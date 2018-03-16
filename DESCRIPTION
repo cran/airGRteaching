@@ -1,0 +1,23 @@
+Package: airGRteaching
+Type: Package
+Title: Teaching Hydrological Modelling with the GR Rainfall-Runoff
+        Models ('Shiny' Interface Included)”
+Version: 0.2.0.9
+Date: 2018-03-15
+Authors@R: c(person("Olivier", "Delaigue", role = c("aut", "cre"), email = "airGR@irstea.fr"), person("Laurent", "Coron", role = c("aut")), person("Pierre", "Brigode", role = c("aut")), person("Guillaume", "Thirel", role = c("ctb")))
+Depends: airGR (>= 1.0.9.43)
+Imports: dygraphs (>= 1.1.1.4), htmlwidgets (>= 1.0), markdown,
+        plotrix, shiny, shinyjs, xts
+Description: Add-on package to the 'airGR' package that simplifies its use and is aimed at being used for teaching hydrology. The package provides 1) three functions that allow to complete very simply a hydrological modelling exercise 2) plotting functions to help students to explore observed data and to interpret the results of calibration and simulation of the GR ('Génie rural') models 3) a 'Shiny' graphical interface that allows for displaying the impact of model parameters on hydrographs and models internal variables.
+License: GPL-2
+NeedsCompilation: no
+URL: https://webgr.irstea.fr/en/airGR/
+Encoding: UTF-8
+Packaged: 2018-03-16 07:30:02 UTC; olivier.delaigue
+Author: Olivier Delaigue [aut, cre],
+  Laurent Coron [aut],
+  Pierre Brigode [aut],
+  Guillaume Thirel [ctb]
+Maintainer: Olivier Delaigue <airGR@irstea.fr>
+Repository: CRAN
+Date/Publication: 2018-03-16 10:20:43 UTC

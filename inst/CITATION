@@ -1,0 +1,35 @@
+year    <- sub("-.*", "", meta$Date)
+version <- meta$Version
+note    <- sprintf("R package version %s", version)
+
+
+citHeader("To cite airGRteaching in publications use these two references:")
+
+bibentry(bibtype="Article",
+         title = "{airGR} and {airGRteaching}: two open source tools for rainfall-runoff modeling and teaching hydrology",
+         author = personList(as.person("O. Delaigue"), as.person("G. Thirel"), as.person("L. Coron"), as.person("P. Brigode")),
+         journal = "HIC2018 proceedings, 13th International conference of Hydroinformatics, July 2018, Palermo, Italy",
+         year = "in review",
+         textVersion = 
+           paste("Delaigue, O., Thirel, G., Coron, L., Brigode, P.",
+                 "(in review).", 
+                 "airGR and airGRteaching: two open source tools for rainfall-runoff modeling and teaching hydrology.",
+                 "HIC2018 proceedings, 13th International conference of Hydroinformatics, July 2018, Palermo, Italy,",
+                 sep = " ")
+)
+
+bibentry(bibtype="Manual",
+         title = "Teaching Hydrological Modelling with {GR} (Shiny Interface Included)",
+         author = personList(as.person("O. Delaigue"), as.person("L. Coron"), as.person("P. Brigode")),
+         journal = "R News",
+         year = year,
+         note = note,
+         url = "https://webgr.irstea.fr/en/airGR/",
+         textVersion = 
+           paste0("Delaigue, O., Coron, L., Brigode, P. (",
+                  year,
+                  "). Teaching Hydrological Modelling with GR (Shiny Interface Included). ",
+                  note,
+                  ". URL: https://webgr.irstea.fr/en/airGR/."
+                  )
+)

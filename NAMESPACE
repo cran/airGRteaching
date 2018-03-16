@@ -1,0 +1,66 @@
+
+
+
+#####################################
+##            S3 methods           ##
+#####################################
+S3method("plot","PrepGR")
+S3method("plot","CalGR")
+S3method("plot","SimGR")
+S3method("dyplot","default")
+S3method("dyplot","PrepGR")
+S3method("dyplot","CalGR")
+S3method("dyplot","SimGR")
+
+
+
+#####################################
+##               Export            ##
+#####################################
+export(CalGR)
+export(PrepGR)
+export(SimGR)
+export(plot.PrepGR)
+export(plot.CalGR)
+export(plot.SimGR)
+export(dyplot)
+export(dyplot.default)
+export(dyplot.PrepGR)
+export(dyplot.CalGR)
+export(dyplot.SimGR)
+export(ShinyGR)
+export(.DiagramGR)
+export(.TypeModelGR)
+
+
+
+#####################################
+##               Export dygraphs   ##
+#####################################
+export(.computeYaxisRange)
+export(.dyBarSeries)
+export(.dyGroup)
+export(.dyStackedBarGroup)
+export(.dyStackedRibbonGroup)
+export(.mergeLists)
+export(.resolveStemPlot)
+export(.resolveStrokePattern)
+
+
+
+#####################################
+##               Import            ##
+#####################################
+import(stats)
+import(graphics)
+import(grDevices)
+import(utils)
+import(airGR)
+importFrom(xts, xts)
+import(dygraphs)
+import(shiny)
+importFrom(shinyjs, useShinyjs)
+importFrom(shinyjs, enable)
+importFrom(shinyjs, disable)
+import(markdown)
+importFrom(plotrix, boxed.labels)

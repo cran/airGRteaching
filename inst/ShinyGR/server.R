@@ -671,9 +671,10 @@ shinyServer(function(input, output, session) {
     tabCrit_out <- merge(tabCrit_gauge, tabCrit_val, by = "Criterion", all.x = TRUE)
     tabCrit_out <- tabCrit_out[order(tabCrit_out$ID), ]
     tabCrit_out <- tabCrit_out[, !colnames(tabCrit_out) %in% "ID"]
+    tabCrit_out[tabCrit_out <= -99.99] <- - 99.99
     tabCrit_out[, seq_len(ncol(tabCrit_out))[-1]] <- sapply(seq_len(ncol(tabCrit_out))[-1], function(x) sprintf("%7.2f", tabCrit_out[, x]))
     tabCrit_out <- as.data.frame(tabCrit_out)
-    tabCrit_out[tabCrit_out <= -99.99] <- "< - 99.99"
+    tabCrit_out[tabCrit_out == " -99.99"] <- "< - 99.99"
     colnames(tabCrit_out) <- gsub("Value", "Qsim", colnames(tabCrit_out))
     
     ## Color the cell of the crietaia uses during the calibration

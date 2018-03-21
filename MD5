@@ -1,7 +1,7 @@
-fa1b098cb22f2404081499bfbac6fe15 *DESCRIPTION
+dd0bcdf528e619cd9394cf124dcbd003 *DESCRIPTION
 9aad9659a9e5e85795fceaad76ebe9b9 *INDEX
 c1e52719e4e1580be799b2d349847742 *NAMESPACE
-60e8e6a581c56795e3320e02706c2900 *NEWS
+4243fdf94f6ab15559f9f34bef79a01a *NEWS
 3932a4e0e06093e4a83587f923fe3ff0 *R/CalGR.R
 4c912a2f3d1a126ef197c3d014ee3308 *R/PrepGR.R
 ad6594b246cea6b1f5775bffc7f13c75 *R/ShinyGR.R
@@ -19,8 +19,9 @@ eb55bfc63ca8bfcc19a0673b8b64d882 *R/plot.PrepGR.R
 973e750a8a58c0563ee46f80c739431e *R/zz_dygraphs_plotters.R
 736d8744999754fb44d2c5a044a455e8 *R/zz_dygraphs_series.R
 cbaa19683f2493fc9ba8fde7f10cabd0 *R/zz_dygraphs_utils.R
+059ca9cb963b2b8b01f056391d27ff6f *build/vignette.rds
 1b8b952adc6333fd69ccad4352f45c1d *inst/CITATION
-00cecee93676297daa7340eb9ec3be43 *inst/ShinyGR/server.R
+8cd659e34d8c38f011fecf2480843c33 *inst/ShinyGR/server.R
 d6cfc4f850fba1ea41d8fea9a9bd9819 *inst/ShinyGR/ui.R
 ad56dd5e95f93f1c9b0f73dc986e54bb *inst/ShinyGR/www/css/bootstrap.min_Cerulean.css
 a3b65d35e744e0d0b1004d42c18601b5 *inst/ShinyGR/www/css/bootstrap.min_Cyborg.css
@@ -53,6 +54,9 @@ aa7f75a01620ebb65f95f40234f3adb4 *inst/ShinyGR/www/tab_fun.md
 d94c97cf5e1205af4d343316651cf30d *inst/ShinyGR/www/tab_fun_files/figure-html/unnamed-chunk-6-1.png
 bdf4f2bff969a33f469d75d69000a96c *inst/ShinyGR/www/tab_fun_files/figure-html/unnamed-chunk-8-1.png
 18c40c3588d38da810269c8d64d3dc90 *inst/ShinyGR/www/tab_fun_files/figure-html/unnamed-chunk-9-1.png
+22b0cb2105fe3634bfbabbbc758b2721 *inst/doc/get_started.R
+cc64f3af7c8357f48d9d3875f34c0199 *inst/doc/get_started.html
+8ad39ac1c4b60da5ab3302b0d068f889 *inst/doc/get_started.rmd
 7e7ddc85343862b9446f87948c3cd086 *inst/plotters/barseries.js
 f8ce64c7c602a92d80f761de99e1575a *inst/plotters/stackedbargroup.js
 78cfff1739ecb97c8767536631a08b73 *inst/plotters/stackedribbongroup.js
@@ -65,3 +69,4 @@ f22c9cca232a956e2035abeef5fc7fcf *man/airGRteaching.Rd
 4088de50f2c89667de8aeedec200f34a *man/plot.CalGR.Rd
 4b8b0faa04f54cc4f3f15844e8d8d757 *man/plot.PrepGR.Rd
 3aba906e495e5a7a120ddf665d9db578 *man/plot.SimGR.Rd
+8ad39ac1c4b60da5ab3302b0d068f889 *vignettes/get_started.rmd

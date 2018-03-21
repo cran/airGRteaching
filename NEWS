@@ -1,8 +1,16 @@
 ############# Release History of the airGRteaching Package
 
 
+## 0.2.2.2 Release Notes (2018-03-21)
 
-## 0.2.0.9 Release Notes (2018-03-15)
+	Bug fixes
+		- bug fixed in ShinyGR(), the criteria values are now right on Unix system
+
+	User-visible changes
+		- vignette added
+		
+		
+## 0.2.0.9 Release Notes (2018-03-16)
 
 	CRAN-compatibility updates
 		- embeding dygraphs functions to avoid user to install the last version of this package from GitHub (import of devtools not necessary)

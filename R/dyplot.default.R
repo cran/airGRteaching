@@ -86,7 +86,7 @@ dyplot.default <- function(x, Qsup = NULL, Qsup.name = "Qsup",
   dg <- dygraphs::dySeries(dygraph = dg, name = "Qobs", axis = 'y' , color = col.Q[1L], drawPoints = TRUE)
   dg <- dygraphs::dySeries(dygraph = dg, name = "Qsim", axis = 'y' , color = col.Q[2L])
   dg <- dygraphs::dySeries(dygraph = dg, name = "Qsup", axis = 'y' , color = col.Q[3L], label = Qsup.name, strokePattern = "dashed")
-  dg <- .dyStackedBarGroup(dygraph = dg, name = rev(grep("^P", colnames(data.xts), value = TRUE)), axis = "y2", color = (col.Precip))
+  dg <- dygraphs::dyStackedBarGroup(dygraph = dg, name = rev(grep("^P", colnames(data.xts), value = TRUE)), axis = "y2", color = (col.Precip))
   dg <- dygraphs::dyAxis(dygraph = dg, name = "y" , label = ylab[1L],
                          valueRange = range(data.xts[, grep("^Q", colnames(data.xts))], na.rm = TRUE) * c(0.01, 1.59))
   dg <- dygraphs::dyAxis(dygraph = dg, name = "y2", label = ylab[2L], independentTicks = FALSE,

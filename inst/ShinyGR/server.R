@@ -538,8 +538,8 @@ shinyServer(function(input, output, session) {
     dg3 <- dygraphs::dyOptions(dg3, fillAlpha = 1.0,
                                axisLineColor = op$fg, axisLabelColor = op$fg,
                                titleHeight = 10, retainDateWindow = FALSE)
-    dg3 <- .dyStackedRibbonGroup(dg3, name = names,
-                                          color = colors, strokeBorderColor = "black")
+    dg3 <- dygraphs::dyStackedRibbonGroup(dg3, name = names,
+                                color = colors, strokeBorderColor = "black")
     dg3 <- dygraphs::dySeries(dg3, name = "Qobs", fillGraph = FALSE, drawPoints = TRUE, color = op$fg)
     dg3 <- dygraphs::dySeries(dg3, name = "Qsim", fillGraph = FALSE, color = "orangered")
     if (length(getSim()$SIMold) == 2 & input$ShowOldQsim == "Yes") {
@@ -562,7 +562,7 @@ shinyServer(function(input, output, session) {
     
     dg4 <- dygraphs::dygraph(data.xts, group = "mod_diag", ylab = paste0("precip. [mm/", getPrep()$TMGR$TimeUnit, "]"))
     dg4 <- dygraphs::dyOptions(dg4, colors = "#428BCA", drawXAxis = FALSE, retainDateWindow = FALSE)
-    dg4 <- .dyBarSeries(dg4, name = "precip.")
+    dg4 <- dygraphs::dyBarSeries(dg4, name = "precip.")
     dg4 <- dygraphs::dyAxis(dg4, name = "y", valueRange = c(max(data.xts[, "precip."], na.rm = TRUE), -1e-3))
     dg4 <- dygraphs::dyEvent(dg4, input$Event, color = "orangered")
     dg4 <- dygraphs::dyLegend(dg4, show = "onmouseover", width = 225)
@@ -635,18 +635,18 @@ shinyServer(function(input, output, session) {
   output$stPlotMD <- renderPlot({
     if (length(getSim()$SIM$OutputsModel$DatesR) < 2) {
       return(NULL)
-    }
+    } 
     # OutputsModel <- getSim()$SIM$OutputsModel
     # IndPlot <- which(OutputsModel$DatesR >= input$Period[1L] & OutputsModel$DatesR <= input$Period[2L])
     # OutputsModel2 <- sapply(OutputsModel[seq_len(which(names(OutputsModel) == "Qsim"))], function(x) x[IndPlot])
     # OutputsModel2 <- c(OutputsModel2, Qobs = list(getSim()$SIM$Qobs[IndPlot]))
     
     OutputsModel2 <- getData()$OutputsModel
-    
+
     par(getPlotPar()$par)
-    .DiagramGR(OutputsModel = OutputsModel2, Param = getSim()$PARAM,
+    try(.DiagramGR(OutputsModel = OutputsModel2, Param = getSim()$PARAM,
                SimPer = input$Period, EventDate = input$Event,
-               HydroModel = input$HydroModel)
+               HydroModel = input$HydroModel), silent = TRUE)
   }, bg = "transparent")
   
   

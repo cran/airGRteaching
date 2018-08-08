@@ -9,27 +9,27 @@ bibentry(bibtype="Article",
          title = "{airGR} and {airGRteaching}: two open source tools for rainfall-runoff modeling and teaching hydrology",
          author = personList(as.person("O. Delaigue"), as.person("G. Thirel"), as.person("L. Coron"), as.person("P. Brigode")),
          journal = "HIC2018 proceedings, 13th International conference of Hydroinformatics, July 2018, Palermo, Italy",
-         year = "in review",
+         year = "accepted",
          textVersion = 
            paste("Delaigue, O., Thirel, G., Coron, L., Brigode, P.",
-                 "(in review).", 
+                 "(accepted).", 
                  "airGR and airGRteaching: two open source tools for rainfall-runoff modeling and teaching hydrology.",
-                 "HIC2018 proceedings, 13th International conference of Hydroinformatics, July 2018, Palermo, Italy,",
+                 "HIC2018 proceedings, 13th International conference of Hydroinformatics, July 2018, Palermo, Italy.",
                  sep = " ")
 )
 
 bibentry(bibtype="Manual",
-         title = "Teaching Hydrological Modelling with {GR} (Shiny Interface Included)",
+         title = "{airGRteaching}: Teaching Hydrological Modelling with {GR} ({Shiny} Interface Included)",
          author = personList(as.person("O. Delaigue"), as.person("L. Coron"), as.person("P. Brigode")),
          journal = "R News",
          year = year,
          note = note,
-         url = "https://webgr.irstea.fr/en/airGR/",
+         url = "https://webgr.irstea.fr/en/airGRteaching/",
          textVersion = 
            paste0("Delaigue, O., Coron, L., Brigode, P. (",
                   year,
-                  "). Teaching Hydrological Modelling with GR (Shiny Interface Included). ",
+                  "). airGRteaching: Teaching Hydrological Modelling with GR (Shiny Interface Included). ",
                   note,
-                  ". URL: https://webgr.irstea.fr/en/airGR/."
+                  ". URL: https://webgr.irstea.fr/en/airGRteaching/."
                   )
 )

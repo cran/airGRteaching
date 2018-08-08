@@ -1,6 +1,16 @@
 ############# Release History of the airGRteaching Package
 
 
+## 0.2.3.2 Release Notes (2018-08-08)
+
+	CRAN-compatibility updates
+		- now depends on the latest version (1.1.1.6) of the dygraphs package from CRAN (embeded dygraphs functions have been removed)
+		
+	User-visible changes
+		- the article reference is updated
+		- .DiagramGR() no longer returns errors when inputs are not yet available in ShinyGR()
+		
+
 ## 0.2.2.2 Release Notes (2018-03-21)
 
 	Bug fixes

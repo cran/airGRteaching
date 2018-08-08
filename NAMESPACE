@@ -35,20 +35,6 @@ export(.TypeModelGR)
 
 
 #####################################
-##               Export dygraphs   ##
-#####################################
-export(.computeYaxisRange)
-export(.dyBarSeries)
-export(.dyGroup)
-export(.dyStackedBarGroup)
-export(.dyStackedRibbonGroup)
-export(.mergeLists)
-export(.resolveStemPlot)
-export(.resolveStrokePattern)
-
-
-
-#####################################
 ##               Import            ##
 #####################################
 import(stats)

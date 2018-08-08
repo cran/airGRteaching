@@ -15,7 +15,7 @@ The airGRteaching package has been designed to fulfil a major requirement: facil
 The package is mostly based on three families of functions: \cr
 - the functions that allow to complete very simply a hydrological modelling exercise; \cr
 - plotting functions to help students to explore observed data and to interpret the results of calibration and simulation of the GR models; \cr
-- a function which runs a shiny graphical interface that allows for displaying in real-time model parameters impacts on hydrographs.
+- a function which runs a 'Shiny' graphical interface that allows for displaying in real-time model parameters impacts on hydrographs.
 \cr\cr
 
 

@@ -1,9 +1,9 @@
 ---
-title: "Get Started with airGRteachning"
+title: "Get Started with airGRteaching"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteIndexEntry{Get Started with airGR}
+  %\VignetteIndexEntry{Get Started with airGRteaching}
   %\VignetteEncoding{UTF-8}
 ---
 
@@ -29,7 +29,7 @@ library(airGRteaching)
 ### How to run the `r airGR` hydrological models in  only three simple steps with `r airGRteaching`
 
 
-#### Preparation of observed data for modelling
+#### Preparation of input data
 
 A `data.frame` of daily hydrometeorological observations time series at the catchment scale is needed. The required fields are:
 

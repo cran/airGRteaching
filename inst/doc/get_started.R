@@ -9,7 +9,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(airGRteaching)
 
 ## ---- echo=3, eval=TRUE--------------------------------------------------
-data(L0123001)
+data(L0123001, package = "airGR")
 BasinObs <- BasinObs[, c("DatesR", "P", "E", "Qmm", "T")]
 head(BasinObs)
 

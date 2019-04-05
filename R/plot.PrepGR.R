@@ -41,4 +41,6 @@ plot.PrepGR <- function(x, type = "l", col.Precip = "royalblue", col.Q = "black"
     legend("topright", legend = "NA", pch = 15, col = col.na, bty = "n", cex = 0.8)
   }
   
+  box()
+  
 }

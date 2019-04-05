@@ -45,10 +45,10 @@
 \author{Olivier Delaigue}
 
 \examples{
-library(airGR)
+library(airGRteaching)
 
 ## data.frame of observed data
-data(L0123001)
+data(L0123001, package = "airGR")
 BasinObs2 <- BasinObs[, c("DatesR", "P", "E", "Qmm", "T")]
 
 ## Preparation of observed data for modelling

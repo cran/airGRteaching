@@ -42,6 +42,11 @@ ShinyGR <- function(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL, 
   } else if (is.null(ObsDF)) {
     NamesObsBV <- ifelse(is.null(NamesObsBV), "Unnamed watershed", NamesObsBV[1L])
   }
+  if (!is.null(NamesObsBV)) {
+    if (any(nchar(NamesObsBV) == 0)) {
+      stop("NamesObsBV must be a string vector of at least one character.")
+    }
+  }  
   
   if (is.null(ObsDF)) {
     if (length(ZInputs) > 1) {

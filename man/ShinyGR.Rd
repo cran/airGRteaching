@@ -56,15 +56,15 @@ Laurent Coron,
 Pierre Brigode}
 
 \examples{
-library(airGR)
+library(airGRteaching)
 
 ## data.frame of observed data of a low-land basin
-data(L0123001)
+data(L0123001, package = "airGR")
 BV_L0123001 <- BasinObs[0001:6000, c("DatesR", "P", "E", "Qmm", "T")]
 BI_L0123001 <- BasinInfo
 
 ## data.frame of observed data of a mountainous basin
-data(L0123002)
+data(L0123002, package = "airGR")
 BV_L0123002 <- BasinObs[5000:9999, c("DatesR", "P", "E", "Qmm", "T")]
 BI_L0123002 <- BasinInfo
 

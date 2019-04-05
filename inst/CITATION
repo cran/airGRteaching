@@ -5,31 +5,42 @@ note    <- sprintf("R package version %s", version)
 
 citHeader("To cite airGRteaching in publications use these two references:")
 
-bibentry(bibtype="Article",
-         title = "{airGR} and {airGRteaching}: two open source tools for rainfall-runoff modeling and teaching hydrology",
-         author = personList(as.person("O. Delaigue"), as.person("G. Thirel"), as.person("L. Coron"), as.person("P. Brigode")),
-         journal = "HIC2018 proceedings, 13th International conference of Hydroinformatics, July 2018, Palermo, Italy",
-         year = "accepted",
+bibentry(bibtype    = "InProceedings",
+          author    = personList(as.person("O. Delaigue"), as.person("G. Thirel"), as.person("L. Coron"), as.person("P. Brigode")),
+          title     = "{airGR} and {airGRteaching}: Two Open-Source Tools for Rainfall-Runoff Modeling and Teaching Hydrology",
+          booktitle = "HIC 2018. 13th International Conference on Hydroinformatics",
+          editor    = "Goffredo La Loggia and Gabriele Freni and Valeria Puleo and Mauro De Marchis",
+          series    = "EPiC Series in Engineering",
+          volume    = "3",
+          pages     = "541-548",
+          year      = "2018",
+          publisher = "EasyChair",
+          bibsource = "EasyChair, https://easychair.org",
+          issn      = "2516-2330",
+          url       = "https://easychair.org/publications/paper/VQ52",
+          doi       = "10.29007/qsqj",
          textVersion = 
            paste("Delaigue, O., Thirel, G., Coron, L., Brigode, P.",
-                 "(accepted).", 
-                 "airGR and airGRteaching: two open source tools for rainfall-runoff modeling and teaching hydrology.",
-                 "HIC2018 proceedings, 13th International conference of Hydroinformatics, July 2018, Palermo, Italy.",
+                 "(2018).", 
+                 "airGR and airGRteaching: Two open-source tools for rainfall-runoff modeling and teaching hydrology.",
+                 "HIC 2018. 13th International Conference on Hydroinformatics",
+                 "(eds. G.L. Loggia, G. Freni, V. Puleo & M.D. Marchis),",
+                 "vol. 3 of EPiC Series in Engineering, p. 541-548, EasyChair, URL: https://easychair.org/publications/paper/VQ52.",
                  sep = " ")
 )
 
-bibentry(bibtype="Manual",
+bibentry(bibtype ="Manual",
          title = "{airGRteaching}: Teaching Hydrological Modelling with {GR} ({Shiny} Interface Included)",
          author = personList(as.person("O. Delaigue"), as.person("L. Coron"), as.person("P. Brigode")),
          journal = "R News",
          year = year,
          note = note,
-         url = "https://webgr.irstea.fr/en/airGRteaching/",
+         url = "https://CRAN.R-project.org/package=airGRteaching/",
          textVersion = 
            paste0("Delaigue, O., Coron, L., Brigode, P. (",
                   year,
                   "). airGRteaching: Teaching Hydrological Modelling with GR (Shiny Interface Included). ",
                   note,
-                  ". URL: https://webgr.irstea.fr/en/airGRteaching/."
+                  ". URL: https://CRAN.R-project.org/package=airGRteaching/."
                   )
 )

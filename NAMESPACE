@@ -29,8 +29,8 @@ export(dyplot.PrepGR)
 export(dyplot.CalGR)
 export(dyplot.SimGR)
 export(ShinyGR)
-export(.DiagramGR)
-export(.TypeModelGR)
+exportPattern(".DiagramGR")
+exportPattern(".TypeModelGR")
 
 
 

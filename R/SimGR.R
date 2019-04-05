@@ -66,14 +66,14 @@ SimGR <- function(PrepGR, CalGR = NULL, Param = NULL, EffCrit = c("NSE", "KGE", 
 
   
   MOD_crt <- CreateInputsCrit(FUN_CRIT = FUN_CRIT, InputsModel = PrepGR$InputsModel, 
-                              RunOptions = MOD_opt, Qobs = PrepGR$Qobs[SimInd], transfo = transfo)  
+                              RunOptions = MOD_opt, Obs = PrepGR$Qobs[SimInd], transfo = transfo)  
   
   
   SIM <- RunModel(InputsModel = PrepGR$InputsModel, RunOptions = MOD_opt, 
                   Param = Param, FUN_MOD =  get(PrepGR$TypeModel))
   
   
-  CRT <- ErrorCrit(InputsCrit = MOD_crt, OutputsModel = SIM, FUN_CRIT = FUN_CRIT, verbose = verbose)
+  CRT <- ErrorCrit(InputsCrit = MOD_crt, OutputsModel = SIM, verbose = verbose)
 
   
   SimGR <- list(OptionsSimul = MOD_opt, OptionsCrit = MOD_crt, OutputsModel = SIM, Qobs = PrepGR$Qobs[SimInd],

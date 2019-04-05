@@ -40,7 +40,7 @@ A `data.frame` of daily hydrometeorological observations time series at the catc
   * *Qmm* : outlet discharge [mm/time step]
   
 ```{r, echo=3, eval=TRUE}
-data(L0123001)
+data(L0123001, package = "airGR")
 BasinObs <- BasinObs[, c("DatesR", "P", "E", "Qmm", "T")]
 head(BasinObs)
 ```
@@ -171,7 +171,7 @@ ShinyGR(ObsDF = BasinObs, SimPer = c("1994-01-01", "1998-12-31"))
 Only daily models are currently available (GR4J, GR5J, GR6J + CemaNeige).
 
 It is also possible to change the interface look; different themes are proposed (`theme` argument).
-<div><center><image src="fig/theme_rstudio.jpg" width="32%" height="32%"> <image src="fig/theme_cerulean.jpg" width="32%" height="32%"> <image src="fig/theme_cyborg.jpg" width="32%" height="32%"></img></center></div>
-<div><center><image src="fig/theme_flatly.jpg" width="32%" height="32%"> <image src="fig/theme_united.jpg" width="32%" height="32%"> <image src="fig/theme_yeti.jpg" width="32%" height="32%"></center></div>
+<div><center><image src="https://hydrogr.github.io/airGRteaching/fig/airGRteaching_ShinyUi_theme_rstudio.jpg" width="30%" height="30%"> <image src="https://hydrogr.github.io/airGRteaching/fig/airGRteaching_ShinyUi_theme_cerulean.jpg" width="30%" height="30%"> <image src="https://hydrogr.github.io/airGRteaching/fig/airGRteaching_ShinyUi_theme_cyborg.jpg" width="30%" height="30%"></img></center></div>
+<div><center><image src="https://hydrogr.github.io/airGRteaching/fig/airGRteaching_ShinyUi_theme_flatly.jpg" width="30%" height="30%"> <image src="https://hydrogr.github.io/airGRteaching/fig/airGRteaching_ShinyUi_theme_united.jpg" width="30%" height="30%"> <image src="https://hydrogr.github.io/airGRteaching/fig/airGRteaching_ShinyUi_theme_yeti.jpg" width="30%" height="30%"></center></div>
 
 

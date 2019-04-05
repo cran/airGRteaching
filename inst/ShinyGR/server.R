@@ -142,24 +142,38 @@ shinyServer(function(input, output, session) {
                  verbose = FALSE)
     
     ## Criteria computation
-    CRIT_opt <- list(Crit    = c("ErrorCrit_NSE", "ErrorCrit_KGE"),
-                     Transfo = c("NO", "sqrt", "inv"))
-    CRIT <- lapply(CRIT_opt$Crit, function(iCRIT) {
-      Qtransfo <- lapply(CRIT_opt$Transfo, function(iTRSF) {
-        iInputsCrit <- SIM$OptionsCrit
-        iTRSF <- gsub("NO", "", iTRSF)
-        iInputsCrit$transfo <- iTRSF
-        iCRIT <- ErrorCrit(InputsCrit = iInputsCrit, OutputsModel = SIM$OutputsModel, FUN_CRIT = get(iCRIT), verbose = FALSE)
-        iCRIT <- iCRIT[c("CritName", "CritValue")]
-        return(iCRIT)
-      })
-      return(Qtransfo)
-    })
-    CRIT <- as.data.frame(matrix(na.omit(unlist(CRIT)), ncol = 2, byrow = TRUE), stringsAsFactors = FALSE)
+    CRIT_opt <- list(Crit    = c(rep("ErrorCrit_NSE", 3),  rep("ErrorCrit_KGE", 3)),
+                     Transfo = rep(c("", "sqrt", "inv"), times = 2))
+    InputsCritMulti <- CreateInputsCrit(FUN_CRIT = CRIT_opt$Crit,
+                                        InputsModel = getPrep()$PREP$InputsModel,
+                                        RunOptions = SIM$OptionsSimul,
+                                        Obs = replicate(n = 6, expr = SIM$Qobs, simplify = FALSE),
+                                        VarObs = rep("Q", times = 6),
+                                        transfo = CRIT_opt$Transfo,
+                                        Weights = NULL) 
+    iCRIT <- ErrorCrit(InputsCrit = InputsCritMulti, OutputsModel = SIM$OutputsModel, verbose = FALSE)
+    CRIT <- do.call("rbind", lapply(iCRIT, function(i) data.frame(CritName = i$CritName, CritValue = i$CritValue)))
+    CRIT$CritName <- gsub("\\[", " [", CRIT$CritName)
     colnames(CRIT) <- c("Criterion", "Value")
-    rownames(CRIT) <- NULL    
-    CRIT$Value     <- as.numeric(CRIT$Value)
-    CRIT$Criterion <- gsub("\\[", " [", CRIT$Criterion)
+    # CRIT_opt <- list(Crit    = c("ErrorCrit_NSE", "ErrorCrit_KGE"),
+    #                  Transfo = c("NO", "sqrt", "inv"))
+    # CRIT <- lapply(CRIT_opt$Crit, function(iCRIT) {
+    #   Qtransfo <- lapply(CRIT_opt$Transfo, function(iTRSF) {
+    #     iInputsCrit <- SIM$OptionsCrit
+    #     iTRSF <- gsub("NO", "", iTRSF)
+    #     iInputsCrit$transfo <- iTRSF
+    #     iCRIT <- ErrorCrit(InputsCrit = iInputsCrit, OutputsModel = SIM$OutputsModel, FUN_CRIT = get(iCRIT), verbose = FALSE)
+    #     iCRIT <- iCRIT[c("CritName", "CritValue")]
+    #     return(iCRIT)
+    #   })
+    #   return(Qtransfo)
+    # })
+    # print(CRIT)
+    # CRIT <- as.data.frame(matrix(na.omit(unlist(CRIT)), ncol = 2, byrow = TRUE), stringsAsFactors = FALSE)
+    # colnames(CRIT) <- c("Criterion", "Value")
+    # rownames(CRIT) <- NULL    
+    # CRIT$Value     <- as.numeric(CRIT$Value)
+    # CRIT$Criterion <- gsub("\\[", " [", CRIT$Criterion)
     
     ## Recording past simulations
     .GlobalEnv$.ShinyGR.hist[[length(.GlobalEnv$.ShinyGR.hist)+1]] <- list(Qsim      = SIM$OutputsModel$Qsim,
@@ -209,20 +223,31 @@ shinyServer(function(input, output, session) {
                         WupPer = substr(getPrep()$WUPPER, 1, 10),
                         SimPer = substr(c(input$Period[1], input$Period[2]), 1, 10),
                         verbose = FALSE)
-        CRITold <- lapply(CRIT_opt$Crit, function(iCRIT) {
-          SIM_transfo <- lapply(CRIT_opt$Transfo, function(iTRSF) {
-            iTRSF <- gsub("NO", "", iTRSF)
-            SIMold$OptionsCrit$transfo <- iTRSF
-            iCRITold <- ErrorCrit(InputsCrit = SIMold$OptionsCrit, OutputsModel = SIMold$OutputsModel, FUN_CRIT = get(iCRIT), verbose = FALSE)
-            iCRITold <- iCRITold[c("CritName", "CritValue")]
-            return(iCRITold)
-          })
-        })
-        CRITold <- as.data.frame(matrix(na.omit(unlist(CRITold)), ncol = 2, byrow = TRUE), stringsAsFactors = FALSE)
+        # CRITold <- lapply(CRIT_opt$Crit, function(iCRIT) {
+        #   SIM_transfo <- lapply(CRIT_opt$Transfo, function(iTRSF) {
+        #     iTRSF <- gsub("NO", "", iTRSF)
+        #     SIMold$OptionsCrit$transfo <- iTRSF
+        #     iCRITold <- ErrorCrit(InputsCrit = SIMold$OptionsCrit, OutputsModel = SIMold$OutputsModel, FUN_CRIT = get(iCRIT), verbose = FALSE)
+        #     iCRITold <- iCRITold[c("CritName", "CritValue")]
+        #     return(iCRITold)
+        #   })
+        # })
+        # CRITold <- as.data.frame(matrix(na.omit(unlist(CRITold)), ncol = 2, byrow = TRUE), stringsAsFactors = FALSE)
+        # colnames(CRITold) <- c("Criterion", "Value")
+        # rownames(CRITold) <- NULL    
+        # CRITold$Value     <- as.numeric(CRITold$Value)
+        # CRITold$Criterion <- gsub("\\[", " [", CRITold$Criterion)
+        InputsCritMultiold <- CreateInputsCrit(FUN_CRIT = CRIT_opt$Crit,
+                                               InputsModel = OBSold$InputsModel,
+                                               RunOptions = SIMold$OptionsSimul,
+                                               Obs = replicate(n = 6, expr = SIMold$Qobs, simplify = FALSE),
+                                               VarObs = rep("Q", times = 6),
+                                               transfo = CRIT_opt$Transfo,
+                                               Weights = NULL) 
+        iCRITold <- ErrorCrit(InputsCrit = InputsCritMultiold, OutputsModel = SIMold$OutputsModel, verbose = FALSE)
+        CRITold <- do.call("rbind", lapply(iCRITold, function(i) data.frame(CritName = i$CritName, CritValue = i$CritValue)))
+        CRITold$CritName <- gsub("\\[", " [", CRITold$CritName)
         colnames(CRITold) <- c("Criterion", "Value")
-        rownames(CRITold) <- NULL    
-        CRITold$Value     <- as.numeric(CRITold$Value)
-        CRITold$Criterion <- gsub("\\[", " [", CRITold$Criterion)
         
         .GlobalEnv$.ShinyGR.hist[[1]]$Crit <- CRITold
         .GlobalEnv$.ShinyGR.hist[[1]]$Qsim <- SIMold$OutputsModel$Qsim
@@ -248,15 +273,15 @@ shinyServer(function(input, output, session) {
   
   
   ## Models available considering the plot type
-  observe({
-    if (getPlotType() == 4) {
-      updateSelectInput(session, inputId = "HydroModel", choice = c("GR4J", "GR5J", "GR6J"), selected = input$HydroModel)
-      updateSelectInput(session, inputId = "SnowModel" , choice = c("None"))
-    } else {
-      updateSelectInput(session, inputId = "HydroModel", choice = c("GR4J", "GR5J", "GR6J"), selected = input$HydroModel)
-      updateSelectInput(session, inputId = "SnowModel" , choice = c("None", "CemaNeige")   , selected = input$SnowModel)
-    }
-  })
+  # observe({
+  #   if (getPlotType() == 4) {
+  #     updateSelectInput(session, inputId = "HydroModel", choice = c("GR4J", "GR5J", "GR6J"), selected = input$HydroModel)
+  #     updateSelectInput(session, inputId = "SnowModel" , choice = c("None"))
+  #   } else {
+  #     updateSelectInput(session, inputId = "HydroModel", choice = c("GR4J", "GR5J", "GR6J"), selected = input$HydroModel)
+  #     updateSelectInput(session, inputId = "SnowModel" , choice = c("None", "CemaNeige")   , selected = input$SnowModel)
+  #   }
+  # })
   
   
   ## Plots available considering the model type
@@ -334,7 +359,8 @@ shinyServer(function(input, output, session) {
       # } else {
       if (dateWindow[1L] != dateWindow[2L]) {
         updateSliderInput(session, inputId = "Period",
-                          value = dateWindow + .TypeModelGR(input$HydroModel)$TimeLag)
+                          value = dateWindow + .TypeModelGR(input$HydroModel)$TimeLag,
+                          timeFormat = "%F")
       }
       # }
     }
@@ -367,27 +393,33 @@ shinyServer(function(input, output, session) {
   ## Reset period slider responds to dygraphs to mouse clicks
   observeEvent({input$dyPlotTS_click}, {
     updateSliderInput(session, inputId = "Period",
-                      value = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]], tz = "UTC"))
+                      value = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]], tz = "UTC"),
+                      timeFormat = "%F")
   }, priority = +10)
   observeEvent({input$dyPlotSVs_click}, {
     updateSliderInput(session, inputId = "Period",
-                      value = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]], tz = "UTC"))
+                      value = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]], tz = "UTC"),
+                      timeFormat = "%F")
   }, priority = +10)
   observeEvent({input$dyPlotSVq_click}, {
     updateSliderInput(session, inputId = "Period",
-                      value = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]], tz = "UTC"))
+                      value = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]], tz = "UTC"),
+                      timeFormat = "%F")
   }, priority = +10)
   observeEvent({input$dyPlotMDp_click}, {
     updateSliderInput(session, inputId = "Period",
-                      value = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]], tz = "UTC"))
+                      value = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]], tz = "UTC"),
+                      timeFormat = "%F")
   }, priority = +10)
   observeEvent({input$dyPlotMDe_click}, {
     updateSliderInput(session, inputId = "Period",
-                      value = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]], tz = "UTC"))
+                      value = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]], tz = "UTC"),
+                      timeFormat = "%F")
   }, priority = +10)
   observeEvent({input$dyPlotMDq_click}, {
     updateSliderInput(session, inputId = "Period",
-                      value = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]], tz = "UTC"))
+                      value = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]], tz = "UTC"),
+                      timeFormat = "%F")
   }, priority = +10)
   
 
@@ -396,7 +428,8 @@ shinyServer(function(input, output, session) {
     updateSliderInput(session, inputId = "Period",
                       min = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]][1L], tz = "UTC"),
                       max = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]][2L], tz = "UTC"),
-                      value = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]], tz = "UTC"))
+                      value = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]], tz = "UTC"),
+                      timeFormat = "%F")
   })
   
   
@@ -405,12 +438,14 @@ shinyServer(function(input, output, session) {
     updateSliderInput(session, inputId = "Event", label = "Select the target date:",
                       min = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]][1L], tz = "UTC") + .TypeModelGR(input$HydroModel)$TimeLag,
                       max = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]][2L], tz = "UTC"),
-                      value = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]][1L], tz = "UTC"), + .TypeModelGR(input$HydroModel)$TimeLag)
+                      value = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]][1L], tz = "UTC"), + .TypeModelGR(input$HydroModel)$TimeLag,
+                      timeFormat = "%F")
   })
   observe({
     updateSliderInput(session, inputId = "Event", label = "Select the target date:",
                       min = input$Period[1L] + .TypeModelGR(input$HydroModel)$TimeLag,
-                      max = input$Period[2L])
+                      max = input$Period[2L],
+                      timeFormat = "%F")
   })
   
   
@@ -646,7 +681,8 @@ shinyServer(function(input, output, session) {
     par(getPlotPar()$par)
     try(.DiagramGR(OutputsModel = OutputsModel2, Param = getSim()$PARAM,
                SimPer = input$Period, EventDate = input$Event,
-               HydroModel = input$HydroModel), silent = TRUE)
+               HydroModel = input$HydroModel, CemaNeige = input$SnowModel == "CemaNeige"),
+        silent = TRUE)
   }, bg = "transparent")
   
   

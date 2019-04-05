@@ -16,7 +16,7 @@ plot.CalGR <- function(x, xlab = NULL, ylab =  NULL, main = NULL, which = c("per
   on.exit(par(opar))
   
   if (any(which[1L] %in% c("perf"))) {
-    plot(x$OutputsModel, Qobs = x$Qobs, ...)
+    plot.OutputsModel(x$OutputsModel, Qobs = x$Qobs, ...)
   }
   
   if (any(which[1L] %in% c("iter"))) {
@@ -42,7 +42,6 @@ plot.CalGR <- function(x, xlab = NULL, ylab =  NULL, main = NULL, which = c("per
   }
   
   if (any(which[1L] %in% c("iter"))) {
-    
     ParamLab <- data.frame(Name  = c(sprintf("X%i", 1:6), sprintf("C%i", 1:2)),
                            Label = c("prod. store capacity [mm]",
                                      "intercatchment exch. coef. [mm/TimeUnit]",
@@ -106,5 +105,6 @@ plot.CalGR <- function(x, xlab = NULL, ylab =  NULL, main = NULL, which = c("per
     #   legend("topright", legend = "NA", pch = 15, col = col.na, bty = "n", cex = 0.8)
     # }
   }
+  # box()
   
 }

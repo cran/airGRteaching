@@ -55,7 +55,7 @@ CalGR <- function(PrepGR, CalCrit = c("NSE", "KGE", "KGE2", "RMSE"),
   
   
   MOD_crt <- CreateInputsCrit(FUN_CRIT = FUN_CRIT, InputsModel = PrepGR$InputsModel, 
-                              RunOptions = MOD_opt, Qobs = PrepGR$Qobs[CalInd], transfo = transfo)
+                              RunOptions = MOD_opt, Obs = PrepGR$Qobs[CalInd], transfo = transfo)
   
   
   CAL_opt <- CreateCalibOptions(FUN_MOD = get(PrepGR$TypeModel), FUN_CALIB = Calibration_Michel)

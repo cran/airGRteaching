@@ -48,7 +48,7 @@ if (getRversion() >= "2.15.1") {
 ## function to plot the gr models diagrams (only GR4J and GR5J)
 ## =================================================================================
 
-.DiagramGR <- function(OutputsModel, Param, SimPer, EventDate, HydroModel) {
+.DiagramGR <- function(OutputsModel, Param, SimPer, EventDate, HydroModel, CemaNeige) {
   
   
   # --------------------------------------------------------------------------------
@@ -233,6 +233,9 @@ if (getRversion() >= "2.15.1") {
   # --------------------------------------------------------------------------------
   
   # Entrees P et ETP
+  if (CemaNeige) {
+    text(x = xy_P[1]*1.65, y = xy_P[2]*0.98, labels = "+ CemaNeige", adj = c(1, 1), font = 2, col = "grey40", cex = 1.6)
+  }
   text(x = xy_P[1], y = xy_P[2], labels = "P", pos = 3, font = 2, col = col_P, cex = 1.8)
   text(x = xy_E[1], y = xy_E[2], labels = "E", pos = 3, font = 2, col = col_E, cex = 1.8)
   

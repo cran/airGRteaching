@@ -1,6 +1,6 @@
 PrepGR <- function(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL, Qobs = NULL, TempMean = NULL, 
-                  ZInputs = NULL, HypsoData = NULL, NLayers = 5,
-                  HydroModel, CemaNeige = FALSE) {
+                   ZInputs = NULL, HypsoData = NULL, NLayers = 5,
+                   HydroModel, CemaNeige = FALSE) {
   
   
   if (is.null(ObsDF) && (is.null(DatesR) | is.null(Precip) | is.null(PotEvap) | is.null(Qobs))) {

@@ -74,7 +74,7 @@ CalGR <- function(PrepGR, CalCrit = c("NSE", "KGE", "KGE2", "RMSE"),
   CalGR <- list(OptionsCalib = MOD_opt, Qobs = PrepGR$Qobs[CalInd],
                 OutputsCalib = CAL, OutputsModel = SIM,
                 TypeModel = PrepGR$TypeModel, CalCrit = CalCrit,
-                PeriodModel = list(WarmUp = as.POSIXct(PrepGR$InputsModel$DatesR[range(MOD_opt$IndPeriod_WarmUp)]),
+                PeriodModel = list(WarmUp = as.POSIXct(PrepGR$InputsModel$DatesR[range(MOD_opt$IndPeriod_WarmUp)], tz = "UTC"),
                                    Run    = CalPer))
   class(CalGR) <- c("CalGR", "GR")
   return(CalGR)  

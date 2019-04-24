@@ -57,7 +57,7 @@ dyplot.default <- function(x, Qsup = NULL, Qsup.name = "Qsup",
       data$Precip <- NULL
     }
   }
-  data.xts <- xts::xts(data[, -1L], order.by = data$DatesR)
+  data.xts <- xts::xts(data[, -1L], order.by = data$DatesR, tz = "UTC")
   
   
   rgba <- function(x, alpha = 1) {

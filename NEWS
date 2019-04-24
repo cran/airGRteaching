@@ -3,13 +3,34 @@ Release History of the airGRteaching Package
 
 
 
+##################### 0.2.6.27 Release Notes (2019-04-23) #####################
+
+
+#### Bug fixes
+
+- ShinyGR() may now run for any timezone
+
+- ShinyGR() takes into account the fact that on 1 time step airGR::ErrorCrit_KGE do not return CritName (temporary patch)
+
+- ShinyGR() takes into account the fact that the previous simulation could have a missing value criterion
+
+- ShinyGR() takes into account the fact the prevuous Qsim is sometimes to long of one value (temporary patch)
+
+
+#### User-visible changes
+
+- The WarmUp element returned by CalGR() and SimGR() now presents a timezone defined as UTC
+
+
+
+
+
 ##################### 0.2.6.14 Release Notes (2019-04-03) #####################
 
 
 #### CRAN-compatibility updates
 
-- now depends on the latest version (1.2.13.16) of the airGR package.
-CalGR(), SimGR() and ShinyGR() have been updated.
+- now depends on the latest version (1.2.13.16) of the airGR package: CalGR(), SimGR() and ShinyGR() have been updated
 
 - the htmlwidget package is no longer imported
 

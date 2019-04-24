@@ -33,7 +33,7 @@ PrepGR(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL,
   
   \item{HydroModel}{[character] name of the hydrological model (must be one of \code{"GR1A"}, \code{"GR2M"}, \code{"GR4J"}, \code{"GR5J"}, \code{"GR6J"} or \code{"GR4H"})}
   
-  \item{CemaNeige}{[boolean] option indicating whether CemaNeige should be activated (only available when \code{HydroModel} is equal to any of \code{"GR4J"}, \code{"GR5J"} or \code{"GR6J"})}
+  \item{CemaNeige}{[boolean] option indicating whether CemaNeige should be activated (only available when \code{HydroModel} is equal to any of \code{"GR4J"}, \code{"GR5J"} or \code{"GR6J"}). See details}
 }
 
 
@@ -53,7 +53,9 @@ PrepGR(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL,
 \description{Creation of the inputs required to run the CalGR and SimGR functions}
 
 \details{
-If the \code{ObsDF} argument is provided, \code{DatesR}, \code{Precip}, \code{PotEvap}, \code{Qobs} and \code{TempMean} are not necessary, and vice-versa. If one variable is provided in \code{ObsDF} and also separately, then only the data included in \code{ObsDF} are used. 
+If the \code{ObsDF} argument is provided, \code{DatesR}, \code{Precip}, \code{PotEvap}, \code{Qobs} and \code{TempMean} are not necessary, and vice-versa. If one variable is provided in \code{ObsDF} and also separately, then only the data included in \code{ObsDF} are used.
+\cr \cr
+If the \code{CemaNeige} argument is set to \code{TRUE}, the default version of CemaNeige is used (i.e. without the Linear Hysteresis, see the details part in \code{\link{CreateRunOptions}}).
 }
 
 \author{Olivier Delaigue}

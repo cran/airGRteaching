@@ -70,7 +70,7 @@ SimGR <- function(PrepGR, CalGR = NULL, Param = NULL, EffCrit = c("NSE", "KGE", 
   
   
   SIM <- RunModel(InputsModel = PrepGR$InputsModel, RunOptions = MOD_opt, 
-                  Param = Param, FUN_MOD =  get(PrepGR$TypeModel))
+                  Param = Param, FUN_MOD = get(PrepGR$TypeModel))
   
   
   CRT <- ErrorCrit(InputsCrit = MOD_crt, OutputsModel = SIM, verbose = verbose)
@@ -79,7 +79,7 @@ SimGR <- function(PrepGR, CalGR = NULL, Param = NULL, EffCrit = c("NSE", "KGE", 
   SimGR <- list(OptionsSimul = MOD_opt, OptionsCrit = MOD_crt, OutputsModel = SIM, Qobs = PrepGR$Qobs[SimInd],
                 TypeModel = PrepGR$TypeModel,
                 CalCrit = CalGR$CalCrit, EffCrit = CRT,
-                PeriodModel = list(WarmUp = as.POSIXct(PrepGR$InputsModel$DatesR[range(MOD_opt$IndPeriod_WarmUp)]),
+                PeriodModel = list(WarmUp = as.POSIXct(PrepGR$InputsModel$DatesR[range(MOD_opt$IndPeriod_WarmUp)], tz = "UTC"),
                                    Run    = SimPer))
   class(SimGR) <- c("SimGR", "GR")
   return(SimGR)  

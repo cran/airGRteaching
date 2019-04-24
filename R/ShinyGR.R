@@ -140,7 +140,11 @@ ShinyGR <- function(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL, 
                                    ZInputs = ZInputs, HypsoData = HypsoData, NLayers = NLayers, SimPer = SimPer,
                                    theme = theme)
   
-  on.exit(rm(.ShinyGR.args, .ShinyGR.hist, envir = .GlobalEnv))
+  ## timezone used
+  # oTZ <- Sys.timezone()
+  Sys.setenv(TZ = "UTC")
+  
+  on.exit({rm(.ShinyGR.args, .ShinyGR.hist, envir = .GlobalEnv) ; Sys.unsetenv("TZ")})
   
   shiny::runApp(system.file("ShinyGR", package = "airGRteaching"), launch.browser = TRUE)
   return(NULL)

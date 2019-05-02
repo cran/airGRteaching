@@ -168,10 +168,10 @@ navbarPage(title       = div("airGRteaching",
                                                                                           choices = c("No", "Yes"), inline = TRUE),#),
                                                             downloadButton("DownloadTab" , label = "Download sim. as csv",
                                                                            style = "color:#565656; background-color:#ECF0F1; border-color:#DCDCDC; width:170px; height:25px; font-size:95%; padding-top:2px; margin-top:20px;"), 
-                                                            conditionalPanel(condition = "input.PlotType == 'Model performance' || input.PlotType == 'Flow time series' || input.PlotType == 'State variables'",
+                                                            #conditionalPanel(condition = "input.PlotType == 'Model performance' || input.PlotType == 'Flow time series' || input.PlotType == 'State variables'",
                                                                              downloadButton("DownloadPlot", label = "Download plot as png",
                                                                                             style = "color:#565656; background-color:#ECF0F1; border-color:#DCDCDC; width:170px; height:25px; font-size:95%; padding-top:2px; margin-top:10px;")
-                                                            )
+                                                            #)
                                                             
                                                      )
                                             )

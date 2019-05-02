@@ -3,6 +3,21 @@ Release History of the airGRteaching Package
 
 
 
+
+##################### 0.2.6.29 Release Notes (2019-05-02) #####################
+
+#### Bug fixes
+
+- ShinyGR() can export the csv table again. It was broken due to modifications to the version 1.2.13.16 of the airGR package
+
+
+#### User-visible changes
+
+- it is now possible to export the diagram plot of the model from the ShinyGR() interface
+
+
+
+
 ##################### 0.2.6.27 Release Notes (2019-04-23) #####################
 
 
@@ -20,7 +35,6 @@ Release History of the airGRteaching Package
 #### User-visible changes
 
 - The WarmUp element returned by CalGR() and SimGR() now presents a timezone defined as UTC
-
 
 
 
@@ -186,7 +200,7 @@ Release History of the airGRteaching Package
 
 - it is now possible to show the table of the last simulation criteria in the ShinyGR() interface
 
-- it is now possible to export state variable plot from ShinyGR() interface
+- it is now possible to export state variable plot from the ShinyGR() interface
 
 
 

@@ -1,7 +1,7 @@
-861609e6ce508fc3f83861d5abd8e6e1 *DESCRIPTION
+abd8c51c29f79c68b2d4e795bd609084 *DESCRIPTION
 9aad9659a9e5e85795fceaad76ebe9b9 *INDEX
 eb050c79764501998839fca9a6a81802 *NAMESPACE
-ed8b47c1ea53d4c52914e62c86ea4897 *NEWS
+4a0e31851f1f2eec962220f0f706ab0f *NEWS
 77e95f1a40f6d13cff5b27ab396ec589 *R/CalGR.R
 b86d0f2fcd9fc1c612d0277965ae2311 *R/PrepGR.R
 2770c432551cddd65b3a22bb6eddacb2 *R/ShinyGR.R
@@ -17,8 +17,8 @@ f8f72a0a7f802247a4db17881b93a0be *R/plot.PrepGR.R
 1e6dd84cd96e152d6d8a964dd601723e *R/plot.SimGR.R
 89afbc6e2475d79edfc75ed71a283a02 *build/vignette.rds
 afe7ee76445b33ea65fc3b6921bb7452 *inst/CITATION
-07894a6fdccb2f5438c3cd18fcf67183 *inst/ShinyGR/server.R
-d6cfc4f850fba1ea41d8fea9a9bd9819 *inst/ShinyGR/ui.R
+aacae7f1cc6d530ea16b4d909a810171 *inst/ShinyGR/server.R
+794175c36d6b55a40d78ca4ec5308455 *inst/ShinyGR/ui.R
 ad56dd5e95f93f1c9b0f73dc986e54bb *inst/ShinyGR/www/css/bootstrap.min_Cerulean.css
 a3b65d35e744e0d0b1004d42c18601b5 *inst/ShinyGR/www/css/bootstrap.min_Cyborg.css
 fca520c2593b08bd923f24b12cd5e5b0 *inst/ShinyGR/www/css/bootstrap.min_Flatly.css

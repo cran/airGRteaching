@@ -698,10 +698,10 @@ shinyServer(function(input, output, session) {
     # OutputsModel2 <- sapply(OutputsModel[seq_len(which(names(OutputsModel) == "Qsim"))], function(x) x[IndPlot])
     # OutputsModel2 <- c(OutputsModel2, Qobs = list(getSim()$SIM$Qobs[IndPlot]))
     
-    OutputsModel2 <- getData()$OutputsModel
+    # OutputsModel2 <- getData()$OutputsModel
 
     par(getPlotPar()$par)
-    try(.DiagramGR(OutputsModel = OutputsModel2, Param = getSim()$PARAM,
+    try(.DiagramGR(OutputsModel = getData()$OutputsModel, Param = getSim()$PARAM,
                SimPer = input$Period, EventDate = input$Event,
                HydroModel = input$HydroModel, CemaNeige = input$SnowModel == "CemaNeige"),
         silent = TRUE)
@@ -784,7 +784,7 @@ shinyServer(function(input, output, session) {
                            PrecipSim_CemaNeige       = PrecipSim,
                            PrecipFracSolid_CemaNeige = FracSolid,
                            TempMeanSim_CemaNeige     = TempMean,
-                           Qobs                      = SIM$OptionsCrit$Qobs,
+                           Qobs                      = SIM$OptionsCrit$Obs,
                            Qsim                      = SIM$OutputsModel$Qsim)
       colnames(TabSim) <- sprintf("%s [%s]", colnames(TabSim), c("-", rep("mm", 3), "-", "°C", rep("mm", 2)))
       colnames(TabSim) <- ifelse(grepl("mm", colnames(TabSim)),
@@ -900,6 +900,18 @@ shinyServer(function(input, output, session) {
         lines(data$DatesR, data$Qsim, lwd = 1, col = "orangered")
         lines(data$DatesR, data$Qobs, lwd = 1, col = par("fg"), type = "o", pch = 20, cex = 0.5)
         mtext(text = PngTitle, side = 3, outer = TRUE, cex = 0.8, line = 0.7)
+        box()
+        dev.off()
+      }
+      if (getPlotType() == 4) {
+        isCN <- input$SnowModel == "CemaNeige"
+        png(filename = file, width = 550*k, height = ifelse(isCN, 1000, 900)*k, pointsize = 12, res = 150)
+        PngTitle2 <- gsub(", C1", "\nC1", PngTitle)
+        par(oma = c(0, 0, ifelse(isCN, 7, 6), 0))
+        .DiagramGR(OutputsModel = getData()$OutputsModel, Param = getSim()$PARAM,
+                   SimPer = input$Period, EventDate = input$Event,
+                   HydroModel = input$HydroModel, CemaNeige = input$SnowModel == "CemaNeige")
+        mtext(text = PngTitle2, side = 3, outer = TRUE, cex = 1.2, line = ifelse(isCN, -0.15, 0.6))
         dev.off()
       }
     }

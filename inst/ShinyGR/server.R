@@ -32,6 +32,11 @@ shinyServer(function(input, output, session) {
       # ObsDF <- get(input$Dataset)
       ObsDF <- .ShinyGR.args$ObsDF[[input$Dataset]]
     }
+    if (!all(is.na(ObsDF[[4]])) | !all(is.na(.ShinyGR.args$Qobs))) {
+      isUngauged <- FALSE
+    } else {
+      isUngauged <- TRUE
+    }
     PREP <- PrepGR(ObsDF = ObsDF,
                    DatesR = .ShinyGR.args$DatesR,
                    Precip = .ShinyGR.args$Precip, PotEvap = .ShinyGR.args$PotEvap,
@@ -41,7 +46,6 @@ shinyServer(function(input, output, session) {
                    NLayers = .ShinyGR.args$NLayers[[input$Dataset]],
                    HydroModel = input$HydroModel,
                    CemaNeige = input$SnowModel == "CemaNeige")
-    
     
     ## old value: bad time zone management 
     #WUPPER <- c(PREP$InputsModel$DatesR[1L], input$Period[1]-.TypeModelGR(PREP)$TimeLag)
@@ -62,7 +66,7 @@ shinyServer(function(input, output, session) {
       shinyjs::disable("CalButton")
     }
     
-    return(list(TMGR = TMGR, PREP = PREP, WUPPER = WUPPER))
+    return(list(TMGR = TMGR, PREP = PREP, WUPPER = WUPPER, isUngauged = isUngauged))
     
   })
   
@@ -76,7 +80,7 @@ shinyServer(function(input, output, session) {
   
   ## Automatic calibration
   observeEvent(input$CalButton, {
-    
+
     ## Desable all inputs during automatic calibration
     lapply(getInputs(), shinyjs::disable)
     shinyjs::disable("CalButton")
@@ -123,15 +127,32 @@ shinyServer(function(input, output, session) {
       CAL_click$valueButton <- ifelse(CAL_click$valueButton < -1, -1, CAL_click$valueButton)
       if (CAL_click$valueButton < 0) {
         updateActionButton(session, inputId = "CalButton", label = "Run", icon = icon("refresh"))
-        shinyjs::enable("CalButton")
+        if (!getPrep()$isUngauged) {
+          shinyjs::enable("CalButton")
+        }
       }
       
       ## Enable all inputs except automatic calibration
       if (input$Period[1L] != input$Period[2L]) {
         lapply(getInputs(), shinyjs::enable)
+        if (getPrep()$isUngauged) {
+          shinyjs::disable("CalButton")
+          shinyjs::disable("TypeCrit")
+        }
+      }
+      
+      ## Disable the use of CemaNeige is there is no temperature
+      if (!is.null(.ShinyGR.args$ObsDF[[input$Dataset]])) {
+        if (ncol(.ShinyGR.args$ObsDF[[input$Dataset]]) < 5) {
+          shinyjs::disable("SnowModel")
+        }
+      } else {
+        if (is.null(.ShinyGR.args$TempMean)) {
+          shinyjs::disable("SnowModel")
+        }
       }
     })
-
+  
   
   
   ## --------------- Simulation
@@ -143,7 +164,8 @@ shinyServer(function(input, output, session) {
     }
     
     ## Simulated flows computation
-    SIM <- SimGR(PrepGR = getPrep()$PREP, Param = PARAM,
+    PREP <- getPrep()$PREP
+    SIM <- SimGR(PrepGR = PREP, Param = PARAM,
                  WupPer = substr(getPrep()$WUPPER, 1, 10),
                  SimPer = c(substr(input$Period[1], 1, 10), substr(input$Period[2], 1, 10)),
                  verbose = FALSE)
@@ -151,48 +173,33 @@ shinyServer(function(input, output, session) {
     ## Criteria computation
     CRIT_opt <- list(Crit    = c(rep("ErrorCrit_NSE", 3),  rep("ErrorCrit_KGE", 3)),
                      Transfo = rep(c("", "sqrt", "inv"), times = 2))
-    InputsCritMulti <- CreateInputsCrit(FUN_CRIT = CRIT_opt$Crit,
-                                        InputsModel = getPrep()$PREP$InputsModel,
-                                        RunOptions = SIM$OptionsSimul,
-                                        Obs = replicate(n = 6, expr = SIM$Qobs, simplify = FALSE),
-                                        VarObs = rep("Q", times = 6),
-                                        transfo = CRIT_opt$Transfo,
-                                        Weights = NULL) 
-    iCRIT <- ErrorCrit(InputsCrit = InputsCritMulti, OutputsModel = SIM$OutputsModel, verbose = FALSE)
-    CRIT <- do.call("rbind", lapply(iCRIT, function(i) data.frame(CritName = NA, CritValue = i$CritValue))) ## patch: CritName = i$CritName to change with the future airGR
-    CRIT$CritName <- c("NSE [Q]", "NSE [sqrt(Q)]", "NSE [1/Q]", "KGE [Q]", "KGE [sqrt(Q)]", "KGE [1/Q]") ## patch: to change with the future airGR
-    # CRIT$CritName <- gsub("\\[", " [", CRIT$CritName) ## patch: to change with the future airGR
-    CRIT <- rbind(CRIT, data.frame(CritName = "BIAS [Qsim/Qobs]",
-                                   CritValue = ifelse(is.na(iCRIT[[which(CRIT$CritName == "KGE [Q]")]]$CritValue),
-                                                      NA,
-                                                      iCRIT[[which(CRIT$CritName == "KGE [Q]")]]$SubCritValues[3])))
-    colnames(CRIT) <- c("Criterion", "Value")
-    # CRIT_opt <- list(Crit    = c("ErrorCrit_NSE", "ErrorCrit_KGE"),
-    #                  Transfo = c("NO", "sqrt", "inv"))
-    # CRIT <- lapply(CRIT_opt$Crit, function(iCRIT) {
-    #   Qtransfo <- lapply(CRIT_opt$Transfo, function(iTRSF) {
-    #     iInputsCrit <- SIM$OptionsCrit
-    #     iTRSF <- gsub("NO", "", iTRSF)
-    #     iInputsCrit$transfo <- iTRSF
-    #     iCRIT <- ErrorCrit(InputsCrit = iInputsCrit, OutputsModel = SIM$OutputsModel, FUN_CRIT = get(iCRIT), verbose = FALSE)
-    #     iCRIT <- iCRIT[c("CritName", "CritValue")]
-    #     return(iCRIT)
-    #   })
-    #   return(Qtransfo)
-    # })
-    # print(CRIT)
-    # CRIT <- as.data.frame(matrix(na.omit(unlist(CRIT)), ncol = 2, byrow = TRUE), stringsAsFactors = FALSE)
-    # colnames(CRIT) <- c("Criterion", "Value")
-    # rownames(CRIT) <- NULL    
-    # CRIT$Value     <- as.numeric(CRIT$Value)
-    # CRIT$Criterion <- gsub("\\[", " [", CRIT$Criterion)
-    
+    nCRIT_opt <- length(CRIT_opt$Crit)
+    if (!getPrep()$isUngauged) {
+      InputsCritMulti <- CreateInputsCrit(FUN_CRIT = CRIT_opt$Crit,
+                                          InputsModel = getPrep()$PREP$InputsModel,
+                                          RunOptions = SIM$OptionsSimul,
+                                          Obs = replicate(n = nCRIT_opt, expr = SIM$Qobs, simplify = FALSE),
+                                          VarObs = rep("Q", times = nCRIT_opt),
+                                          transfo = CRIT_opt$Transfo,
+                                          Weights = NULL) 
+      iCRIT <- ErrorCrit(InputsCrit = InputsCritMulti, OutputsModel = SIM$OutputsModel, verbose = FALSE)
+      CRIT <- do.call("rbind", lapply(iCRIT, function(i) data.frame(CritName = i$CritName, CritValue = i$CritValue)))
+      CRIT <- rbind(CRIT, data.frame(CritName = "BIAS[Qsim/Qobs]",
+                                     CritValue = ifelse(is.na(iCRIT[[which(CRIT$CritName == "KGE[Q]")]]$CritValue),
+                                                        NA,
+                                                        iCRIT[[which(CRIT$CritName == "KGE[Q]")]]$SubCritValues[3])))
+      colnames(CRIT) <- c("Criterion", "Value")
+    } else {
+      CRIT <- data.frame(Criterion = NA, Value = NA)
+    }
+
     ## Recording past simulations
     .GlobalEnv$.ShinyGR.hist[[length(.GlobalEnv$.ShinyGR.hist)+1]] <- list(Qsim      = SIM$OutputsModel$Qsim,
                                                                            Param     = PARAM,
                                                                            TypeModel = SIM$TypeModel,
                                                                            Crit      = CRIT,
-                                                                           Dataset   = input$Dataset)
+                                                                           Dataset   = input$Dataset,
+                                                                           Period    = SIM$PeriodModel$Run)
     
     .GlobalEnv$.ShinyGR.hist <- .GlobalEnv$.ShinyGR.hist[!(duplicated(sapply(.GlobalEnv$.ShinyGR.hist, function(x) sum(x$Param)), fromLast = TRUE) & 
                                                              duplicated(sapply(.GlobalEnv$.ShinyGR.hist, function(x) x$TypeModel), fromLast = TRUE))]
@@ -209,8 +216,9 @@ shinyServer(function(input, output, session) {
     if (length(.GlobalEnv$.ShinyGR.hist) == 2 & !is.null(names(.GlobalEnv$.ShinyGR.hist[[1]]))) {
       isEqualSumQsim   <- !identical(sum(.GlobalEnv$.ShinyGR.hist[[1]]$Crit$Value), sum(.GlobalEnv$.ShinyGR.hist[[2]]$Crit$Value))
       isEqualTypeModel <- .GlobalEnv$.ShinyGR.hist[[1]]$TypeModel == .GlobalEnv$.ShinyGR.hist[[2]]$TypeModel
+      isEqualPeriod    <- !identical(.GlobalEnv$.ShinyGR.hist[[1]]$Period, .GlobalEnv$.ShinyGR.hist[[2]]$Period)
       if (length(.GlobalEnv$.ShinyGR.hist[[1]]$Qsim) != length(.GlobalEnv$.ShinyGR.hist[[2]]$Qsim) |
-          (isEqualSumQsim & isEqualTypeModel)) {
+          (isEqualSumQsim & isEqualTypeModel) | isEqualPeriod) {
         OBSold <- getPrep()$PREP
         OBSold$TypeModel <- .GlobalEnv$.ShinyGR.hist[[1]]$TypeModel
         if (.TypeModelGR(OBSold)$CemaNeige & !.TypeModelGR(getPrep()$PREP)$CemaNeige | # present: No CemaNeige ; old: CemaNeige
@@ -222,53 +230,38 @@ shinyServer(function(input, output, session) {
             ObsDF <- .ShinyGR.args$ObsDF[[input$Dataset]]
           }
           OBSold <- PrepGR(ObsDF = ObsDF,
-                          Precip = .ShinyGR.args$Precip, PotEvap = .ShinyGR.args$PotEvap,
-                          Qobs = .ShinyGR.args$Qobs, TempMean = .ShinyGR.args$TempMean, 
-                          ZInputs = .ShinyGR.args$ZInputs[[input$Dataset]],
-                          HypsoData = .ShinyGR.args$HypsoData[[input$Dataset]],
-                          NLayers = .ShinyGR.args$NLayers[[input$Dataset]],
-                          HydroModel = input$HydroModel,
-                          CemaNeige = input$SnowModel == "CemaNeige")
+                           DatesR = .ShinyGR.args$DatesR,
+                           Precip = .ShinyGR.args$Precip, PotEvap = .ShinyGR.args$PotEvap,
+                           Qobs = .ShinyGR.args$Qobs, TempMean = .ShinyGR.args$TempMean, 
+                           ZInputs = .ShinyGR.args$ZInputs[[input$Dataset]],
+                           HypsoData = .ShinyGR.args$HypsoData[[input$Dataset]],
+                           NLayers = .ShinyGR.args$NLayers[[input$Dataset]],
+                           HydroModel = input$HydroModel,
+                           CemaNeige = input$SnowModel == "CemaNeige")
         }
         SIMold <- SimGR(PrepGR = OBSold,
                         Param = .GlobalEnv$.ShinyGR.hist[[1]]$Param,
                         WupPer = substr(getPrep()$WUPPER, 1, 10),
                         SimPer = substr(c(input$Period[1], input$Period[2]), 1, 10),
                         verbose = FALSE)
-        # CRITold <- lapply(CRIT_opt$Crit, function(iCRIT) {
-        #   SIM_transfo <- lapply(CRIT_opt$Transfo, function(iTRSF) {
-        #     iTRSF <- gsub("NO", "", iTRSF)
-        #     SIMold$OptionsCrit$transfo <- iTRSF
-        #     iCRITold <- ErrorCrit(InputsCrit = SIMold$OptionsCrit, OutputsModel = SIMold$OutputsModel, FUN_CRIT = get(iCRIT), verbose = FALSE)
-        #     iCRITold <- iCRITold[c("CritName", "CritValue")]
-        #     return(iCRITold)
-        #   })
-        # })
-        # CRITold <- as.data.frame(matrix(na.omit(unlist(CRITold)), ncol = 2, byrow = TRUE), stringsAsFactors = FALSE)
-        # colnames(CRITold) <- c("Criterion", "Value")
-        # rownames(CRITold) <- NULL    
-        # CRITold$Value     <- as.numeric(CRITold$Value)
-        # CRITold$Criterion <- gsub("\\[", " [", CRITold$Criterion)
-        InputsCritMultiold <- CreateInputsCrit(FUN_CRIT = CRIT_opt$Crit,
-                                               InputsModel = OBSold$InputsModel,
-                                               RunOptions = SIMold$OptionsSimul,
-                                               Obs = replicate(n = 6, expr = SIMold$Qobs, simplify = FALSE),
-                                               VarObs = rep("Q", times = 6),
-                                               transfo = CRIT_opt$Transfo,
-                                               Weights = NULL) 
-        # iCRITold <- ErrorCrit(InputsCrit = InputsCritMultiold, OutputsModel = SIMold$OutputsModel, verbose = FALSE)
-        # CRITold <- do.call("rbind", lapply(iCRITold, function(i) data.frame(CritName = i$CritName, CritValue = i$CritValue)))
-        iCRITold <- ErrorCrit(InputsCrit = InputsCritMulti, OutputsModel = SIMold$OutputsModel, verbose = FALSE)
-        CRITold <- do.call("rbind", lapply(iCRITold, function(i) data.frame(CritName = NA, CritValue = i$CritValue))) ## patch: CritName = i$CritName to change with the future airGR
-        CRITold$CritName <- c("NSE [Q]", "NSE [sqrt(Q)]", "NSE [1/Q]", "KGE [Q]", "KGE [sqrt(Q)]", "KGE [1/Q]") ## patch: to change with the future airGR
-        # CRIT$CritName <- gsub("\\[", " [", CRIT$CritName) ## patch: to change with the future airGR
-        # CRITold <- rbind(CRITold, data.frame(CritName = "BIAS [Qsim/Qobs]", CritValue = iCRITold[[which(CRITold$CritName == "KGE [Q]")]]$SubCritValues[3]))
-        CRITold <- rbind(CRITold, data.frame(CritName = "BIAS [Qsim/Qobs]",
-                                             CritValue = ifelse(is.na(iCRITold[[which(CRITold$CritName == "KGE [Q]")]]$CritValue),
-                                                                NA,
-                                                                iCRITold[[which(CRITold$CritName == "KGE [Q]")]]$SubCritValues[3])))
-        colnames(CRITold) <- c("Criterion", "Value")
-        
+        if (!getPrep()$isUngauged) {
+          InputsCritMultiold <- CreateInputsCrit(FUN_CRIT = CRIT_opt$Crit,
+                                                 InputsModel = OBSold$InputsModel,
+                                                 RunOptions = SIMold$OptionsSimul,
+                                                 Obs = replicate(n = nCRIT_opt, expr = SIMold$Qobs, simplify = FALSE),
+                                                 VarObs = rep("Q", times = nCRIT_opt),
+                                                 transfo = CRIT_opt$Transfo,
+                                                 Weights = NULL) 
+          iCRITold <- ErrorCrit(InputsCrit = InputsCritMultiold, OutputsModel = SIMold$OutputsModel, verbose = FALSE)
+          CRITold <- do.call("rbind", lapply(iCRITold, function(i) data.frame(CritName = i$CritName, CritValue = i$CritValue)))
+          CRITold <- rbind(CRITold, data.frame(CritName = "BIAS[Qsim/Qobs]",
+                                               CritValue = ifelse(is.na(iCRITold[[which(CRITold$CritName == "KGE[Q]")]]$CritValue),
+                                                                  NA,
+                                                                  iCRITold[[which(CRITold$CritName == "KGE[Q]")]]$SubCritValues[3])))
+          colnames(CRITold) <- c("Criterion", "Value")
+        } else {
+          CRITold <- data.frame(Criterion = NA, Value = NA)
+        }
         .GlobalEnv$.ShinyGR.hist[[1]]$Crit <- CRITold
         .GlobalEnv$.ShinyGR.hist[[1]]$Qsim <- SIMold$OutputsModel$Qsim
       }
@@ -357,9 +350,9 @@ shinyServer(function(input, output, session) {
   
 
   ## Period slider responds to changes in the selected/zoomed dateWindow 
-  observeEvent({input$dyPlotTS_date_window ; input$dyPlotSVs_date_window ; input$dyPlotMDp_date_window}, {
-    if (!is.null(input$dyPlotTS_date_window)  && getPlotType() == 2) {
-      dateWindow <- as.POSIXct(strftime(input$dyPlotTS_date_window , "%Y-%m-%d %H:%M:%S"), tz = "UTC")
+  observeEvent({input$dyPlotTSq_date_window ; input$dyPlotSVq_date_window ; input$dyPlotMDp_date_window}, {
+    if (!is.null(input$dyPlotTSq_date_window)  && getPlotType() == 2) {
+      dateWindow <- as.POSIXct(strftime(input$dyPlotTSq_date_window , "%Y-%m-%d %H:%M:%S"), tz = "UTC")
     }
     if (!is.null(input$dyPlotSVq_date_window) && getPlotType() == 3) {
       dateWindow <- as.POSIXct(strftime(input$dyPlotSVq_date_window, "%Y-%m-%d %H:%M:%S"), tz = "UTC") 
@@ -411,11 +404,16 @@ shinyServer(function(input, output, session) {
   
   
   ## Reset period slider responds to dygraphs to mouse clicks
-  observeEvent({input$dyPlotTS_click}, {
+  observeEvent({input$dyPlotTSq_click}, {
     updateSliderInput(session, inputId = "Period",
                       value = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]], tz = "UTC"),
                       timeFormat = "%F", timezone = "+0000")
   }, priority = +10)
+  observeEvent({input$dyPlotTSe_click}, {
+    updateSliderInput(session, inputId = "Period",
+                      value = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]], tz = "UTC"),
+                      timeFormat = "%F", timezone = "+0000")
+  }, priority = +10)  
   observeEvent({input$dyPlotSVs_click}, {
     updateSliderInput(session, inputId = "Period",
                       value = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]], tz = "UTC"),
@@ -505,7 +503,7 @@ shinyServer(function(input, output, session) {
   
   
   ## Plot flow time series
-  output$dyPlotTS <- dygraphs::renderDygraph({
+  output$dyPlotTSq <- dygraphs::renderDygraph({
     if (length(getSim()$SIM$OutputsModel$DatesR) < 2) {
       return(NULL)
     }
@@ -515,11 +513,52 @@ shinyServer(function(input, output, session) {
       QsimOld <- NULL
     }
     op <- getPlotPar()$par
-    dg1 <- dyplot(getSim()$SIM, Qsup = QsimOld, Qsup.name = "Qold", RangeSelector = FALSE, LegendShow = "auto",
-                  col.Q = c(op$fg, "orangered", "grey"), col.Precip = c("#428BCA", "lightblue"))
-    dg1 <- dygraphs::dyOptions(dg1, axisLineColor = op$fg, axisLabelColor = op$fg,
-                               retainDateWindow = FALSE, useDataTimezone = TRUE)
-    dg1 <- dygraphs::dyLegend(dg1, show = "follow", width = 325)
+    dgTSq <- dyplot(getSim()$SIM, Qsup = QsimOld, Qsup.name = "Qold",
+                    RangeSelector = FALSE, LegendShow = "auto",
+                    col.Q = c(op$fg, "orangered", "grey"),
+                    col.Precip = c("#428BCA", "lightblue"),
+                    col.na = rgb(0.5, 0.5, 0.5, alpha = 0.4),
+                    group = "ts")
+    dgTSq <- dygraphs::dyOptions(dgTSq, axisLineColor = op$fg, axisLabelColor = op$fg,
+                                 retainDateWindow = FALSE, useDataTimezone = TRUE)
+    dgTSq <- dygraphs::dyLegend(dgTSq, show = "follow", width = 325)
+    dgTSq <- dygraphs::dyCrosshair(dgTSq, direction = "vertical")
+  })
+  output$dyPlotTSe <- dygraphs::renderDygraph({
+    if (length(getSim()$SIM$OutputsModel$DatesR) < 2) {
+      return(NULL)
+    }
+    if (getPrep()$isUngauged) {
+      return(NULL)
+    }
+    if (length(getSim()$SIMold) == 2 & input$ShowOldQsim == "Yes") {
+      ErrorOld <- getSim()$SIMold[[1]]$Qsim - getSim()$SIM$Qobs
+    } else {
+      ErrorOld <- NA
+    }
+    data <- data.frame(DatesR = getSim()$SIM$OutputsModel$DatesR,
+                       Error = getSim()$SIM$OutputsModel$Qsim - getSim()$SIM$Qobs,
+                       ErrorOld = ErrorOld,
+                       naCol = NA)
+    data.xts <- xts::xts(data[, -1L, drop = FALSE], order.by = data$DatesR, tz = "UTC")
+    op <- getPlotPar()$par
+    dgTSe <- dygraphs::dygraph(data.xts, group = "ts", ylab = "flow error [mm/d]", main = "   ")
+    dgTSe <- dygraphs::dySeries(dgTSe, "Error"   , axis = "y" , color = "orangered")
+    dgTSe <- dygraphs::dySeries(dgTSe, "ErrorOld", axis = "y" , color = "grey", strokePattern = "dashed")
+    dgTSe <- dygraphs::dySeries(dgTSe, "naCol", axis = "y2", color = NA)
+    dgTSe <- dygraphs::dyAxis(dgTSe, name = "y", axisLabelWidth = 60)
+    dgTSe <- dygraphs::dyAxis(dgTSe, name = "y2", drawGrid = FALSE,
+                              axisLabelFormatter = "function(d) {return d.toString().replace(/./g,'');}",
+                              axisLabelWidth = 60)
+    dgTSe <- dygraphs::dyOptions(dgTSe, titleHeight = 50,
+                                 axisLineColor = op$fg, axisLabelColor = op$fg,
+                                 retainDateWindow = FALSE, useDataTimezone = TRUE)
+    dgTSe <- dygraphs::dyLegend(dgTSe, show = "onmouseover", width = 225)
+    dgTSe <- dygraphs::dyCrosshair(dgTSe, direction = "vertical")
+    dgTSe <- dygraphs::dyLimit(dgTSe, limit = 0, color = "blue")
+    idNA <- .StartStop(data$Error, FUN = is.na)
+    dgTSe <- .DyShadingMulti(dygraph = dgTSe, color = rgb(0.5, 0.5, 0.5, alpha = 0.4),
+                             ts = data$DatesR, idStart = idNA$start, IdStop = idNA$stop)
   })
   
   
@@ -540,15 +579,15 @@ shinyServer(function(input, output, session) {
     } else {
       colors = c("#00008B", "#008B8B")
     }
-        
+    
     op <- getPlotPar()$par
-    dg2 <- dygraphs::dygraph(data.xts, group = "state_var", ylab = "store [mm]")
-    dg2 <- dygraphs::dyOptions(dg2, colors = colors,
-                               fillGraph = TRUE, fillAlpha = 0.3,
-                               drawXAxis = FALSE, axisLineColor = op$fg, axisLabelColor = op$fg,
-                               retainDateWindow = FALSE, useDataTimezone = TRUE)
-    dg2 <- dygraphs::dyLegend(dg2, show = "always", width = 325)
-    dg2 <- dygraphs::dyCrosshair(dg2, direction = "vertical")
+    dgSVs <- dygraphs::dygraph(data.xts, group = "state_var", ylab = "store [mm]")
+    dgSVs <- dygraphs::dyOptions(dgSVs, colors = colors,
+                                 fillGraph = TRUE, fillAlpha = 0.3,
+                                 drawXAxis = FALSE, axisLineColor = op$fg, axisLabelColor = op$fg,
+                                 retainDateWindow = FALSE, useDataTimezone = TRUE)
+    dgSVs <- dygraphs::dyLegend(dgSVs, show = "always", width = 325)
+    dgSVs <- dygraphs::dyCrosshair(dgSVs, direction = "vertical")
   })
   
   
@@ -588,21 +627,24 @@ shinyServer(function(input, output, session) {
       names  <- c("Qd", "Qr")
       colors <- c("#FFD700", "#EE6300")
     }
-
+    
     op <- getPlotPar()$par
-    dg3 <- dygraphs::dygraph(data.xts, group = "state_var", ylab = paste0("flow [mm/", getPrep()$TMGR$TimeUnit, "]"), main = " ")
-    dg3 <- dygraphs::dyOptions(dg3, fillAlpha = 1.0,
-                               axisLineColor = op$fg, axisLabelColor = op$fg, titleHeight = 10,
-                               retainDateWindow = FALSE, useDataTimezone = TRUE)
-    dg3 <- dygraphs::dyStackedRibbonGroup(dg3, name = names,
-                                color = colors, strokeBorderColor = "black")
-    dg3 <- dygraphs::dySeries(dg3, name = "Qobs", fillGraph = FALSE, drawPoints = TRUE, color = op$fg)
-    dg3 <- dygraphs::dySeries(dg3, name = "Qsim", fillGraph = FALSE, color = "orangered")
+    dgSVq <- dygraphs::dygraph(data.xts, group = "state_var", ylab = paste0("flow [mm/", getPrep()$TMGR$TimeUnit, "]"), main = " ")
+    dgSVq <- dygraphs::dyOptions(dgSVq, fillAlpha = 1.0,
+                                 axisLineColor = op$fg, axisLabelColor = op$fg, titleHeight = 10,
+                                 retainDateWindow = FALSE, useDataTimezone = TRUE)
+    dgSVq <- dygraphs::dyStackedRibbonGroup(dgSVq, name = names,
+                                            color = colors, strokeBorderColor = "black")
+    dgSVq <- dygraphs::dySeries(dgSVq, name = "Qobs", fillGraph = FALSE, drawPoints = TRUE, color = op$fg)
+    dgSVq <- dygraphs::dySeries(dgSVq, name = "Qsim", fillGraph = FALSE, color = "orangered")
     if (length(getSim()$SIMold) == 2 & input$ShowOldQsim == "Yes") {
-      dg3 <- dygraphs::dySeries(dg3, name = "QsimOld", label = "Qold", fillGraph = FALSE, color = "grey", strokePattern = "dashed")
+      dgSVq <- dygraphs::dySeries(dgSVq, name = "QsimOld", label = "Qold", fillGraph = FALSE, color = "grey", strokePattern = "dashed")
     }
-    dg3 <- dygraphs::dyCrosshair(dg3, direction = "vertical")
-    dg3 <- dygraphs::dyLegend(dg3, show = "always", width = 325)
+    dgSVq <- dygraphs::dyCrosshair(dgSVq, direction = "vertical")
+    dgSVq <- dygraphs::dyLegend(dgSVq, show = "always", width = 325)
+    idNA <- .StartStop(getData()$Tab$Qobs, FUN = is.na)
+    dgSVq <- .DyShadingMulti(dygraph = dgSVq, color = rgb(0.5, 0.5, 0.5, alpha = 0.4),
+                             ts = data$DatesR, idStart = idNA$start, IdStop = idNA$stop)
   })
   
   
@@ -611,19 +653,29 @@ shinyServer(function(input, output, session) {
     if (length(getSim()$SIM$OutputsModel$DatesR) < 2) {
       return(NULL)
     }
-    data <- data.frame(DatesR  = getSim()$SIM$OutputsModel$DatesR,
-                       precip. = getSim()$SIM$OutputsModel$Precip)
-    # data <- getData()$Tab[, c("DatesR", "precip.")]
+    
+    data <- data.frame(DatesR  = getSim()$SIM$OutputsModel$DatesR)
+    if (grepl("CemaNeige", getSim()$SIM$TypeModel)) {
+      data$Psol <- rowMeans(sapply(getSim()$SIM$OutputsModel$CemaNeigeLayers, function(x) x$Psol))
+      data$Pliq <- rowMeans(sapply(getSim()$SIM$OutputsModel$CemaNeigeLayers, function(x) x$Pliq))
+      Plim <- c(-1e-3, max(data$Psol+data$Pliq, na.rm = TRUE))
+      col.Precip = c("#428BCA", "lightblue")
+    } else {
+      data$Precip <- getSim()$SIM$OutputsModel$Precip
+      Plim <- c(-1e-3, max(data$Precip, na.rm = TRUE))
+      col.Precip <- c("#428BCA")
+    }
     data.xts <- xts::xts(data[, -1L, drop = FALSE], order.by = data$DatesR, tzone = "UTC")
     
-    dg4 <- dygraphs::dygraph(data.xts, group = "mod_diag", ylab = paste0("precip. [mm/", getPrep()$TMGR$TimeUnit, "]"))
-    dg4 <- dygraphs::dyOptions(dg4, colors = "#428BCA", drawXAxis = FALSE,
-                               retainDateWindow = FALSE, useDataTimezone = TRUE)
-    dg4 <- dygraphs::dyBarSeries(dg4, name = "precip.")
-    dg4 <- dygraphs::dyAxis(dg4, name = "y", valueRange = c(max(data.xts[, "precip."], na.rm = TRUE), -1e-3))
-    dg4 <- dygraphs::dyEvent(dg4, input$Event, color = "orangered")
-    dg4 <- dygraphs::dyLegend(dg4, show = "onmouseover", width = 225)
-    dg4 <- dygraphs::dyCrosshair(dg4, direction = "vertical")
+    dgMDp <- dygraphs::dygraph(data.xts, group = "mod_diag", ylab = paste0("precip. [mm/", getPrep()$TMGR$TimeUnit, "]"))
+    dgMDp <- dygraphs::dyOptions(dgMDp, colors = col.Precip, drawXAxis = FALSE,
+                                 retainDateWindow = FALSE, useDataTimezone = TRUE)
+    dgMDp <- dygraphs::dyStackedBarGroup(dgMDp, name = rev(grep("^P", colnames(data.xts), value = TRUE)),
+                                         axis = "y", color = (col.Precip))
+    dgMDp <- dygraphs::dyAxis(dgMDp, name = "y", valueRange = rev(Plim))
+    dgMDp <- dygraphs::dyEvent(dgMDp, input$Event, color = "orangered")
+    dgMDp <- dygraphs::dyLegend(dgMDp, show = "onmouseover", width = 225)
+    dgMDp <- dygraphs::dyCrosshair(dgMDp, direction = "vertical")
   })
   
   
@@ -638,14 +690,14 @@ shinyServer(function(input, output, session) {
     data.xts <- xts::xts(data[, -1L, drop = FALSE], order.by = data$DatesR, tzone = "UTC")
     
     op <- getPlotPar()$par
-    dg5 <- dygraphs::dygraph(data.xts, group = "mod_diag", ylab = paste0("PET [mm/", getPrep()$TMGR$TimeUnit, "]"), main = " ")
-    dg5 <- dygraphs::dyOptions(dg5, colors = "#A4C400", drawPoints = TRUE,
-                               strokeWidth = 0, pointSize = 2, drawXAxis = FALSE,
-                               axisLineColor = op$fg, axisLabelColor = op$fg, titleHeight = 10,
-                               retainDateWindow = FALSE, useDataTimezone = TRUE)
-    dg5 <- dygraphs::dyEvent(dg5, input$Event, color = "orangered")
-    dg5 <- dygraphs::dyLegend(dg5, show = "onmouseover", width = 225)
-    dg5 <- dygraphs::dyCrosshair(dg5, direction = "vertical")
+    dgMDe <- dygraphs::dygraph(data.xts, group = "mod_diag", ylab = paste0("PET [mm/", getPrep()$TMGR$TimeUnit, "]"), main = " ")
+    dgMDe <- dygraphs::dyOptions(dgMDe, colors = "#A4C400", drawPoints = TRUE,
+                                 strokeWidth = 0, pointSize = 2, drawXAxis = FALSE,
+                                 axisLineColor = op$fg, axisLabelColor = op$fg, titleHeight = 10,
+                                 retainDateWindow = FALSE, useDataTimezone = TRUE)
+    dgMDe <- dygraphs::dyEvent(dgMDe, input$Event, color = "orangered")
+    dgMDe <- dygraphs::dyLegend(dgMDe, show = "onmouseover", width = 225)
+    dgMDe <- dygraphs::dyCrosshair(dgMDe, direction = "vertical")
   })
   
   
@@ -676,15 +728,18 @@ shinyServer(function(input, output, session) {
     data.xts <- xts::xts(data[, -1L, drop = FALSE], order.by = data$DatesR, tzone = "UTC")
     
     op <- getPlotPar()$par
-    dg6 <- dygraphs::dygraph(data.xts, group = "mod_diag", ylab = paste0("flow [mm/", getPrep()$TMGR$TimeUnit, "]"), main = " ")
-    dg6 <- dygraphs::dyOptions(dg6, colors = c(op$fg, "orangered", "grey"), drawPoints = TRUE,
-                               axisLineColor = op$fg, axisLabelColor = op$fg, titleHeight = 10,
-                               retainDateWindow = FALSE, useDataTimezone = TRUE)
-    dg6 <- dygraphs::dySeries(dg6, name = "Qsim"   , drawPoints = FALSE)
-    dg6 <- dygraphs::dyEvent(dg6, input$Event, color = "orangered")
-    dg6 <- dygraphs::dySeries(dg6, name = "QsimOld", label = "Qold", drawPoints = FALSE, strokePattern = "dashed")
-    dg6 <- dygraphs::dyLegend(dg6, show = "onmouseover", width = 225)
-    dg6 <- dygraphs::dyCrosshair(dg6, direction = "vertical")
+    dgMDq <- dygraphs::dygraph(data.xts, group = "mod_diag", ylab = paste0("flow [mm/", getPrep()$TMGR$TimeUnit, "]"), main = " ")
+    dgMDq <- dygraphs::dyOptions(dgMDq, colors = c(op$fg, "orangered", "grey"), drawPoints = TRUE,
+                                 axisLineColor = op$fg, axisLabelColor = op$fg, titleHeight = 10,
+                                 retainDateWindow = FALSE, useDataTimezone = TRUE)
+    dgMDq <- dygraphs::dySeries(dgMDq, name = "Qsim"   , drawPoints = FALSE)
+    dgMDq <- dygraphs::dyEvent(dgMDq, input$Event, color = "orangered")
+    dgMDq <- dygraphs::dySeries(dgMDq, name = "QsimOld", label = "Qold", drawPoints = FALSE, strokePattern = "dashed")
+    dgMDq <- dygraphs::dyLegend(dgMDq, show = "onmouseover", width = 225)
+    dgMDq <- dygraphs::dyCrosshair(dgMDq, direction = "vertical")
+    idNA <- .StartStop(data$Qobs, FUN = is.na)
+    dgMDq <- .DyShadingMulti(dygraph = dgMDq, color = rgb(0.5, 0.5, 0.5, alpha = 0.4),
+                             ts = data$DatesR, idStart = idNA$start, IdStop = idNA$stop)
   })
   
   
@@ -714,9 +769,9 @@ shinyServer(function(input, output, session) {
   output$Criteria <- renderTable({
 
     ## Table created in order to choose order the criteria in the table output
-    tabCrit_gauge <- data.frame(Criterion = c("NSE [Q]", "NSE [sqrt(Q)]", "NSE [1/Q]",
-                                              "KGE [Q]", "KGE [sqrt(Q)]", "KGE [1/Q]",
-                                              "BIAS [Qsim/Qobs]"),
+    tabCrit_gauge <- data.frame(Criterion = c("NSE[Q]", "NSE[sqrt(Q)]", "NSE[1/Q]",
+                                              "KGE[Q]", "KGE[sqrt(Q)]", "KGE[1/Q]",
+                                              "BIAS[Qsim/Qobs]"),
                                 ID        = 1:7, stringsAsFactors = FALSE)
     
     if (length(getSim()$SIMold) == 2 & input$ShowOldQsim == "Yes") {
@@ -730,11 +785,12 @@ shinyServer(function(input, output, session) {
     tabCrit_out <- merge(tabCrit_gauge, tabCrit_val, by = "Criterion", all.x = TRUE)
     tabCrit_out <- tabCrit_out[order(tabCrit_out$ID), ]
     tabCrit_out <- tabCrit_out[, !colnames(tabCrit_out) %in% "ID"]
-    tabCrit_out[tabCrit_out <= -99.99] <- - 99.99
+    tabCrit_out[tabCrit_out <= -99.99] <- -99.99
     tabCrit_out[, seq_len(ncol(tabCrit_out))[-1]] <- sapply(seq_len(ncol(tabCrit_out))[-1], function(x) sprintf("%7.2f", tabCrit_out[, x]))
     tabCrit_out <- as.data.frame(tabCrit_out)
-    tabCrit_out[tabCrit_out == " -99.99"] <- "< - 99.99"
+    tabCrit_out[tabCrit_out == " -99.99"] <- "< -99.99"
     colnames(tabCrit_out) <- gsub("Value", "Qsim", colnames(tabCrit_out))
+    tabCrit_out$Criterion <- gsub("\\[", " [", tabCrit_out$Criterion)
     
     ## Color the cell of the crietaia uses during the calibration
     if (CAL_click$valueButton >= 0) {
@@ -761,34 +817,13 @@ shinyServer(function(input, output, session) {
       filename <- sprintf("airGR_%s_%s.csv", filename, gsub("(.*)( )(\\d{2})(:)(\\d{2})(:)(\\d{2})", "\\1_\\3h\\5m\\7s", Sys.time()))
     },
     content = function(file) {
-      PREP <- getPrep()$PREP
-      SIM  <- getSim()$SIM
-      if (input$SnowModel != "CemaNeige") {
-        PrecipSim <- NA
-        FracSolid <- NA
-        TempMean  <- NA
-      } else {
-        PrecipSol <- rowMeans(as.data.frame(PREP$InputsModel$LayerPrecip) * as.data.frame(PREP$InputsModel$LayerFracSolidPrecip), na.rm = TRUE)
-        PrecipSim <- rowMeans(as.data.frame(PREP$InputsModel$LayerPrecip), na.rm = TRUE)
-        FracSolid <- PrecipSol / PrecipSim
-        FracSolid <- ifelse(is.na(FracSolid)  & PrecipSol == 0 & PrecipSim == 0, 0, FracSolid)
-        PrecipSim <- PrecipSim[SIM$OptionsSimul$IndPeriod_Run]
-        FracSolid <- FracSolid[SIM$OptionsSimul$IndPeriod_Run]
-        FracSolid <- round(FracSolid, digits = 3)
-        TempMean  <- rowMeans(as.data.frame(PREP$InputsModel$LayerTempMean), na.rm = TRUE)
-        TempMean  <- TempMean[SIM$OptionsSimul$IndPeriod_Run]
+      TabSim <- as.data.frame(getSim()$SIM)
+      if (getPrep()$isUngauged) {
+        TabSim$Qobs <- NA
       }
-      TabSim <- data.frame(Dates                     = SIM$OutputsModel$DatesR,
-                           PotEvap                   = SIM$OutputsModel$PotEvap,
-                           PrecipObs                 = SIM$OutputsModel$Precip,
-                           PrecipSim_CemaNeige       = PrecipSim,
-                           PrecipFracSolid_CemaNeige = FracSolid,
-                           TempMeanSim_CemaNeige     = TempMean,
-                           Qobs                      = SIM$OptionsCrit$Obs,
-                           Qsim                      = SIM$OutputsModel$Qsim)
-      colnames(TabSim) <- sprintf("%s [%s]", colnames(TabSim), c("-", rep("mm", 3), "-", "°C", rep("mm", 2)))
+      colnames(TabSim) <- sprintf("%s [%s]", colnames(TabSim), c("-", rep("mm", 2), "-", "°C", rep("mm", 2)))
       colnames(TabSim) <- ifelse(grepl("mm", colnames(TabSim)),
-                                 gsub("mm", paste0("mm/", .TypeModelGR(PREP)$TimeUnit), colnames(TabSim)),
+                                 gsub("mm", paste0("mm/", .TypeModelGR(getSim()$SIM)$TimeUnit), colnames(TabSim)),
                                  colnames(TabSim))
       write.table(TabSim, file = file, row.names = FALSE, sep = ";")
     }
@@ -829,7 +864,7 @@ shinyServer(function(input, output, session) {
       if (getPlotType() == 2) {
         png(filename = file, width = 1000*k, height = 600*k, pointsize = 14, res = 150)
         par(oma = c(0, 0, 4, 0))
-        plot(getSim()$SIM, which = c( "Precip", "Flows"))
+        plot(getSim()$SIM, which = c("Precip", "Flows", "Error"))
         mtext(text = PngTitle, side = 3, outer = TRUE, cex = 0.8, line = 1.2)
         dev.off()
       }
@@ -906,12 +941,21 @@ shinyServer(function(input, output, session) {
       if (getPlotType() == 4) {
         isCN <- input$SnowModel == "CemaNeige"
         png(filename = file, width = 550*k, height = ifelse(isCN, 1000, 900)*k, pointsize = 12, res = 150)
-        PngTitle2 <- gsub(", C1", "\nC1", PngTitle)
+        PngTitleMD <- sprintf("%s - %s/%s\n%s\n%s", input$Dataset,
+                            input$HydroModel, ifelse(input$SnowModel == "CemaNeige", "CemaNeige", "No snow model"),
+                            input$Event,
+                            ParamTitle)
+        if (grepl("X5", PngTitleMD)) {
+          PngTitleMD <- gsub(", X5", "\nX5", PngTitleMD)
+        } else {
+          PngTitleMD <- gsub(", C1", "\nC1", PngTitleMD)
+        }
+
         par(oma = c(0, 0, ifelse(isCN, 7, 6), 0))
         .DiagramGR(OutputsModel = getData()$OutputsModel, Param = getSim()$PARAM,
                    SimPer = input$Period, EventDate = input$Event,
                    HydroModel = input$HydroModel, CemaNeige = input$SnowModel == "CemaNeige")
-        mtext(text = PngTitle2, side = 3, outer = TRUE, cex = 1.2, line = ifelse(isCN, -0.15, 0.6))
+        mtext(text = PngTitleMD, side = 3, outer = TRUE, cex = 1.2, line = ifelse(isCN, -0.15, 0.6))
         dev.off()
       }
     }

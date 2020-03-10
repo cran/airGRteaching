@@ -11,6 +11,7 @@ S3method("dyplot","default")
 S3method("dyplot","PrepGR")
 S3method("dyplot","CalGR")
 S3method("dyplot","SimGR")
+S3method("as.data.frame", "airGRt")
 
 
 
@@ -20,17 +21,21 @@ S3method("dyplot","SimGR")
 export(CalGR)
 export(PrepGR)
 export(SimGR)
+export(plot)
 export(plot.PrepGR)
 export(plot.CalGR)
 export(plot.SimGR)
 export(dyplot)
 export(dyplot.default)
-export(dyplot.PrepGR)
-export(dyplot.CalGR)
-export(dyplot.SimGR)
+#export(dyplot.PrepGR)
+#export(dyplot.CalGR)
+#export(dyplot.SimGR)
 export(ShinyGR)
+export(as.data.frame.airGRt)
 exportPattern(".DiagramGR")
 exportPattern(".TypeModelGR")
+exportPattern(".StartStop")
+exportPattern(".DyShadingMulti")
 
 
 

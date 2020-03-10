@@ -1,13 +1,28 @@
 \encoding{UTF-8}
-\name{plot.PrepGR}
+\name{plot}
+\alias{plot}
 \alias{plot.PrepGR}
+\alias{plot.CalGR}
+\alias{plot.SimGR}
+
+
 \title{Time series plotting GR observation objects}
 
 
+\description{Time series plotting GR observation objects}
+
+
 \usage{
-\method{plot}{PrepGR}(x, type = "l", col.Precip = "royalblue", col.Q = "black", col.na = "grey",
-  xlab = NULL, ylab = NULL, main = NULL,
-  plot.na = TRUE, ...)
+\method{plot}{PrepGR}(x, type = "l",
+     col.Precip = "royalblue", col.Q = "black", col.na = "grey",
+     xlab = NULL, ylab = NULL, main = NULL,
+     plot.na = TRUE, ...)
+  
+\method{plot}{CalGR}(x, xlab = NULL, ylab = NULL, main = NULL,
+     which = c("perf", "iter", "ts"), ...)
+
+\method{plot}{SimGR}(x, ...)
+  
 }
 
 
@@ -31,15 +46,15 @@
   \item{plot.na}{[boolean] boolean indicating if the missing values are plotted on the x-axis}
   
   \item{...}{other parameters to be passed through to plotting functions}
+
+  
+  \item{which}{[character] choice of the plot type (\code{"perf"} (default): plot diagnostics; \code{"iter"}: parameter and calibration criterion values during the iterations of the steepest descent step of the airGR calibration algorithm; \code{"ts"}: time series of observed precipitation and observed and simulated flows)}
 }
 
 
 \seealso{
 \code{\link{PrepGR}}
 }
-
-
-\description{Time series plotting GR observation objects}
 
 
 \author{Olivier Delaigue}

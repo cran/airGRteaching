@@ -4,9 +4,9 @@
 
 
 navbarPage(title       = div("airGRteaching", 
-                             img(src = "fig/logo_airGR_square.svg"        , height = 350 / 9),
-                             img(src = "fig/logo_irstea_hydro_square.svg" , height = 350 / 9),
-                             img(src = "fig/logo_irstea_square.svg"       , height = 350 / 9), style = "position:relative; top:-9px;"),
+                             img(src = "fig/logo_airGR_CMJN_square.svg"      , height = 350 / 9),
+                             img(src = "fig/logo_inrae_hydro_CMJN_square.svg", height = 350 / 9),
+                             img(src = "fig/logo_inrae_CMJN_square.svg"      , height = 350 / 9), style = "position:relative; top:-9px;"),
            
            windowTitle = "airGRteaching",
            
@@ -16,7 +16,9 @@ navbarPage(title       = div("airGRteaching",
                                 Cerulean  = "css/bootstrap.min_Cerulean.css",
                                 Flatly    = "css/bootstrap.min_Flatly.css",
                                 United    = "css/bootstrap.min_United.css",
-                                Yeti      = "css/bootstrap.min_Yeti.css"
+                                Yeti      = "css/bootstrap.min_Yeti.css",
+                                Inrae     = "css/bootstrap.min_Inrae.css",
+                                Saclay    = "css/bootstrap.min_Saclay.css"
            ),
            
            
@@ -149,7 +151,8 @@ navbarPage(title       = div("airGRteaching",
                                                                              plotOutput("stPlotMP", width = "100%", height = "900px"))),
                                                      conditionalPanel(condition = "input.PlotType == 'Flow time series'",
                                                                       column(width = 09,
-                                                                             dygraphs::dygraphOutput("dyPlotTS", width = "100%", height = "400px"))),
+                                                                             dygraphs::dygraphOutput("dyPlotTSq", width = "100%", height = "400px"),
+                                                                             dygraphs::dygraphOutput("dyPlotTSe", width = "100%", height = "300px"))),
                                                      conditionalPanel(condition = "input.PlotType == 'State variables'",
                                                                       column(width = 09,
                                                                              dygraphs::dygraphOutput("dyPlotSVs", width = "100%", height = "325px"),

@@ -5,6 +5,11 @@ CalGR <- function(PrepGR, CalCrit = c("NSE", "KGE", "KGE2", "RMSE"),
     stop("Non convenient data for argument \"PrepGR\". Must be of class \"PrepGR\"")
   }
   
+  isQobs <- !all(is.na(PrepGR$Qobs))
+  if (!isQobs) {
+    stop("\"PrepGR\" does not contain any Qobs values. It is not possible to calibrate the model")
+  }
+  
   WupInd <- NULL
   if (!is.null(WupPer)) {
     WupPer <- as.POSIXct(WupPer, tz = "UTC")
@@ -76,7 +81,7 @@ CalGR <- function(PrepGR, CalCrit = c("NSE", "KGE", "KGE2", "RMSE"),
                 TypeModel = PrepGR$TypeModel, CalCrit = CalCrit,
                 PeriodModel = list(WarmUp = as.POSIXct(PrepGR$InputsModel$DatesR[range(MOD_opt$IndPeriod_WarmUp)], tz = "UTC"),
                                    Run    = CalPer))
-  class(CalGR) <- c("CalGR", "GR")
+  class(CalGR) <- c("CalGR", "GR", "airGRt")
   return(CalGR)  
   
 }

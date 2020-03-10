@@ -1,11 +1,16 @@
 \encoding{UTF-8}
 \name{SimGR}
 \alias{SimGR}
+
+
 \title{Running one of the GR hydrological models}
 
 
+\description{Function for running the GR hydrological models}
+
+
 \usage{
-SimGR(PrepGR, CalGR = NULL, Param = NULL, EffCrit = c("NSE", "KGE", "KGE2", "RMSE"),
+SimGR(PrepGR, CalGR = NULL, Param, EffCrit = c("NSE", "KGE", "KGE2", "RMSE"),
   WupPer = NULL, SimPer,
   transfo = c("", "sqrt", "log", "inv", "sort"), verbose = TRUE)
 }
@@ -14,9 +19,9 @@ SimGR(PrepGR, CalGR = NULL, Param = NULL, EffCrit = c("NSE", "KGE", "KGE2", "RMS
 \arguments{
   \item{PrepGR}{[object of class \emph{PrepGR}] see \code{\link{PrepGR}} for details}
   
-  \item{CalGR}{(optional) [object of class \emph{CalGR}] see \code{\link{CalGR}} and below for details}
+  \item{CalGR}{(deprecated) use the \code{Param} argument instead}
   
-  \item{Param}{(optional) [numeric] vector of parameters (the length of the vector depends on the model used), see below for details}
+  \item{Param}{[object of class \emph{CalGR} or numeric] see \code{\link{CalGR}}. The length of the vector of parameters depends on the model used, see below for details}
   
   \item{EffCrit}{[character] name of the efficiency criterion (must be one of \code{"NSE"}, \code{"KGE"}, \code{"KGE2"} or \code{"RMSE"})}
   
@@ -49,11 +54,9 @@ SimGR(PrepGR, CalGR = NULL, Param = NULL, EffCrit = c("NSE", "KGE", "KGE2", "RMS
 }
 
 
-\description{Function for running the GR hydrological models}
-
 \details{
 The user can customize the parameters with the \code{Param} argument.
-The user can also use the parameters resulting from a calibration. In this case, it is necessary to use the \code{CalGR} argument. 
+The user can also use the parameters resulting from a calibration. In this case, it is necessary to use the \code{\link{CalGR}} function. 
 }
 
 \author{Olivier Delaigue}
@@ -74,7 +77,7 @@ CAL <- CalGR(PrepGR = PREP, CalCrit = "KGE2",
              WupPer = NULL, CalPer = c("1990-01-01", "1993-12-31"))
        
 ## Simulation step using the result of the automatic calibration method to set the model parameters
-SIM <- SimGR(PrepGR = PREP, CalGR = CAL, EffCrit = "KGE2",
+SIM <- SimGR(PrepGR = PREP, Param = CAL, EffCrit = "KGE2",
              WupPer = NULL, SimPer = c("1994-01-01", "1998-12-31"))
                         
 ## Simulation step using model parameters set by the user

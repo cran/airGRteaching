@@ -82,10 +82,10 @@ dyplot.default <- function(x, Qsup = NULL, Qsup.name = "Qsup",
   }
   
   
-  dg <- dygraphs::dygraph(data.xts, main = main)
-  dg <- dygraphs::dySeries(dygraph = dg, name = "Qobs", axis = 'y' , color = col.Q[1L], drawPoints = TRUE)
-  dg <- dygraphs::dySeries(dygraph = dg, name = "Qsim", axis = 'y' , color = col.Q[2L])
-  dg <- dygraphs::dySeries(dygraph = dg, name = "Qsup", axis = 'y' , color = col.Q[3L], label = Qsup.name, strokePattern = "dashed")
+  dg <- dygraphs::dygraph(data.xts, main = main, ...)
+  dg <- dygraphs::dySeries(dygraph = dg, name = "Qobs", axis = "y", color = col.Q[1L], drawPoints = TRUE)
+  dg <- dygraphs::dySeries(dygraph = dg, name = "Qsim", axis = "y", color = col.Q[2L])
+  dg <- dygraphs::dySeries(dygraph = dg, name = "Qsup", axis = "y", color = col.Q[3L], label = Qsup.name, strokePattern = "dashed")
   dg <- dygraphs::dyStackedBarGroup(dygraph = dg, name = rev(grep("^P", colnames(data.xts), value = TRUE)), axis = "y2", color = (col.Precip))
   dg <- dygraphs::dyAxis(dygraph = dg, name = "y" , label = ylab[1L],
                          valueRange = range(data.xts[, grep("^Q", colnames(data.xts))], na.rm = TRUE) * c(0.01, 1.59))
@@ -95,18 +95,9 @@ dyplot.default <- function(x, Qsup = NULL, Qsup.name = "Qsup",
     dg <- dygraphs::dyRangeSelector(dygraph = dg, height = 15)
   }
   if (plot.na) {
-    naQ_rle <- rle(is.na(data$Qobs))
-    naQ_ide <- cumsum(naQ_rle$lengths)[naQ_rle$values]   + 1
-    naQ_ids <- naQ_ide - naQ_rle$lengths[naQ_rle$values] - 1
-    IDna   <- data.frame(start = naQ_ids, end = naQ_ide)
-    IDna$start <- ifelse(IDna$start < 1         , 1         , IDna$start)
-    IDna$end   <- ifelse(IDna$end   > nrow(data), nrow(data), IDna$end  )
-    for (i in seq_len(nrow(IDna))) {
-      dg <- dygraphs::dyShading(dygraph = dg,
-                                from    = as.character(data$DatesR)[IDna[i, "start"]],
-                                to      = as.character(data$DatesR)[IDna[i, "end"  ]],
-                                color   = col.na)
-    }
+    idNA <- .StartStop(data$Qobs, FUN = is.na)
+    dg <- .DyShadingMulti(dygraph = dg, color = col.na,
+                             ts = data$DatesR, idStart = idNA$start, IdStop = idNA$stop)
   }
   if (Roller) {
     dg <- dygraphs::dyRoller(dygraph = dg, rollPeriod = 5)

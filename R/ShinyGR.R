@@ -10,8 +10,17 @@ ShinyGR <- function(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL, 
     stop("Null values non suitable for 'SimPer'.")
   }
   
+  if (!is.null(ObsDF)) {
+    if (!is.list(ObsDF) | inherits(ObsDF, "PrepGR")) {
+      stop("'ObsDF' must be a (list of) 'data.frame'.")
+    }
+  }
   if (is.data.frame(ObsDF)) {
     ObsDF <- list(ObsDF)
+  }
+  
+  if (!is.list(HypsoData)) {
+    HypsoData <- list(HypsoData)
   }
   
   if (!is.list(SimPer)) {
@@ -133,7 +142,7 @@ ShinyGR <- function(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL, 
   }
   names(SimPer) <- NamesObsBV
 
-
+  
   .GlobalEnv$.ShinyGR.hist <- list(list())#list(Param = list(), TypeModel = lsit(), Crit = list(), Qsim = list())
   .GlobalEnv$.ShinyGR.args <- list(ObsDF = ObsDF, NamesObsBV = NamesObsBV,
                                    DatesR = DatesR, Precip = Precip, PotEvap = PotEvap, Qobs = Qobs, TempMean = TempMean, 

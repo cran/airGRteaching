@@ -12,10 +12,10 @@ output:
 <table  width="100%">
 <tbody>
   <tr>
-  <td width="125"><img src="fig/logo_airGRteaching_square.svg" width="90%" height="90%"></td>
+  <td width="125"><img src="fig/logo_airGRteaching_CMJN_square_0125x0121.png" width="90%" height="90%"></td>
   <td><h4>
-<font color="#009EE0">
-To obtain help regarding the use of the <strong><font color="#009EE0">airGRteaching</font></strong> or <strong><font color="#009EE0">airGR</font></strong> packages, or to suggest modifications, send an email to <font color="#003A80"><strong>airGR@irstea.fr</strong></font>
+<font color="#0BA6AA">
+To obtain help regarding the use of the <strong><font color="#62003C">airGRteaching</font></strong> or <strong><font color="#62003C">airGR</font></strong> packages, or to suggest modifications, send an email to <font color="#62003C"><strong>airGR@inrae.fr</strong></font>
 </font>
 </h4>
   </tr>
@@ -30,7 +30,7 @@ To obtain help regarding the use of the <strong><font color="#009EE0">airGRteach
 
 
 
-### How to run the <strong><font color="#009EE0">airGR</font></strong> hydrological models in  only three simple steps with <strong><font color="#009EE0">airGRteaching</font></strong>
+### How to run the <strong><font color="#0BA6AA">airGR</font></strong> hydrological models in  only three simple steps with <strong><font color="#0BA6AA">airGRteaching</font></strong>
 
 
 #### Preparation of observed data for modelling
@@ -58,7 +58,7 @@ head(BasinObs)
 ## 6 1984-01-06  0.0 0.3 1.3560  0.9
 ```
 
-Before running a model, <strong><font color="#009EE0">airGRteaching</font></strong> functions require data and options with specific formats.
+Before running a model, <strong><font color="#0BA6AA">airGRteaching</font></strong> functions require data and options with specific formats.
 
 For this step, you just have to use the `PrepGR()` function. You have to define:
 
@@ -92,7 +92,7 @@ You can obviously define another objective function or warm-up period:
   * `CalCrit`: name of the objective function (`"NSE", "KGE", "KGE2", "RMSE"`)
   * `WupPer`: a vector of 2 dates to define the warm-up period
   
-The calibration algorithm has been developed by Claude Michel (`Calibration_Michel()` function in the <strong><font color="#009EE0">airGR</font></strong> package) .
+The calibration algorithm has been developed by Claude Michel (`Calibration_Michel()` function in the <strong><font color="#0BA6AA">airGR</font></strong> package) .
 
 
 ```r
@@ -103,12 +103,12 @@ CAL <- CalGR(PrepGR = PREP, CalCrit = "KGE2",
 ```
 ## Grid-Screening in progress (0% 20% 40% 60% 80% 100%)
 ## 	 Screening completed (243 runs)
-## 	     Param =  175.915 ,   -0.110 ,   83.931 ,    1.857 ,    0.467
-## 	     Crit KGE'[Q]      = 0.8300
+## 	     Param =  175.915,   -0.110,   83.931,    1.857,    0.467
+## 	     Crit. KGE2[Q]      = 0.8300
 ## Steepest-descent local search in progress
 ## 	 Calibration completed (18 iterations, 406 runs)
-## 	     Param =  188.670 ,    1.456 ,   83.931 ,    1.779 ,    0.493
-## 	     Crit KGE'[Q]      = 0.8787
+## 	     Param =  188.670,    1.456,   83.931,    1.779,    0.493
+## 	     Crit. KGE2[Q]      = 0.8787
 ```
 
 <br>
@@ -124,13 +124,13 @@ SIM <- SimGR(PrepGR = PREP, CalGR = CAL, EffCrit = "KGE2",
 ```
 
 ```
-## Crit. KGE'[Q] = 0.8545
+## Crit. KGE2[Q] = 0.8549
 ```
 
 ```
-## 	SubCrit. KGE'[Q] cor(sim, obs, "pearson") = 0.9008 
-## 	SubCrit. KGE'[Q] cv(sim)/cv(obs)          = 0.8969 
-## 	SubCrit. KGE'[Q] mean(sim)/mean(obs)      = 0.9737
+## 	SubCrit. KGE2[Q] cor(sim, obs, "pearson") = 0.9012 
+## 	SubCrit. KGE2[Q] cv(sim)/cv(obs)          = 0.8974 
+## 	SubCrit. KGE2[Q] mean(sim)/mean(obs)      = 0.9724
 ```
 
 <br>
@@ -149,7 +149,7 @@ plot(PREP, main = "Observation")
 ![](tab_fun_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
 
 
-By default (with the argument `which = "perf"`), the call of the `plot()` function with a `CalGR` object draws the classical <strong><font color="#009EE0">airGR</font></strong> plot diagnostics (observed and simulated time series together with diagnostic plot)
+By default (with the argument `which = "perf"`), the call of the `plot()` function with a `CalGR` object draws the classical <strong><font color="#0BA6AA">airGR</font></strong> plot diagnostics (observed and simulated time series together with diagnostic plot)
 
 
 ```r
@@ -175,7 +175,7 @@ plot(CAL, which = "ts", main = "Calibration")
 
 ![](tab_fun_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
 
-The call of the `plot()` function with a `SimGR` object draws the classical <strong><font color="#009EE0">airGR</font></strong> plot diagnostics.
+The call of the `plot()` function with a `SimGR` object draws the classical <strong><font color="#0BA6AA">airGR</font></strong> plot diagnostics.
 
 ```r
 plot(SIM)
@@ -205,7 +205,7 @@ dyplot(SIM, main = "Simulation")
 
 ### *Shiny* interface
 
-The <strong><font color="#009EE0">airGRteaching</font></strong> package also provides the `ShinyGR()` function, which allows to run the *Shiny* interface that is proposed on this page.
+The <strong><font color="#0BA6AA">airGRteaching</font></strong> package also provides the `ShinyGR()` function, which allows to run the *Shiny* interface that is proposed on this page.
 
 The `ShinyGR()` function just needs:
 

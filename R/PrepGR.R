@@ -3,7 +3,7 @@ PrepGR <- function(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL, Q
                    HydroModel, CemaNeige = FALSE) {
   
   
-  if (is.null(ObsDF) && (is.null(DatesR) | is.null(Precip) | is.null(PotEvap) | is.null(Qobs))) {
+  if (is.null(ObsDF) && (is.null(DatesR) | is.null(Precip) | is.null(PotEvap))) {
     stop("Missing input data")
   }
 
@@ -11,6 +11,12 @@ PrepGR <- function(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL, Q
     if (ncol(ObsDF) >= 5) {
       TempMean <- ObsDF[, 5L]
     }
+  }
+  
+  if (!is.null(Qobs)) {
+    Qobs <- Qobs
+  } else {
+    Qobs <- NA
   }
   
   if (!is.null(TempMean)) {
@@ -39,7 +45,7 @@ PrepGR <- function(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL, Q
     stop("Non convenient date format. Time zone must be defined as \"UTC\"")
   }
   
-  SuiteGR <- paste0("GR", c("1A", "2M", "4J", "5J", "6J", "4H"))
+  SuiteGR <- paste0("GR", c("1A", "2M", "4J", "5J", "6J", "4H", "5H"))
   
   if (! any(HydroModel %in% SuiteGR)) {
     stop("Non convenient model")
@@ -47,10 +53,10 @@ PrepGR <- function(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL, Q
     if (! CemaNeige) {
       TypeModel <- sprintf("RunModel_%s", HydroModel)
     }
-    if (CemaNeige && grepl("J", HydroModel)) {
+    if (CemaNeige && grepl("J|H", HydroModel)) {
       TypeModel <- sprintf("RunModel_CemaNeige%s", HydroModel)
     }
-    if (CemaNeige && !grepl("J", HydroModel)) {
+    if (CemaNeige && !grepl("J|H", HydroModel)) {
       warning("CemaNeige can not be used with ", HydroModel)
       TypeModel <- sprintf("RunModel_%s", HydroModel)
     }
@@ -64,7 +70,7 @@ PrepGR <- function(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL, Q
   
   
   PrepGR <- list(InputsModel = MOD_obs, Qobs = ObsDF$Qobs, TypeModel = TypeModel)
-  class(PrepGR) <- c("PrepGR", "GR")
+  class(PrepGR) <- c("PrepGR", "GR", "airGRt")
   return(PrepGR)
  
 }

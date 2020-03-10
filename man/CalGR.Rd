@@ -1,13 +1,18 @@
 \encoding{UTF-8}
 \name{CalGR}
 \alias{CalGR}
+
+
 \title{Calibration algorithm that optimises the error criterion selected as objective function}
+
+
+\description{Calibration algorithm that optimises the error criterion selected as objective function using the INRAE-HYCAR procedure described by C. Michel}
 
 
 \usage{
 CalGR(PrepGR, CalCrit = c("NSE", "KGE", "KGE2", "RMSE"),
-  WupPer = NULL, CalPer,
-  transfo = c("", "sqrt", "log", "inv", "sort"), verbose = TRUE)
+      WupPer = NULL, CalPer,
+      transfo = c("", "sqrt", "log", "inv", "sort"), verbose = TRUE)
 }
 
 
@@ -41,9 +46,6 @@ CalGR(PrepGR, CalCrit = c("NSE", "KGE", "KGE2", "RMSE"),
 \seealso{
 \code{\link{CreateRunOptions}}, \code{\link{CreateInputsCrit}}, \code{\link{CreateCalibOptions}}, \code{\link{ErrorCrit_RMSE}}, \code{\link{ErrorCrit_NSE}}, \code{\link{ErrorCrit_KGE}}, \code{\link{ErrorCrit_KGE2}}, \code{\link{Calibration_Michel}}
 }
-
-
-\description{Calibration algorithm that optimises the error criterion selected as objective function using the Irstea-HBAN procedure described by C. Michel}
 
 
 \author{Olivier Delaigue}

@@ -2,19 +2,21 @@
 \name{dyplot}
 \alias{dyplot.default}
 \alias{dyplot}
-\alias{dyplot.PrepGR}
-\alias{dyplot.CalGR}
-\alias{dyplot.SimGR}
+
+
 \title{Interactive time series plotting of GR data}
+
+
+\description{Interactive time series plotting of objects of classes \emph{PrepGR}, \emph{CalGR} or \emph{SimGR}.}
 
 
 \usage{
 \method{dyplot}{default}(x, Qsup = NULL, Qsup.name = "Qsup",
-  col.Precip = c("royalblue", "lightblue"),
-  col.Q = c("black", "orangered", "grey"), col.na = "lightgrey",
-  ylab = NULL, main = NULL,
-  plot.na = TRUE, RangeSelector = TRUE, Roller = FALSE,
-  LegendShow = c("follow", "auto", "always", "onmouseover", "never"), ...)
+       col.Precip = c("royalblue", "lightblue"),
+       col.Q = c("black", "orangered", "grey"), col.na = "lightgrey",
+       ylab = NULL, main = NULL,
+       plot.na = TRUE, RangeSelector = TRUE, Roller = FALSE,
+       LegendShow = c("follow", "auto", "always", "onmouseover", "never"), ...)
 }
 
 
@@ -50,9 +52,6 @@
 \seealso{
 \code{\link{PrepGR}}, \code{\link{CalGR}}, \code{\link{SimGR}}
 }
-
-
-\description{Interactive time series plotting of objects of classes \emph{PrepGR}, \emph{CalGR} or \emph{SimGR}.}
 
 
 \author{Olivier Delaigue}

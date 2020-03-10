@@ -1,7 +1,12 @@
 \encoding{UTF-8}
 \name{PrepGR}
 \alias{PrepGR}
+
+
 \title{Creation of the inputs required to run the CalGR and SimGR functions}
+
+
+\description{Creation of the inputs required to run the CalGR and SimGR functions}
 
 
 \usage{
@@ -31,9 +36,9 @@ PrepGR(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL,
   
   \item{NLayers}{(optional) [numeric] integer giving the number of elevation layers requested [-], required to create CemaNeige (if used) model inputs}
   
-  \item{HydroModel}{[character] name of the hydrological model (must be one of \code{"GR1A"}, \code{"GR2M"}, \code{"GR4J"}, \code{"GR5J"}, \code{"GR6J"} or \code{"GR4H"})}
+  \item{HydroModel}{[character] name of the hydrological model (must be one of \code{"GR1A"}, \code{"GR2M"}, \code{"GR4J"}, \code{"GR5J"}, \code{"GR6J"}, \code{"GR4H"} or \code{"GR5H"})}
   
-  \item{CemaNeige}{[boolean] option indicating whether CemaNeige should be activated (only available when \code{HydroModel} is equal to any of \code{"GR4J"}, \code{"GR5J"} or \code{"GR6J"}). See details}
+  \item{CemaNeige}{[boolean] option indicating whether CemaNeige should be activated (only available for hourly or daily models, when \code{HydroModel} is equal to any of \code{"GR4J"}, \code{"GR5J"}, \code{"GR6J"}, \code{"GR4H"} or \code{"GR5H"}). See details}
 }
 
 
@@ -50,12 +55,12 @@ PrepGR(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL,
 }
 
 
-\description{Creation of the inputs required to run the CalGR and SimGR functions}
-
 \details{
 If the \code{ObsDF} argument is provided, \code{DatesR}, \code{Precip}, \code{PotEvap}, \code{Qobs} and \code{TempMean} are not necessary, and vice-versa. If one variable is provided in \code{ObsDF} and also separately, then only the data included in \code{ObsDF} are used.
 \cr \cr
 If the \code{CemaNeige} argument is set to \code{TRUE}, the default version of CemaNeige is used (i.e. without the Linear Hysteresis, see the details part in \code{\link{CreateRunOptions}}).
+\cr\cr
+The \code{PrepGR} function can be used even if no observed discharges are available. In this case, it is necessary to provide observed discharges time series equal to NA: this means that either the \code{ObsDF} observed discharges column or the \code{Qobs} arguments, depending on the format of data you provide, must be provided and filled with NAs.
 }
 
 \author{Olivier Delaigue}
@@ -68,8 +73,21 @@ library(airGRteaching)
 data(L0123001, package = "airGR")
 BasinObs2 <- BasinObs[, c("DatesR", "P", "E", "Qmm", "T")]
 
-## Preparation of observed data for modelling
+## Preparation of observed data for modelling when inputs set by using a data.frame
 PREP <- PrepGR(ObsDF = BasinObs2, HydroModel = "GR4J", CemaNeige = FALSE)
 str(PREP)
-}
 
+
+## Preparation of observed data for modelling when inputs set by using independant vectors
+PREP <- PrepGR(DatesR = BasinObs2$DatesR, Precip = BasinObs2$P,
+               PotEvap = BasinObs2$E, Qobs = BasinObs2$Qmm,
+               HydroModel = "GR4J", CemaNeige = FALSE)
+
+
+## Preparation of observed data for an ungauged catchment (i.e. no observed discharge available)
+## Observed discharge set to NA in the Qobs argument
+##   or in the 4th column of the data.frame if the ObsDF argument is used
+PREP <- PrepGR(DatesR = BasinObs2$DatesR, Precip = BasinObs2$P,
+               PotEvap = BasinObs2$E, Qobs = NA,
+               HydroModel = "GR4J", CemaNeige = FALSE)
+}

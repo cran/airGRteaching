@@ -1,3 +1,16 @@
+.onAttach <- function(libname, pkgname) {
+  if (packageVersion("htmlwidgets") <= "1.5.1") {
+    base::packageStartupMessage("\n---------------------------\n")
+    base::packageStartupMessage("This version of 'airGRteaching' is designed to work with 'htmlwidgets' >= 1.5.1.9000 (troubles with 'dygraphs')")
+    base::packageStartupMessage("Install the latest version of 'htmlwidgets' from GitHub with the following command lines:")  
+    base::packageStartupMessage("\tinstall.packages(\"remotes\")\n\tremotes::install_github(\"ramnathv/htmlwidgets\")")
+    base::packageStartupMessage("\n---------------------------\n")
+  }
+}
+
+
+
+
 ## =================================================================================
 ## commands to avoid warnings during package checking when global variables are used
 ## =================================================================================
@@ -10,6 +23,38 @@ if (getRversion() >= "2.15.1") {
 }
 
 
+
+
+## =================================================================================
+## function to compute the start and stop id of equal values in a vector
+## =================================================================================
+
+.StartStop <- function(x, FUN) {
+  naQ_rle <- rle(FUN(x))
+  naQ_ide <- cumsum(naQ_rle$lengths)[naQ_rle$values]   + 1
+  naQ_ids <- naQ_ide - naQ_rle$lengths[naQ_rle$values] - 1
+  idNA   <- data.frame(start = naQ_ids, stop = naQ_ide)
+  idNA$start <- ifelse(idNA$start < 1         , 1       , idNA$start)
+  idNA$stop  <- ifelse(idNA$stop  > length(x), length(x), idNA$stop )
+  idNA
+}
+
+
+
+
+## =================================================================================
+## function for drawing several shadows of dygraphic regions simultaneously
+## =================================================================================
+
+.DyShadingMulti <- function(dygraph, ts, idStart, IdStop, ...) {
+  for (i in seq_along(idStart)) {
+    dygraph <- dygraphs::dyShading(dygraph = dygraph,
+                                   from    = as.character(ts)[idStart[i]],
+                                   to      = as.character(ts)[IdStop[i]],
+                                   ...)
+  }
+  dygraph
+}
 
 
 ## =================================================================================
@@ -122,7 +167,6 @@ if (getRversion() >= "2.15.1") {
   dates_deb       <- EventDate
   n_pdt           <- length(which(OutputsModel$DatesR >= EventDate & OutputsModel$DatesR <= SimPer[2L]))
   i_pdt           <- which(format(OutputsModel$DatesR, "%Y%m%d") == format(EventDate, "%Y%m%d"))
-  
   
   
   # --------------------------------------------------------------------------------
@@ -244,6 +288,7 @@ if (getRversion() >= "2.15.1") {
   
   # Parametres
   tmp_decal   <- 20
+  
   
   # --------------------------------------------------------------------------------
   # NEUTRALISATION DE P
@@ -403,6 +448,7 @@ if (getRversion() >= "2.15.1") {
              cex = cex_tri(OutputsModel$PR[i_pdt], fact = fact_triangle, max = cex_max_poly))
     }
     
+    
     # --------------------------------------------------------------------------------
     # HYDROGRAMME UNITAIRE 1
     # --------------------------------------------------------------------------------
@@ -421,6 +467,7 @@ if (getRversion() >= "2.15.1") {
                                OutputsModel$PR[PR_mat_UH1_id]), times = PR_mat_UH1_lg),
                          ncol = PR_mat_UH1_lg+1)[, -1L]
     PR_mat_UH1[lower.tri(PR_mat_UH1)] <- 0
+    
     
     # --------------------------------------------------------------------------------
     # HYDROGRAMME UNITAIRE 2
@@ -608,7 +655,6 @@ if (getRversion() >= "2.15.1") {
     }
   }
   
-
   
   # --------------------------------------------------------------------------------
   # RESERVOIR EXPONENTIEL

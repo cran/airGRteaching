@@ -10,7 +10,7 @@ vignette: >
 
 
 ```{r include=FALSE}
-formatGR <- '<strong><font color="#009EE0">%s</font></strong>'
+formatGR      <- '<strong><font color="#0BA6AA">%s</font></strong>'
 GR            <- sprintf(formatGR, "GR")
 airGR         <- sprintf(formatGR, "airGR")
 airGRteaching <- sprintf(formatGR, "airGRteaching")
@@ -89,16 +89,28 @@ CAL <- CalGR(PrepGR = PREP, CalCrit = "KGE2",
 
 #### Simulation step
 
-To run a model, please use the `SimGR()` function. The `PrepGR` and `WupPer` arguments of `SimGR()` are similar to the ones of the `CalGR()` function. Here, `EffCrit` is used to calculate the performance of the model over the simulation period `SimPer` and `CalGR` is the object returned by the `CalGR()` function.
+To run a model, please use the `SimGR()` function. The `PrepGR` and `WupPer` arguments of `SimGR()` are similar to the ones of the `CalGR()` function. Here, `EffCrit` is used to calculate the performance of the model over the simulation period `SimPer` and `Param` is the object returned by the `CalGR()` function.
 
 ```{r, warning=FALSE}
-SIM <- SimGR(PrepGR = PREP, CalGR = CAL, EffCrit = "KGE2",
+SIM <- SimGR(PrepGR = PREP, Param = CAL, EffCrit = "KGE2",
              WupPer = NULL, SimPer = c("1994-01-01", "1998-12-31"))
 ```
 
 <br>
 
-### Pre-defined  graphical plots
+
+### Formating outputs
+
+The call of the `as.data.frame()` function with `PrepGR`, `CalGR` or `SimGR` objects allows to coerce the outputs to a data frame .
+
+```{r, warning=FALSE}
+head(as.data.frame(PREP))
+head(as.data.frame(CAL))
+head(as.data.frame(SIM))
+```
+
+
+### Pre-defined graphical plots
 
 #### Static plots
 
@@ -108,7 +120,6 @@ The call of the `plot()` function with a `PrepGR` object draws the observed prec
 par(cex.lab = 0.6, cex.axis = 0.6)
 plot(PREP, main = "Observation")
 ```
-
 
 By default (with the argument `which = "perf"`), the call of the `plot()` function with a `CalGR` object draws the classical `r airGR` plot diagnostics (observed and simulated time series together with diagnostic plot)
 
@@ -136,7 +147,6 @@ The call of the `plot()` function with a `SimGR` object draws the classical `r a
 ```{r, eval=FALSE}
 plot(SIM)
 ```
-
 
 #### Dynamic plots
 

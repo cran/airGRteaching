@@ -25,7 +25,7 @@ bibentry(bibtype    = "InProceedings",
                  "airGR and airGRteaching: Two open-source tools for rainfall-runoff modeling and teaching hydrology.",
                  "HIC 2018. 13th International Conference on Hydroinformatics",
                  "(eds. G.L. Loggia, G. Freni, V. Puleo & M.D. Marchis),",
-                 "vol. 3 of EPiC Series in Engineering, p. 541-548, EasyChair, URL: https://easychair.org/publications/paper/VQ52.",
+                 "vol. 3 of EPiC Series in Engineering, p. 541-548, EasyChair, DOI: 10.29007/qsqj.",
                  sep = " ")
 )
 
@@ -35,12 +35,13 @@ bibentry(bibtype ="Manual",
          journal = "R News",
          year = year,
          note = note,
-         url = "https://CRAN.R-project.org/package=airGRteaching/",
+         url = "https://CRAN.R-project.org/package=airGRteaching",
+         doi = "10.15454/W0SSKT",
          textVersion = 
            paste0("Delaigue, O., Coron, L., Brigode, P. (",
                   year,
                   "). airGRteaching: Teaching Hydrological Modelling with GR (Shiny Interface Included). ",
                   note,
-                  ". URL: https://CRAN.R-project.org/package=airGRteaching/."
+                  ". DOI: 10.15454/W0SSKT. URL: https://CRAN.R-project.org/package=airGRteaching."
                   )
 )

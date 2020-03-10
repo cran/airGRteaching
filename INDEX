@@ -1,16 +1,23 @@
 
 Modelling functions:
-====================
+======================
 
 PrepGR                  Creation of the inputs required to the CalGR
                         and SimGR functions
 CalGR                   Calibration algorithm optimises the error
                         criterion selected as objective function
 SimGR                   Run GR hydrological models
-						
-						
+
+
+Summarizing functions:
+======================
+
+as.data.frame           Create a data.frame from outputs of PrepGR,
+                        CalGR or SimGR
+
+
 Plotting functions:
-====================	
+======================	
 					
 dyplot                  Interactive time series plotting of PrepGR, CalGR
                         and SimGR objects
@@ -23,7 +30,7 @@ plot.SimGR              Synthetic plotting of model outputs
 
 
 Shiny interface:
-====================
+======================
 
 ShinyGR                 Interactive Web applications to run the GR4J, GR5J
                         and GR6J hydrological models whith or without CemaNeige						

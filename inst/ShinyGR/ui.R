@@ -4,26 +4,36 @@
 
 
 navbarPage(title       = div("airGRteaching", 
-                             img(src = "fig/logo_airGR_CMJN_square.svg"      , height = 350 / 9),
-                             img(src = "fig/logo_inrae_hydro_CMJN_square.svg", height = 350 / 9),
-                             img(src = "fig/logo_inrae_CMJN_square.svg"      , height = 350 / 9), style = "position:relative; top:-9px;"),
-           
+                             a(href = "https://hydrogr.github.io/airGRteaching/",
+                               title = "airGRteaching",
+                               target = "_blank", rel = "noopener noreferrer",
+                               img(src = "fig/logo_airGRteaching_CMJN_square_0125x0121.png", height = 350 / 9)),
+                             a(href = "https://webgr.inrae.fr/en/home/",
+                              title = "webgr.inrae.fr",
+                              target = "_blank", rel = "noopener noreferrer",
+                              img(src = "fig/logo_inrae_hydro_CMJN_square.svg", height = 350 / 9)),
+                             a(href = "https://www.inrae.fr/en/",
+                               title = "inrae.fr",
+                               target = "_blank", rel = "noopener noreferrer",
+                               img(src = "fig/logo_inrae_CMJN_square.svg", height = 350 / 9)),
+                             style = "position:relative; top:-9px;"),
+
            windowTitle = "airGRteaching",
            
            theme       = switch(.GlobalEnv$.ShinyGR.args$theme,
-                                RStudio   = "",
-                                Cyborg    = "css/bootstrap.min_Cyborg.css",
-                                Cerulean  = "css/bootstrap.min_Cerulean.css",
-                                Flatly    = "css/bootstrap.min_Flatly.css",
-                                United    = "css/bootstrap.min_United.css",
-                                Yeti      = "css/bootstrap.min_Yeti.css",
-                                Inrae     = "css/bootstrap.min_Inrae.css",
-                                Saclay    = "css/bootstrap.min_Saclay.css"
+                                rstudio   = "",
+                                cyborg    = "css/bootstrap.min_Cyborg.css",
+                                cerulean  = "css/bootstrap.min_Cerulean.css",
+                                flatly    = "css/bootstrap.min_Flatly.css",
+                                united    = "css/bootstrap.min_United.css",
+                                yeti      = "css/bootstrap.min_Yeti.css",
+                                inrae     = "css/bootstrap.min_Inrae.css",
+                                saclay    = "css/bootstrap.min_Saclay.css"
            ),
            
            
-           tabPanel(title = "Interface",
-                    icon  = icon("bar-chart"),
+           tabPanel(title = "Modelling",
+                    icon  = icon("area-chart"),
                     shinyjs::useShinyjs(), # set up shinyjs
                     
                     
@@ -181,9 +191,37 @@ navbarPage(title       = div("airGRteaching",
                                   )
                     )
            ),
-           tabPanel(title = "Functionalities"     , fluidRow(column(6, includeMarkdown("www/tab_fun.md"))),
-                    icon  = icon("cog")),
-           tabPanel(title = "About"               , fluidRow(column(6, includeMarkdown("www/tab_about.md")),
-                                                             column(5, includeMarkdown("www/tab_authors.md"))),
-                    icon  = icon("navicon"))
+           tabPanel(title = "Summary sheet",
+                    icon  = icon("th"),
+                    sidebarLayout(position = "left", 
+                                  sidebarPanel(width = 3,
+                                               h4("Choose a dataset:"),
+                                               fluidRow(column(width = 12, selectInput("DatasetSheet", label = NULL, choices = .ShinyGR.args$NamesObsBV)),
+                                                        style = "height:720px;")),
+                                  mainPanel(width = 9,
+                                            fluidRow(uiOutput("Sheet")))
+                    )
+           ),
+           navbarMenu(title = "Help",
+                      icon  = icon("question-circle"),
+                      tabPanel(title = " Get started",
+                               icon = icon("cog"),
+                               fluidRow(column(width = 12, includeMarkdown("www/tab_fun.md")))
+                      ),
+                      tabPanel(title = "GUI help",
+                               icon = icon("question"),
+                               fluidRow(column(width = 12, a(href = "https://hydrogr.github.io/airGRteaching/fig/airGRteaching_ShinyUi_description.png", target = "_blank", rel = "noopener noreferrer",
+                                                    img(src = "https://hydrogr.github.io/airGRteaching/fig/airGRteaching_ShinyUi_description.png", height = "770px",
+                                                        alt = "If the image does not appear, click on this link.",
+                                                        title = "Click to open in a new window")))),
+                      ),
+                      tabPanel(title = a(icon("r-project"), "CRAN"   , href = "https://CRAN.R-project.org/package=airGRteaching"   , target = "_blank", rel = "noopener noreferrer")),
+                      tabPanel(title = a(icon("at")       , "Website", href = "https://hydrogr.github.io/airGRteaching/"           , target = "_blank", rel = "noopener noreferrer")),
+                      tabPanel(title = a(icon("gitlab")   , "GitLab" , href = "https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/", target = "_blank", rel = "noopener noreferrer")),
+                      tabPanel(title = "About",
+                               icon  = icon("navicon"),
+                               fluidRow(column(width = 6, includeMarkdown("www/tab_about.md")),
+                                        column(width = 5, includeMarkdown("www/tab_authors.md"))),
+                      )
+           )
 )

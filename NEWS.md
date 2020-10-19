@@ -4,6 +4,27 @@
 
 
 
+### 5 Release Notes (2020-10-19)
+
+
+#### New features
+
+- in the <code>ShinyGR()</code> interface, there is a new tab panel that shows a summary sheets of basin if the name of the dataset contains the code station (8 characters : 1 letter and 7 numbers) of the Banque Hydro French database (so it is available only for the dataset of this database) ([#10](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/10))
+
+
+#### User-visible changes
+
+- the <code>theme</code> agument of the <code>ShinyGR()</code> function now works even if a wrong character case
+
+
+#### CRAN-compatibility updates
+
+- when the package is loaded or when the <code>dyplot()</code> and the <code>ShinyGR()</code> function are used, a message warns the users if they use a version of 'htmlwidgets' < 1.5.2.9000. The latest version of this package, available on GitHub, avoids troubles with the use of dynamic graphics of the 'dygraphs' package (called by the <code>dyplot&#42;()</code> and the <code>ShinyGR()</code> functions) ([#5](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/5))
+
+
+____________________________________________________________________________________
+
+
 ### 0.2.8.69 Release Notes (2020-02-28)
 
 
@@ -28,13 +49,13 @@
 
 #### User-visible changes
 
-- it is now possible to use the GR4H and GR5H hourly models with or without CemaNeige. For that, in the <code>PrepGR()</code>, the <code>HydroModel</code> argument could be set to <code>"GR4H"</code> or <code>"GR5H"</code>. In the GUI, launched by <code>ShinyGR()</code> function, nothing changed, only the daily models are available. So, now airGRteaching depends on the version of airGR >= 1.4.3.52)
+- it is now possible to use the GR4H and GR5H hourly models with or without CemaNeige. For that, in the <code>PrepGR()</code>, the <code>HydroModel</code> argument could be set to <code>"GR4H"</code> or <code>"GR5H"</code>. In the GUI, launched by <code>ShinyGR()</code> function, nothing changed, only the daily models are available. So, now airGRteaching depends on the version of airGR >= 1.4.3.52) ([#7](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/7))
 
 - it is now possible to run the <code>PrepGR()</code> function when discharge is not provided in <code>Qobs</code>. If it is the case, the <code>CalGR()</code> function will return an error message because it is not possible to calibrate the model. The <code>SimGR()</code> function will return a warning message because it is not possible to compute any efficiency criterion
 
 - it is now possible to run the <code>ShinyGR()</code> function when discharge is not provided in <code>Qobs</code>
 
-- when observed discharge is provided in <code>ShinyGR()</code>, the first plotting panel now draws the flow error time series
+- when observed discharge is provided in <code>ShinyGR()</code>, the first plotting panel now draws the flow error time series ([#4](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/4))
 
 - the <code>plot()</code> function is now exported
 
@@ -45,7 +66,7 @@
 
 #### CRAN-compatibility updates
 
-- when the package is loaded, a message warns the users if they use a version of 'htmlwidgets' < 1.5.1.9000. The latest version of this package, available on GitHub, avoids troubles with the use of dynamic graphics of the 'dygraphs' package (called by the <code>dyplot&#42;()</code> and the <code>ShinyGR()</code> functions)
+- when the package is loaded, a message warns the users if they use a version of 'htmlwidgets' < 1.5.1.9000. The latest version of this package, available on GitHub, avoids troubles with the use of dynamic graphics of the 'dygraphs' package (called by the <code>dyplot&#42;()</code> and the <code>ShinyGR()</code> functions) ([#5](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/5))
 
 ____________________________________________________________________________________
 

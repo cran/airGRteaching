@@ -14,7 +14,7 @@ The package is mostly based on three families of functions:
 - plotting functions to help students to explore observed data and to interpret the results of calibration and simulation of the GR models;
 - a function which runs a 'Shiny' graphical interface that allows for displaying in real-time model parameters impacts on hydrographs.
 
-This package brings into R the hydrological modelling tools developed at INRAE-Antony ([Catchment Hydrology research group](https://webgr.inrae.fr/en/) of the HYCAR Research Unit, France).
+This package brings into R the hydrological modelling tools developed at INRAE-Antony ([Catchment Hydrology research group](https://webgr.inrae.fr/en/home/) of the HYCAR Research Unit, France).
 
 
 ## Installation
@@ -22,6 +22,14 @@ This package brings into R the hydrological modelling tools developed at INRAE-A
 ``` r
 install.packages("airGRteaching")
 ```
+
+This version of airGRteaching is designed to work with the package htmlwidgets >= 1.5.2.9000 (troubles with the package dygraphs using `dyplot()` and `ShinyGR()`)
+Install the latest version of 'htmlwidgets' from GitHub with the following command lines:
+
+``` {r eval=FALSE}
+install.packages("remotes")
+remotes::install_github("ramnathv/htmlwidgets")
+``` 
 
 
 ## Modelling Functions
@@ -68,7 +76,7 @@ These models can be called within airGRteaching using the following model names:
 - `CemaNeige`: two-parameter degree-day snow melt and accumulation daily model (combined with GR4H, GR5H, GR4J, GR5J or GR6J) (Valéry et al., 2014)
 &#42;: available in the Shiny interface.
 
-For more information and to get started with the package, you can refer to the vignette (`vignette("get_started")`) and go on the [airGRteaching website](https://hydrogr.github.io/airGRteaching).
+For more information and to get started with the package, you can refer to the vignette (`vignette("get_started")`) and go on the [airGRteaching website](https://hydrogr.github.io/airGRteaching/).
 
 
 ## References

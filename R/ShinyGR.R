@@ -1,7 +1,9 @@
 ShinyGR <- function(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL, Qobs = NULL, TempMean = NULL, 
                     ZInputs = NULL, HypsoData = NULL, NLayers = 5, SimPer, NamesObsBV = NULL,
                     theme = "RStudio") {
-
+  
+  .onAttach()
+  
   if ((is.null(ObsDF) | any(sapply(ObsDF, is.null))) && (is.null(DatesR) | is.null(Precip) | is.null(PotEvap) | is.null(Qobs))) {
     stop("Missing input data")
   }
@@ -147,7 +149,7 @@ ShinyGR <- function(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL, 
   .GlobalEnv$.ShinyGR.args <- list(ObsDF = ObsDF, NamesObsBV = NamesObsBV,
                                    DatesR = DatesR, Precip = Precip, PotEvap = PotEvap, Qobs = Qobs, TempMean = TempMean, 
                                    ZInputs = ZInputs, HypsoData = HypsoData, NLayers = NLayers, SimPer = SimPer,
-                                   theme = theme)
+                                   theme = tolower(theme))
   
   ## timezone used
   # oTZ <- Sys.timezone()

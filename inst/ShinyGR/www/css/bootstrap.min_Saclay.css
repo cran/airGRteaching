@@ -147,17 +147,28 @@ border-color: #62003c;
 .navbar-default .navbar-nav > li > a:focus {
 background: #AF006B;
 }
+/* selected navbar button when drop-menu is open */
+.navbar-default .navbar-nav > .open > a, 
+.navbar-default .navbar-nav > .open > a:hover, 
+.navbar-default .navbar-nav > .open > a:focus {
+background-color: #860052;
+}
+/* navbar drop-menu with computer mouse pointer */
+.navbar-default .navbar-nav .dropdown-menu > li > a:hover, 
+.navbar-default .navbar-nav .dropdown-menu > li > a:focus {
+background: #62003c;
+}
 
 /* link color */
 a:link {
-  color: #62003c;
+color: #62003c;
 }
 a:hover {
-  color: #9dc544;
-  text-decoration: underline;
+color: #9dc544;
+text-decoration: underline;
 }
 a:active {
-  color: #9ed6e3;
-  text-decoration: underline;
+color: #9ed6e3;
+text-decoration: underline;
 } 
 

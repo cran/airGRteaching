@@ -1,7 +1,7 @@
 .onAttach <- function(libname, pkgname) {
-  if (packageVersion("htmlwidgets") <= "1.5.1") {
+  if (packageVersion("htmlwidgets") <= "1.5.2") {
     base::packageStartupMessage("\n---------------------------\n")
-    base::packageStartupMessage("This version of 'airGRteaching' is designed to work with 'htmlwidgets' >= 1.5.1.9000 (troubles with 'dygraphs')")
+    base::packageStartupMessage("This version of 'airGRteaching' is designed to work with 'htmlwidgets' >= 1.5.2.9000 (troubles with 'dygraphs')")
     base::packageStartupMessage("Install the latest version of 'htmlwidgets' from GitHub with the following command lines:")  
     base::packageStartupMessage("\tinstall.packages(\"remotes\")\n\tremotes::install_github(\"ramnathv/htmlwidgets\")")
     base::packageStartupMessage("\n---------------------------\n")
@@ -20,6 +20,20 @@ if (getRversion() >= "2.15.1") {
   utils::suppressForeignCheck(c(".ShinyGR.args"))
   utils::globalVariables(c(".ShinyGR.hist"))
   utils::suppressForeignCheck(c(".ShinyGR.hist"))
+}
+
+
+
+
+## =================================================================================
+## function to test if a remote url exists
+## =================================================================================
+
+.CheckUrl <- function(url, timeout = 2) {
+  con <- url(description = url)
+  check <- suppressWarnings(try(open.connection(con = con, open = "rt", timeout = t), silent =  TRUE)[1])
+  suppressWarnings(try(close.connection(con), silent = TRUE))
+  is.null(check)
 }
 
 
@@ -154,7 +168,7 @@ if (getRversion() >= "2.15.1") {
   
   par(col.axis = par("fg"), cex.axis = 1.3, cex.lab = 1.3, cex = 0.7, mgp = mgp)
   
-  if (.GlobalEnv$.ShinyGR.args$theme == "Cyborg") {
+  if (.GlobalEnv$.ShinyGR.args$theme == "cyborg") {
     col_mod_bg    <- rgb(255-245, 255-245, 255-245, maxColorValue = 255)
     col_mod_bd    <- rgb(255-231, 255-231, 255-231, maxColorValue = 255)
   }

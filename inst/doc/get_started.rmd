@@ -101,7 +101,7 @@ SIM <- SimGR(PrepGR = PREP, Param = CAL, EffCrit = "KGE2",
 
 ### Formating outputs
 
-The call of the `as.data.frame()` function with `PrepGR`, `CalGR` or `SimGR` objects allows to coerce the outputs to a data frame .
+The call of the `as.data.frame()` function with `PrepGR`, `CalGR` or `SimGR` objects allows to coerce the outputs to a data frame.
 
 ```{r, warning=FALSE}
 head(as.data.frame(PREP))

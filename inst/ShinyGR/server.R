@@ -171,7 +171,7 @@ shinyServer(function(input, output, session) {
                  verbose = FALSE)
     
     ## Criteria computation
-    CRIT_opt <- list(Crit    = c(rep("ErrorCrit_NSE", 3),  rep("ErrorCrit_KGE", 3)),
+    CRIT_opt <- list(Crit    = c(rep("ErrorCrit_NSE", 3), rep("ErrorCrit_KGE", 3)),
                      Transfo = rep(c("", "sqrt", "inv"), times = 2))
     nCRIT_opt <- length(CRIT_opt$Crit)
     if (!getPrep()$isUngauged) {
@@ -441,13 +441,24 @@ shinyServer(function(input, output, session) {
   }, priority = +10)
   
 
-  ## Time window slider
+  ## Time window slider and dataset choosen on the Summary sheet panel
   observeEvent({input$Dataset}, {
     updateSliderInput(session, inputId = "Period",
                       min = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]][1L], tz = "UTC"),
                       max = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]][2L], tz = "UTC"),
                       value = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]], tz = "UTC"),
                       timeFormat = "%F", timezone = "+0000")
+    updateSelectInput(session, inputId = "DatasetSheet",
+                      choices = .ShinyGR.args$NamesObsBV,
+                      selected = input$Dataset)
+  })
+  
+  
+  ## Dataset choosen on the SInterface panel
+  observeEvent({input$DatasetSheet}, {
+    updateSelectInput(session, inputId = "Dataset",
+                      choices = .ShinyGR.args$NamesObsBV,
+                      selected = input$DatasetSheet)
   })
   
   
@@ -469,11 +480,11 @@ shinyServer(function(input, output, session) {
   
   ## Graphical parameters
   getPlotPar <- reactive({
-    if (.GlobalEnv$.ShinyGR.args$theme == "Cyborg") {
+    if (.GlobalEnv$.ShinyGR.args$theme == "cyborg") {
       col_bg <- "black"
       col_fg <- "white"
       par(bg = col_bg, fg = col_fg, col.axis = col_fg, col.lab = col_fg)
-    } else if (.GlobalEnv$.ShinyGR.args$theme == "Flatly") {
+    } else if (.GlobalEnv$.ShinyGR.args$theme == "flatly") {
       col_bg <- "#2C3E50"
       col_fg <- "black"
       par(bg = col_bg, fg = col_fg, col.axis = col_bg, col.lab = col_bg)
@@ -764,6 +775,8 @@ shinyServer(function(input, output, session) {
   
   
   
+  
+  
   ## --------------- Criteria table
   
   output$Criteria <- renderTable({
@@ -846,7 +859,7 @@ shinyServer(function(input, output, session) {
       ParamUnits <- c("mm", "mm/%s", "mm", "%s",   "", "mm")[seq_len(getPrep()$TMGR$NbParam)]
       if (input$SnowModel == "CemaNeige") {
         ParamTitle <- c(ParamTitle, "C1", "C2")
-        ParamUnits <- c(ParamUnits,   "", "mm/°C/%s")
+        ParamUnits <- c(ParamUnits,  "", "mm/°C/%s")
       }
       ParamTitle <- paste(ParamTitle, paste(getSim()$PARAM, sprintf(ParamUnits, getPrep()$TMGR$TimeUnit)), sep = " = ", collapse = ", ")
       ParamTitle <- gsub(" ,", ",", ParamTitle)
@@ -855,7 +868,7 @@ shinyServer(function(input, output, session) {
                           paste0(input$Period, collapse = " - "),
                           ParamTitle)
       if (getPlotType() == 1) {
-        png(filename = file, width = 1000*k,  height = ifelse(input$SnowModel != "CemaNeige", 700*k, 1100*k), pointsize = 14, res = 150)
+        png(filename = file, width = 1000*k, height = ifelse(input$SnowModel != "CemaNeige", 700*k, 1100*k), pointsize = 14, res = 150)
         par(oma = c(0, 0, 4, 0))
         plot(getSim()$SIM)
         mtext(text = PngTitle, side = 3, outer = TRUE, cex = 0.8, line = 1.2)
@@ -901,7 +914,7 @@ shinyServer(function(input, output, session) {
         polygon(c(data$Dates, rev(range(data$Dates))), c(data$prod., rep(0, 2)), border = "darkblue", col = adjustcolor("darkblue", alpha.f = 0.30))
         polygon(c(data$Dates, rev(range(data$Dates))), c(data$rout., rep(0, 2)), border = "cyan4"   , col = adjustcolor("cyan4"   , alpha.f = 0.30))
         if (input$HydroModel == "GR6J") {
-          minQrExp <- min(data$prod., data$rout., data$exp.,  0)
+          minQrExp <- min(data$prod., data$rout., data$exp., 0)
           colQrExp <- ifelse(minQrExp > 0, "#10B510", "#FF0303")
           polygon(c(data$Dates, rev(range(data$Dates))), c(data$exp., rep(0, 2)), border = colQrExp, col = adjustcolor(colQrExp, alpha.f = 0.30))
         }
@@ -960,6 +973,42 @@ shinyServer(function(input, output, session) {
       }
     }
   )
+  
+  
+  
+  ## --------------- Summary sheet
+  
+  output$Sheet <- renderUI({
+    codeRegex <- "\\D{1}\\d{7}"
+    codeBH <- gsub(sprintf("(.*)(%s)(.*)", codeRegex), "\\2", input$DatasetSheet)
+    urlRegex <- "https://webgr.inrae.fr/wp-content/uploads/fiches/%s_fiche.png"
+    urlSheet <- sprintf(urlRegex, codeBH)
+    if (.CheckUrl(urlSheet)) {
+      tags$p(tags$h6("Click on the image to open it in a new window and to enlarge it."),
+             tags$a(href = urlSheet, target = "_blank", rel = "noopener noreferrer",
+                    tags$img(src = urlSheet, height = "770px",
+                             alt = "If the image does not appear, click on this link.",
+                             title = "Click to open in a new window")))
+    } else {
+      urlSheet <- "fig/sheet_W1110010_thumbnail.png"
+      urlWebGR <- "https://webgr.inrae.fr"
+      txtWebGR <- "webgr.inrae.fr"
+      urlFraDb <- file.path(urlWebGR, "activites/base-de-donnees/")
+      txtFraDb <- "All the summary sheets are available on"
+      tags$p(tags$h1("Sorry, the summary sheet is not available for this dataset."),
+             tags$br(),
+             tags$h5("Only sheets of stations of the Banque Hydro French database are available."),
+             tags$h5("To show a summary sheet, the name of the chosen dataset has to contain the  Banque Hydro station code (8 characters : 1 letter and 7 numbers)."),
+             txtFraDb, tags$a(href = urlFraDb, target = "_blank", rel = "noopener noreferrer", txtWebGR), ".",
+             tags$br(),
+             tags$br(),
+             tags$a(href = urlFraDb, target = "_blank", rel = "noopener noreferrer",
+                    tags$img(src = urlSheet, width = "30%", height = "30%",
+                             alt = txtWebGR,
+                             title = paste("Visit", txtWebGR))))
+    }
+  })
+  
   
   
 })

@@ -18,7 +18,7 @@ The package is mostly based on three families of functions: \cr
 - a function which runs a 'Shiny' graphical interface that allows for displaying in real-time model parameters impacts on hydrographs.
 \cr\cr
 
-This package brings into R the hydrological modelling tools developed at INRAE-Antony (\href{https://webgr.inrae.fr/en/}{Catchment Hydrology research group} of the HYCAR Research Unit, France).
+This package brings into R the hydrological modelling tools developed at INRAE-Antony (\href{https://webgr.inrae.fr/en/home/}{Catchment Hydrology research group} of the HYCAR Research Unit, France).
 \cr\cr
 
 
@@ -65,7 +65,7 @@ These models can be called within airGRteaching using the following model names:
 *: available in the Shiny interface.
 \cr\cr
 
-For more information and to get started with the package, you can refer to the vignette (\code{vignette("get_started")}) and go on the \href{https://hydrogr.github.io/airGRteaching}{airGRteaching website}.
+For more information and to get started with the package, you can refer to the vignette (\code{vignette("get_started")}) and go on the \href{https://hydrogr.github.io/airGRteaching/}{airGRteaching website}.
 
 
 # --- References

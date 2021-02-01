@@ -1,9 +1,12 @@
-ShinyGR <- function(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL, Qobs = NULL, TempMean = NULL, 
+ShinyGR <- function(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL, Qobs = NULL, TempMean = NULL,
                     ZInputs = NULL, HypsoData = NULL, NLayers = 5, SimPer, NamesObsBV = NULL,
                     theme = "RStudio") {
-  
+
   .onAttach()
-  
+
+  theme <- match.arg(arg = theme,
+                     choices = c("RStudio", "Cerulean", "Cyborg", "Flatly", "Inrae", "Saclay", "United", "Yeti"))
+
   if ((is.null(ObsDF) | any(sapply(ObsDF, is.null))) && (is.null(DatesR) | is.null(Precip) | is.null(PotEvap) | is.null(Qobs))) {
     stop("Missing input data")
   }
@@ -11,7 +14,7 @@ ShinyGR <- function(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL, 
   if (is.null(SimPer) | any(sapply(SimPer, is.null))) {
     stop("Null values non suitable for 'SimPer'.")
   }
-  
+
   if (!is.null(ObsDF)) {
     if (!is.list(ObsDF) | inherits(ObsDF, "PrepGR")) {
       stop("'ObsDF' must be a (list of) 'data.frame'.")
@@ -20,21 +23,21 @@ ShinyGR <- function(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL, 
   if (is.data.frame(ObsDF)) {
     ObsDF <- list(ObsDF)
   }
-  
+
   if (!is.list(HypsoData)) {
     HypsoData <- list(HypsoData)
   }
-  
+
   if (!is.list(SimPer)) {
     SimPer <- list(SimPer)
   }
-  
+
   if (is.null(ObsDF)) {
     lenObsDF <- 1L
   } else {
     lenObsDF <- length(ObsDF)
   }
-  
+
   if (is.null(names(ObsDF)) & !is.null(ObsDF)) {
     if (is.null(NamesObsBV)) {
       NamesObsBV <- paste0("%s %0", nchar(lenObsDF), "d")
@@ -57,8 +60,8 @@ ShinyGR <- function(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL, 
     if (any(nchar(NamesObsBV) == 0)) {
       stop("NamesObsBV must be a string vector of at least one character.")
     }
-  }  
-  
+  }
+
   if (is.null(ObsDF)) {
     if (length(ZInputs) > 1) {
       warning("Too long 'ZInputs'. Only the first element(s) of 'ZInputs' argument used.")
@@ -77,7 +80,7 @@ ShinyGR <- function(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL, 
       SimPer <- SimPer[[1L]]
     }
   }
-  
+
   if (is.null(ZInputs)) {
     ZInputs <- vector(mode = "list", length = lenObsDF)
   } else {
@@ -95,7 +98,7 @@ ShinyGR <- function(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL, 
     }
   }
   names(ZInputs) <- NamesObsBV
-  
+
   if (is.null(HypsoData)) {
     HypsoData <- vector(mode = "list", length = lenObsDF)
   } else {
@@ -132,7 +135,7 @@ ShinyGR <- function(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL, 
     }
   }
   names(NLayers) <- NamesObsBV
-  
+
   if (length(SimPer) > lenObsDF) {
     SimPer <- as.list(SimPer)[seq_along(ObsDF)]
     warning("Too long 'SimPer'. Only the first element(s) of 'SimPer' argument used.")
@@ -144,20 +147,20 @@ ShinyGR <- function(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL, 
   }
   names(SimPer) <- NamesObsBV
 
-  
+
   .GlobalEnv$.ShinyGR.hist <- list(list())#list(Param = list(), TypeModel = lsit(), Crit = list(), Qsim = list())
   .GlobalEnv$.ShinyGR.args <- list(ObsDF = ObsDF, NamesObsBV = NamesObsBV,
-                                   DatesR = DatesR, Precip = Precip, PotEvap = PotEvap, Qobs = Qobs, TempMean = TempMean, 
+                                   DatesR = DatesR, Precip = Precip, PotEvap = PotEvap, Qobs = Qobs, TempMean = TempMean,
                                    ZInputs = ZInputs, HypsoData = HypsoData, NLayers = NLayers, SimPer = SimPer,
-                                   theme = tolower(theme))
-  
+                                   theme = theme)
+
   ## timezone used
   # oTZ <- Sys.timezone()
   Sys.setenv(TZ = "UTC")
-  
+
   on.exit({rm(.ShinyGR.args, .ShinyGR.hist, envir = .GlobalEnv) ; Sys.unsetenv("TZ")})
-  
+
   shiny::runApp(system.file("ShinyGR", package = "airGRteaching"), launch.browser = TRUE)
   return(NULL)
-  
+
 }

@@ -1,11 +1,11 @@
 # server.R
 
 shinyServer(function(input, output, session) {
-  
-  
-  
+
+
+
   ## --------------- List of input names
-  
+
   getInputs <- reactive({
     inputList <- sort(names(reactiveValuesToList(input)))
     inputList <- inputList[!grepl("^dy", inputList)]
@@ -13,19 +13,39 @@ shinyServer(function(input, output, session) {
     inputList <- c(inputList, "DownloadTab", "DownloadPlot")
     return(inputList)
   })
-  
-  
-  
-  ## --------------- Data preparation
-  
-  getPrep <- reactive({
-    
-    TMGR  <- .TypeModelGR(input$HydroModel)
-    PARAM <- c(input$X1, input$X2, input$X3, input$X4, input$X5, input$X6)[seq_len(TMGR$NbParam)]
-    
-    if (input$SnowModel == "CemaNeige") {
-      PARAM <- c(PARAM, input$C1, input$C2)
+
+
+
+
+  ## Models available considering the plot type
+  observeEvent(input$Dataset, {
+    if (is.null(.ShinyGR.args$ObsDF[[input$Dataset]])) {
+      datesDataset <- .ShinyGR.args$DatesR[1:2]
+    } else{
+      datesDataset <- .ShinyGR.args$ObsDF[[input$Dataset]]$DatesR[1:2]
     }
+    nbDaysDataset <- as.numeric(diff(datesDataset), units = "days")
+    if (nbDaysDataset %in% 29:31) {
+      updateSelectInput(session, inputId = "HydroModel", choice = c("GR2M"), selected = "GR2M")
+      updateSelectInput(session, inputId = "SnowModel" , choice = c("None"))
+    } else {
+      if (input$HydroModel == "GR2M") {
+      HydroModel <- "GR4J"
+      } else {
+        HydroModel <- input$HydroModel
+      }
+      updateSelectInput(session, inputId = "HydroModel", choice = c("GR4J", "GR5J", "GR6J"), selected = HydroModel)
+      updateSelectInput(session, inputId = "SnowModel" , choice = c("None", "CemaNeige")   , selected = input$SnowModel)
+    }
+  }, priority = -100)
+
+
+
+
+  ## --------------- Data preparation
+
+  getPrep <- reactive({
+
     if (input$Dataset == "Unnamed watershed") {
       ObsDF <- NULL
     } else {
@@ -37,71 +57,101 @@ shinyServer(function(input, output, session) {
     } else {
       isUngauged <- TRUE
     }
+    if (is.null(ObsDF)) {
+      datesDataset <- .ShinyGR.args$DatesR[1:2]
+    } else{
+      datesDataset <- .ShinyGR.args$ObsDF[[input$Dataset]]$DatesR[1:2]
+    }
+    nbDaysDataset <- as.numeric(diff(datesDataset), units = "days")
+    if (nbDaysDataset %in% 29:31) {
+      HydroModel <- "GR2M"
+    } else if (input$HydroModel == "GR2M") {
+      updateSelectInput(session, inputId = "HydroModel", choice = c("GR4J", "GR5J", "GR6J"), selected = input$HydroModel)
+      HydroModel <- "GR4J"
+    } else {
+      HydroModel <- input$HydroModel
+    }
+    TMGR  <- .TypeModelGR(HydroModel)
+    X2 <- ifelse(input$HydroModel == "GR2M", input$X2GR2M, input$X2)
+    PARAM <- c(input$X1, X2, input$X3, input$X4, input$X5, input$X6)[seq_len(TMGR$NbParam)]
+    if (input$SnowModel == "CemaNeige") {
+      PARAM <- c(PARAM, input$C1, input$C2)
+    }
     PREP <- PrepGR(ObsDF = ObsDF,
                    DatesR = .ShinyGR.args$DatesR,
                    Precip = .ShinyGR.args$Precip, PotEvap = .ShinyGR.args$PotEvap,
-                   Qobs = .ShinyGR.args$Qobs, TempMean = .ShinyGR.args$TempMean, 
+                   Qobs = .ShinyGR.args$Qobs, TempMean = .ShinyGR.args$TempMean,
                    ZInputs = .ShinyGR.args$ZInputs[[input$Dataset]],
                    HypsoData = .ShinyGR.args$HypsoData[[input$Dataset]],
                    NLayers = .ShinyGR.args$NLayers[[input$Dataset]],
-                   HydroModel = input$HydroModel,
+                   HydroModel = HydroModel,
                    CemaNeige = input$SnowModel == "CemaNeige")
-    
-    ## old value: bad time zone management 
-    #WUPPER <- c(PREP$InputsModel$DatesR[1L], input$Period[1]-.TypeModelGR(PREP)$TimeLag)
+
+    ## old value: bad time zone management
+    #WUPPER <- c(PREP$InputsModel$DatesR[1L], input$Period[1L]-.TypeModelGR(PREP)$TimeLag)
     ## patch from Juan Camilo Peña <juancamilopec@gmail.com>
-    #WUPPER <- c(format(PREP$InputsModel$DatesR[1L], format = "%Y-%m-%d", tz = "UTC"), format(input$Period[1]-.TypeModelGR(PREP)$TimeLag, format = "%Y-%m-%d", tz = "UTC"))
+    #WUPPER <- c(format(PREP$InputsModel$DatesR[1L], format = "%Y-%m-%d", tz = "UTC"), format(input$Period[1L]-.TypeModelGR(PREP)$TimeLag, format = "%Y-%m-%d", tz = "UTC"))
     ## new value
-    WUPPER <- as.POSIXlt(c(as.character(PREP$InputsModel$DatesR[1L]), as.character(input$Period[1]-.TypeModelGR(PREP)$TimeLag)), tz = "UTC")
-    if (WUPPER[2] < WUPPER[1]) {
-      WUPPER[2] <- WUPPER[1]
+    WUPPER <- as.POSIXlt(c(as.character(PREP$InputsModel$DatesR[1L]), as.character(input$Period[1L]-.TypeModelGR(PREP)$TimeLag)), tz = "UTC")
+    if (HydroModel == "GR2M") {
+      WUPPER <- trunc(WUPPER, units = "months")
+    } else {
+      WUPPER <- trunc(WUPPER, units = "days")
     }
-    
+    if (WUPPER[2L] < WUPPER[1L]) {
+      WUPPER[2L] <- WUPPER[1L]
+    }
+
     ## Enable or disable automatic calibration (if there is Qobs or not)
-    isQobs <- !all(is.na(PREP$Qobs[PREP$InputsModel$Dates >= input$Period[1] & PREP$InputsModel$Dates <= input$Period[2]]))
+    isQobs <- !all(is.na(PREP$Qobs[PREP$InputsModel$Dates >= input$Period[1L] & PREP$InputsModel$Dates <= input$Period[2L]]))
     # if ( isQobs | input$Period[1L] != input$Period[2L]) {
     #   shinyjs::enable("CalButton")
     # }
     if (!isQobs | input$Period[1L] == input$Period[2L]) {
       shinyjs::disable("CalButton")
     }
-    
+
     return(list(TMGR = TMGR, PREP = PREP, WUPPER = WUPPER, isUngauged = isUngauged))
-    
+
   })
-  
-  
-  
+
+
+
   ## --------------- Calibration
-  
+
   ## If the user calibrate the model
   CAL_click <- reactiveValues(valueButton = 0)
-  
-  
+
+
   ## Automatic calibration
   observeEvent(input$CalButton, {
 
     ## Desable all inputs during automatic calibration
     lapply(getInputs(), shinyjs::disable)
     shinyjs::disable("CalButton")
-    
+
     ## Model calibration
     CAL_opt <- list(Crit    = gsub(" .*", "", input$TypeCrit),
                     Transfo = gsub("1", "inv", gsub("(\\D{3} \\[)(\\w{0,4})(\\W*Q\\W*\\])", "\\2", input$TypeCrit)))
     CAL     <- CalGR(PrepGR = getPrep()$PREP, CalCrit = CAL_opt$Crit, transfo = CAL_opt$Transfo,
                      WupPer = substr(getPrep()$WUPPER, 1, 10),
-                     CalPer = c(substr(input$Period[1], 1, 10), substr(input$Period[2], 1, 10)),
+                     CalPer = c(substr(input$Period[1L], 1, 10), substr(input$Period[2L], 1, 10)),
                      verbose = FALSE)
     PARAM   <- CAL$OutputsCalib$ParamFinalR
-    
+
     updateSliderInput(session, inputId = "X1", value = PARAM[1L])
-    updateSliderInput(session, inputId = "X2", value = PARAM[2L])
-    updateSliderInput(session, inputId = "X3", value = PARAM[3L])
-    updateSliderInput(session, inputId = "X4", value = PARAM[4L])
-    if (getPrep()$TMGR$NbParam >= 5) {
+    if (input$HydroModel == "GR2M") {
+      updateSliderInput(session, inputId = "X2GR2M", value = PARAM[2L])
+    }
+    if (input$HydroModel %in% c("GR4J", "GR5J", "GR6J")) {
+      updateSliderInput(session, inputId = "X2", value = PARAM[2L])
+      updateSliderInput(session, inputId = "X3", value = PARAM[3L])
+      updateSliderInput(session, inputId = "X4", value = PARAM[4L])
+    }
+    if (input$HydroModel %in% c("GR5J", "GR6J")) {
       updateSliderInput(session, inputId = "X5", value = PARAM[5L])
     }
-    if (getPrep()$TMGR$NbParam >= 6) {
+    if (input$HydroModel %in% "GR6J") {
       updateSliderInput(session, inputId = "X6", value = PARAM[6L])
     }
     if (input$SnowModel == "CemaNeige") {
@@ -118,10 +168,10 @@ shinyServer(function(input, output, session) {
     # }
   }, priority = +20)
 
-  
+
   ## Manual calibration
   observeEvent({input$Dataset ; input$HydroModel ; input$SnowModel ;
-    input$X1 ; input$X2 ; input$X3 ; input$X4 ; input$X5 ; input$X6 ; input$C1 ; input$C2 ; 
+    input$X1 ; input$X2 ; input$X2GR2M ; input$X3 ; input$X4 ; input$X5 ; input$X6 ; input$C1 ; input$C2 ;
     input$TypeCrit ; input$Period}, {
       CAL_click$valueButton <- CAL_click$valueButton - 1
       CAL_click$valueButton <- ifelse(CAL_click$valueButton < -1, -1, CAL_click$valueButton)
@@ -131,7 +181,7 @@ shinyServer(function(input, output, session) {
           shinyjs::enable("CalButton")
         }
       }
-      
+
       ## Enable all inputs except automatic calibration
       if (input$Period[1L] != input$Period[2L]) {
         lapply(getInputs(), shinyjs::enable)
@@ -140,7 +190,7 @@ shinyServer(function(input, output, session) {
           shinyjs::disable("TypeCrit")
         }
       }
-      
+
       ## Disable the use of CemaNeige is there is no temperature
       if (!is.null(.ShinyGR.args$ObsDF[[input$Dataset]])) {
         if (ncol(.ShinyGR.args$ObsDF[[input$Dataset]]) < 5) {
@@ -152,24 +202,30 @@ shinyServer(function(input, output, session) {
         }
       }
     })
-  
-  
-  
+
+
+
   ## --------------- Simulation
-  
+
   getSim <- reactive({
-    PARAM <- c(input$X1, input$X2, input$X3, input$X4, input$X5, input$X6)[seq_len(getPrep()$TMGR$NbParam)]
+    X2 <- ifelse(input$HydroModel == "GR2M", input$X2GR2M, input$X2)
+    PARAM <- c(input$X1, X2, input$X3, input$X4, input$X5, input$X6)[seq_len(getPrep()$TMGR$NbParam)]
     if (input$SnowModel == "CemaNeige") {
       PARAM <- c(PARAM, input$C1, input$C2)
     }
-    
+
     ## Simulated flows computation
     PREP <- getPrep()$PREP
+    if (input$HydroModel == "GR2M") {
+      SimPer <- trunc(input$Period, units = "months")
+    } else {
+      SimPer <- trunc(input$Period, units = "days")
+    }
     SIM <- SimGR(PrepGR = PREP, Param = PARAM,
                  WupPer = substr(getPrep()$WUPPER, 1, 10),
-                 SimPer = c(substr(input$Period[1], 1, 10), substr(input$Period[2], 1, 10)),
+                 SimPer = c(substr(SimPer[1L], 1, 10), substr(SimPer[2L], 1, 10)),
                  verbose = FALSE)
-    
+
     ## Criteria computation
     CRIT_opt <- list(Crit    = c(rep("ErrorCrit_NSE", 3), rep("ErrorCrit_KGE", 3)),
                      Transfo = rep(c("", "sqrt", "inv"), times = 2))
@@ -181,7 +237,7 @@ shinyServer(function(input, output, session) {
                                           Obs = replicate(n = nCRIT_opt, expr = SIM$Qobs, simplify = FALSE),
                                           VarObs = rep("Q", times = nCRIT_opt),
                                           transfo = CRIT_opt$Transfo,
-                                          Weights = NULL) 
+                                          Weights = NULL)
       iCRIT <- ErrorCrit(InputsCrit = InputsCritMulti, OutputsModel = SIM$OutputsModel, verbose = FALSE)
       CRIT <- do.call("rbind", lapply(iCRIT, function(i) data.frame(CritName = i$CritName, CritValue = i$CritValue)))
       CRIT <- rbind(CRIT, data.frame(CritName = "BIAS[Qsim/Qobs]",
@@ -200,27 +256,27 @@ shinyServer(function(input, output, session) {
                                                                            Crit      = CRIT,
                                                                            Dataset   = input$Dataset,
                                                                            Period    = SIM$PeriodModel$Run)
-    
-    .GlobalEnv$.ShinyGR.hist <- .GlobalEnv$.ShinyGR.hist[!(duplicated(sapply(.GlobalEnv$.ShinyGR.hist, function(x) sum(x$Param)), fromLast = TRUE) & 
-                                                             duplicated(sapply(.GlobalEnv$.ShinyGR.hist, function(x) x$TypeModel), fromLast = TRUE))]
+
+    .GlobalEnv$.ShinyGR.hist <- .GlobalEnv$.ShinyGR.hist[!(duplicated(sapply(.GlobalEnv$.ShinyGR.hist, function(x) sum(x$Param)), fromLast = TRUE) &
+                                                           duplicated(sapply(.GlobalEnv$.ShinyGR.hist, function(x) x$TypeModel), fromLast = TRUE))]
     .GlobalEnv$.ShinyGR.hist <- tail(.GlobalEnv$.ShinyGR.hist, n = 2)
 
-    if (length(.GlobalEnv$.ShinyGR.hist) == 2 &  is.null(names(.GlobalEnv$.ShinyGR.hist[[1]]))) {
-      .GlobalEnv$.ShinyGR.hist[[1]] <- NULL
+    if (length(.GlobalEnv$.ShinyGR.hist) == 2 &  is.null(names(.GlobalEnv$.ShinyGR.hist[[1L]]))) {
+      .GlobalEnv$.ShinyGR.hist[[1L]] <- NULL
     }
     if (length(.GlobalEnv$.ShinyGR.hist) == 2) {
-      if (.GlobalEnv$.ShinyGR.hist[[1]]$Dataset != .GlobalEnv$.ShinyGR.hist[[2]]$Dataset) { # reset Qold when new dataset
-        .GlobalEnv$.ShinyGR.hist[[1]] <- NULL
+      if (.GlobalEnv$.ShinyGR.hist[[1L]]$Dataset != .GlobalEnv$.ShinyGR.hist[[2L]]$Dataset) { # reset Qold when new dataset
+        .GlobalEnv$.ShinyGR.hist[[1L]] <- NULL
       }
     }
-    if (length(.GlobalEnv$.ShinyGR.hist) == 2 & !is.null(names(.GlobalEnv$.ShinyGR.hist[[1]]))) {
-      isEqualSumQsim   <- !identical(sum(.GlobalEnv$.ShinyGR.hist[[1]]$Crit$Value), sum(.GlobalEnv$.ShinyGR.hist[[2]]$Crit$Value))
-      isEqualTypeModel <- .GlobalEnv$.ShinyGR.hist[[1]]$TypeModel == .GlobalEnv$.ShinyGR.hist[[2]]$TypeModel
-      isEqualPeriod    <- !identical(.GlobalEnv$.ShinyGR.hist[[1]]$Period, .GlobalEnv$.ShinyGR.hist[[2]]$Period)
-      if (length(.GlobalEnv$.ShinyGR.hist[[1]]$Qsim) != length(.GlobalEnv$.ShinyGR.hist[[2]]$Qsim) |
+    if (length(.GlobalEnv$.ShinyGR.hist) == 2 & !is.null(names(.GlobalEnv$.ShinyGR.hist[[1L]]))) {
+      isEqualSumQsim   <- !identical(sum(.GlobalEnv$.ShinyGR.hist[[1L]]$Crit$Value), sum(.GlobalEnv$.ShinyGR.hist[[2L]]$Crit$Value))
+      isEqualTypeModel <- .GlobalEnv$.ShinyGR.hist[[1L]]$TypeModel == .GlobalEnv$.ShinyGR.hist[[2L]]$TypeModel
+      isEqualPeriod    <- !identical(.GlobalEnv$.ShinyGR.hist[[1L]]$Period, .GlobalEnv$.ShinyGR.hist[[2L]]$Period)
+      if (length(.GlobalEnv$.ShinyGR.hist[[1L]]$Qsim) != length(.GlobalEnv$.ShinyGR.hist[[2L]]$Qsim) |
           (isEqualSumQsim & isEqualTypeModel) | isEqualPeriod) {
         OBSold <- getPrep()$PREP
-        OBSold$TypeModel <- .GlobalEnv$.ShinyGR.hist[[1]]$TypeModel
+        OBSold$TypeModel <- .GlobalEnv$.ShinyGR.hist[[1L]]$TypeModel
         if (.TypeModelGR(OBSold)$CemaNeige & !.TypeModelGR(getPrep()$PREP)$CemaNeige | # present: No CemaNeige ; old: CemaNeige
             isEqualSumQsim & isEqualTypeModel) {
           if (input$Dataset == "Unnamed watershed") {
@@ -232,17 +288,22 @@ shinyServer(function(input, output, session) {
           OBSold <- PrepGR(ObsDF = ObsDF,
                            DatesR = .ShinyGR.args$DatesR,
                            Precip = .ShinyGR.args$Precip, PotEvap = .ShinyGR.args$PotEvap,
-                           Qobs = .ShinyGR.args$Qobs, TempMean = .ShinyGR.args$TempMean, 
+                           Qobs = .ShinyGR.args$Qobs, TempMean = .ShinyGR.args$TempMean,
                            ZInputs = .ShinyGR.args$ZInputs[[input$Dataset]],
                            HypsoData = .ShinyGR.args$HypsoData[[input$Dataset]],
                            NLayers = .ShinyGR.args$NLayers[[input$Dataset]],
                            HydroModel = input$HydroModel,
                            CemaNeige = input$SnowModel == "CemaNeige")
         }
+        if (input$HydroModel == "GR2M") {
+          SimPer <- trunc(input$Period, units = "months")
+        } else {
+          SimPer <- trunc(input$Period, units = "days")
+        }
         SIMold <- SimGR(PrepGR = OBSold,
-                        Param = .GlobalEnv$.ShinyGR.hist[[1]]$Param,
+                        Param = .GlobalEnv$.ShinyGR.hist[[1L]]$Param,
                         WupPer = substr(getPrep()$WUPPER, 1, 10),
-                        SimPer = substr(c(input$Period[1], input$Period[2]), 1, 10),
+                        SimPer = substr(c(SimPer[1L], SimPer[2L]), 1, 10),
                         verbose = FALSE)
         if (!getPrep()$isUngauged) {
           InputsCritMultiold <- CreateInputsCrit(FUN_CRIT = CRIT_opt$Crit,
@@ -251,7 +312,7 @@ shinyServer(function(input, output, session) {
                                                  Obs = replicate(n = nCRIT_opt, expr = SIMold$Qobs, simplify = FALSE),
                                                  VarObs = rep("Q", times = nCRIT_opt),
                                                  transfo = CRIT_opt$Transfo,
-                                                 Weights = NULL) 
+                                                 Weights = NULL)
           iCRITold <- ErrorCrit(InputsCrit = InputsCritMultiold, OutputsModel = SIMold$OutputsModel, verbose = FALSE)
           CRITold <- do.call("rbind", lapply(iCRITold, function(i) data.frame(CritName = i$CritName, CritValue = i$CritValue)))
           CRITold <- rbind(CRITold, data.frame(CritName = "BIAS[Qsim/Qobs]",
@@ -262,19 +323,19 @@ shinyServer(function(input, output, session) {
         } else {
           CRITold <- data.frame(Criterion = NA, Value = NA)
         }
-        .GlobalEnv$.ShinyGR.hist[[1]]$Crit <- CRITold
-        .GlobalEnv$.ShinyGR.hist[[1]]$Qsim <- SIMold$OutputsModel$Qsim
+        .GlobalEnv$.ShinyGR.hist[[1L]]$Crit <- CRITold
+        .GlobalEnv$.ShinyGR.hist[[1L]]$Qsim <- SIMold$OutputsModel$Qsim
       }
     }
-    
+
     return(list(PARAM = PARAM, SIM = SIM, SIMold = .GlobalEnv$.ShinyGR.hist, Crit = CRIT))
-    
+
   })
-  
-  
-  
+
+
+
   ## --------------- Plot
-  
+
   ## Choice
   getPlotType <- reactive({
     switch(input$PlotType,
@@ -283,8 +344,8 @@ shinyServer(function(input, output, session) {
            "State variables"   = 3,
            "Model diagram"     = 4)
   })
-  
-  
+
+
   ## Models available considering the plot type
   # observe({
   #   if (getPlotType() == 4) {
@@ -295,8 +356,8 @@ shinyServer(function(input, output, session) {
   #     updateSelectInput(session, inputId = "SnowModel" , choice = c("None", "CemaNeige")   , selected = input$SnowModel)
   #   }
   # })
-  
-  
+
+
   ## Plots available considering the model type
   # observe({
   #   if (input$HydroModel == "GR6J") {
@@ -309,15 +370,17 @@ shinyServer(function(input, output, session) {
   #                       selected = input$PlotType)
   #   }
   # })
-  
-  
+
+
   # Formated simulation results
   getData <- reactive({
     OutputsModel <- getSim()$SIM$OutputsModel
     IndPlot <- which(OutputsModel$DatesR >= input$Period[1L] & OutputsModel$DatesR <= input$Period[2L])
-    OutputsModel2 <- sapply(OutputsModel[seq_len(which(names(OutputsModel) == "Qsim"))], function(x) x[IndPlot])
+    namesOutputsModel2Selec <- names(OutputsModel)[seq_len(which(names(OutputsModel) == "Qsim"))]
+    OutputsModel2 <- sapply(OutputsModel[namesOutputsModel2Selec], function(x) x[IndPlot])
+    # OutputsModel2 <- OutputsModel[IndPlot] ### using S3method('[', OutputsModel)
     OutputsModel2 <- c(OutputsModel2, Qobs = list(getSim()$SIM$Qobs[IndPlot]))
-    
+
     if (length(OutputsModel2$DatesR) != 0) {
       data <- data.frame(DatesR  = OutputsModel2$DatesR,
                          precip. = OutputsModel2$Precip,
@@ -327,35 +390,39 @@ shinyServer(function(input, output, session) {
                          # exp.    = rep(NA, length(OutputsModel2$DatesR)),
                          # 'exp. (+)'= rep(NA, length(OutputsModel2$DatesR)),
                          # 'exp. (-)'= rep(NA, length(OutputsModel2$DatesR)),
-                         Qr      = OutputsModel2$QR,
-                         Qd      = OutputsModel2$QD,
+                         # Qr      = OutputsModel2$QR,
+                         # Qd      = OutputsModel2$QD,
                          Qsim    = OutputsModel2$Qsim,
                          Qobs    = OutputsModel2$Qobs,
                          QsimOld = rep(NA, length(OutputsModel2$DatesR)))
                          # QrExp   = rep(NA, length(OutputsModel2$DatesR)))
-      
+
       if (length(.GlobalEnv$.ShinyGR.hist) == 2 & input$ShowOldQsim == "Yes") {
-        data$QsimOld <- .GlobalEnv$.ShinyGR.hist[[1]]$Qsim[seq_len(nrow(data))]
+        data$QsimOld <- .GlobalEnv$.ShinyGR.hist[[1L]]$Qsim[seq_len(nrow(data))]
       }
       if (input$HydroModel == "GR6J") {
         data$'exp.'    <- NULL
         data$'exp. (+)'<- ifelse(OutputsModel2$Exp >= 0, OutputsModel2$Exp, NA)
         data$'exp. (-)'<- ifelse(OutputsModel2$Exp <  0, OutputsModel2$Exp, NA)
-        data$QrExp <- OutputsModel2$QRExp
+        data$'QrExp'   <- OutputsModel2$QRExp
       }
-      
+      if (input$HydroModel != "GR2M") {
+        data$'Qr'    <- OutputsModel2$QR
+        data$'Qd'    <- OutputsModel2$QD
+      }
+
       return(list(OutputsModel = OutputsModel2, Tab = data))
     }
   })
-  
 
-  ## Period slider responds to changes in the selected/zoomed dateWindow 
+
+  ## Period slider responds to changes in the selected/zoomed dateWindow
   observeEvent({input$dyPlotTSq_date_window ; input$dyPlotSVq_date_window ; input$dyPlotMDp_date_window}, {
     if (!is.null(input$dyPlotTSq_date_window)  && getPlotType() == 2) {
-      dateWindow <- as.POSIXct(strftime(input$dyPlotTSq_date_window , "%Y-%m-%d %H:%M:%S"), tz = "UTC")
+      dateWindow <- as.POSIXct(strftime(input$dyPlotTSq_date_window, "%Y-%m-%d %H:%M:%S"), tz = "UTC")
     }
     if (!is.null(input$dyPlotSVq_date_window) && getPlotType() == 3) {
-      dateWindow <- as.POSIXct(strftime(input$dyPlotSVq_date_window, "%Y-%m-%d %H:%M:%S"), tz = "UTC") 
+      dateWindow <- as.POSIXct(strftime(input$dyPlotSVq_date_window, "%Y-%m-%d %H:%M:%S"), tz = "UTC")
     }
     if (!is.null(input$dyPlotMDp_date_window) && getPlotType() == 4) {
       dateWindow <- as.POSIXct(strftime(input$dyPlotMDp_date_window, "%Y-%m-%d %H:%M:%S"), tz = "UTC")
@@ -371,15 +438,16 @@ shinyServer(function(input, output, session) {
       #   }
       # } else {
       if (dateWindow[1L] != dateWindow[2L]) {
+        timeFormat <- ifelse(input$HydroModel == "GR2M", "%Y-%m", "%F")
         updateSliderInput(session, inputId = "Period",
                           value = dateWindow, ### + .TypeModelGR(input$HydroModel)$TimeLag,
-                          timeFormat = "%F", timezone = "+0000")
+                          timeFormat = timeFormat, timezone = "+0000")
       }
       # }
     }
   }, priority = +100)
-  
-  
+
+
   # observe({
   #   if (getPlotType() == 1) {
   #     if (input$Period[1L] == input$Period[2L]) {
@@ -393,7 +461,7 @@ shinyServer(function(input, output, session) {
   #     }
   #   }
   # }, priority = +100)
-  
+
   ## Disable all inputs if there is no data
   observe({
     if (input$Period[1L] == input$Period[2L]) {
@@ -401,93 +469,105 @@ shinyServer(function(input, output, session) {
       lapply(inputs, shinyjs::disable)
     }
   }, priority = -100)
-  
-  
+
+
   ## Reset period slider responds to dygraphs to mouse clicks
   observeEvent({input$dyPlotTSq_click}, {
+    timeFormat <- ifelse(input$HydroModel == "GR2M", "%Y-%m", "%F")
     updateSliderInput(session, inputId = "Period",
                       value = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]], tz = "UTC"),
-                      timeFormat = "%F", timezone = "+0000")
+                      timeFormat = timeFormat, timezone = "+0000")
   }, priority = +10)
   observeEvent({input$dyPlotTSe_click}, {
+    timeFormat <- ifelse(input$HydroModel == "GR2M", "%Y-%m", "%F")
     updateSliderInput(session, inputId = "Period",
                       value = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]], tz = "UTC"),
-                      timeFormat = "%F", timezone = "+0000")
-  }, priority = +10)  
+                      timeFormat = timeFormat, timezone = "+0000")
+  }, priority = +10)
   observeEvent({input$dyPlotSVs_click}, {
+    timeFormat <- ifelse(input$HydroModel == "GR2M", "%Y-%m", "%F")
     updateSliderInput(session, inputId = "Period",
                       value = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]], tz = "UTC"),
-                      timeFormat = "%F", timezone = "+0000")
+                      timeFormat = timeFormat, timezone = "+0000")
   }, priority = +10)
   observeEvent({input$dyPlotSVq_click}, {
+    timeFormat <- ifelse(input$HydroModel == "GR2M", "%Y-%m", "%F")
     updateSliderInput(session, inputId = "Period",
                       value = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]], tz = "UTC"),
-                      timeFormat = "%F", timezone = "+0000")
+                      timeFormat = timeFormat, timezone = "+0000")
   }, priority = +10)
   observeEvent({input$dyPlotMDp_click}, {
+    timeFormat <- ifelse(input$HydroModel == "GR2M", "%Y-%m", "%F")
     updateSliderInput(session, inputId = "Period",
                       value = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]], tz = "UTC"),
-                      timeFormat = "%F", timezone = "+0000")
+                      timeFormat = timeFormat, timezone = "+0000")
   }, priority = +10)
   observeEvent({input$dyPlotMDe_click}, {
+    timeFormat <- ifelse(input$HydroModel == "GR2M", "%Y-%m", "%F")
     updateSliderInput(session, inputId = "Period",
                       value = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]], tz = "UTC"),
-                      timeFormat = "%F", timezone = "+0000")
+                      timeFormat = timeFormat, timezone = "+0000")
   }, priority = +10)
   observeEvent({input$dyPlotMDq_click}, {
+    timeFormat <- ifelse(input$HydroModel == "GR2M", "%Y-%m", "%F")
     updateSliderInput(session, inputId = "Period",
                       value = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]], tz = "UTC"),
-                      timeFormat = "%F", timezone = "+0000")
+                      timeFormat = timeFormat, timezone = "+0000")
   }, priority = +10)
-  
+
 
   ## Time window slider and dataset choosen on the Summary sheet panel
   observeEvent({input$Dataset}, {
+    timeFormat <- ifelse(input$HydroModel == "GR2M", "%Y-%m", "%F")
     updateSliderInput(session, inputId = "Period",
                       min = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]][1L], tz = "UTC"),
                       max = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]][2L], tz = "UTC"),
                       value = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]], tz = "UTC"),
-                      timeFormat = "%F", timezone = "+0000")
+                      timeFormat = timeFormat, timezone = "+0000")
     updateSelectInput(session, inputId = "DatasetSheet",
                       choices = .ShinyGR.args$NamesObsBV,
                       selected = input$Dataset)
   })
-  
-  
+
+
   ## Dataset choosen on the SInterface panel
   observeEvent({input$DatasetSheet}, {
     updateSelectInput(session, inputId = "Dataset",
                       choices = .ShinyGR.args$NamesObsBV,
                       selected = input$DatasetSheet)
   })
-  
-  
+
+
   ## Target date slider
   eventReactive({input$Dataset}, {
-    updateSliderInput(session, inputId = "Event", label = "Select the target date:",
+    EventId <- ifelse(input$HydroModel == "GR2M", "EventGR2M", "Event")
+    timeFormat <- ifelse(input$HydroModel == "GR2M", "%Y-%m", "%F")
+    updateSliderInput(session, inputId = EventId, label = "Select the target date:",
                       min = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]][1L], tz = "UTC"),## + .TypeModelGR(input$HydroModel)$TimeLag,
                       max = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]][2L], tz = "UTC"),
                       value = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]][1L], tz = "UTC"), + .TypeModelGR(input$HydroModel)$TimeLag,
-                      timeFormat = "%F", timezone = "+0000")
+                      timeFormat = timeFormat, timezone = "+0000")
   })
   observe({
-    updateSliderInput(session, inputId = "Event", label = "Select the target date:",
+    EventId <- ifelse(input$HydroModel == "GR2M", "EventGR2M", "Event")
+    timeFormat <- ifelse(input$HydroModel == "GR2M", "%Y-%m", "%F")
+    updateSliderInput(session, inputId = EventId, label = "Select the target date:",
                       min = input$Period[1L],## + .TypeModelGR(input$HydroModel)$TimeLag,
                       max = input$Period[2L],
-                      timeFormat = "%F", timezone = "+0000")
-  })
-  
-  
+                      timeFormat = timeFormat, timezone = "+0000")
+  }, priority = -100)
+
+
   ## Graphical parameters
   getPlotPar <- reactive({
-    if (.GlobalEnv$.ShinyGR.args$theme == "cyborg") {
+    if (.GlobalEnv$.ShinyGR.args$theme == "Cyborg") {
       col_bg <- "black"
       col_fg <- "white"
       par(bg = col_bg, fg = col_fg, col.axis = col_fg, col.lab = col_fg)
-    } else if (.GlobalEnv$.ShinyGR.args$theme == "flatly") {
-      col_bg <- "#2C3E50"
-      col_fg <- "black"
-      par(bg = col_bg, fg = col_fg, col.axis = col_bg, col.lab = col_bg)
+    # } else if (.GlobalEnv$.ShinyGR.args$theme == "Flatly") {
+    #   col_bg <- "#2C3E50"
+    #   col_fg <- "black"
+    #   par(bg = col_bg, fg = col_fg, col.axis = col_bg, col.lab = col_bg)
     } else {
       col_bg <- "white"
       col_fg <- "black"
@@ -495,8 +575,8 @@ shinyServer(function(input, output, session) {
     }
     return(list(col_bg = col_bg, col_fg = col_fg, par = par(no.readonly = TRUE)))
   })
-  
-  
+
+
   ## Plot model performance
   output$stPlotMP <- renderPlot({
     if (length(getSim()$SIM$OutputsModel$DatesR) < 2) {
@@ -511,15 +591,15 @@ shinyServer(function(input, output, session) {
     }
     plot(OutputsModel, Qobs = getSim()$SIM$Qobs, IndPeriod_Plot = IndPlot, cex.lab = 1.2, cex.axis = 1.4, cex.leg = 1.4)
   }, bg = "transparent")
-  
-  
+
+
   ## Plot flow time series
   output$dyPlotTSq <- dygraphs::renderDygraph({
     if (length(getSim()$SIM$OutputsModel$DatesR) < 2) {
       return(NULL)
     }
     if (length(getSim()$SIMold) == 2 & input$ShowOldQsim == "Yes") {
-      QsimOld <- getSim()$SIMold[[1]]$Qsim
+      QsimOld <- getSim()$SIMold[[1L]]$Qsim
     } else {
       QsimOld <- NULL
     }
@@ -543,7 +623,7 @@ shinyServer(function(input, output, session) {
       return(NULL)
     }
     if (length(getSim()$SIMold) == 2 & input$ShowOldQsim == "Yes") {
-      ErrorOld <- getSim()$SIMold[[1]]$Qsim - getSim()$SIM$Qobs
+      ErrorOld <- getSim()$SIMold[[1L]]$Qsim - getSim()$SIM$Qobs
     } else {
       ErrorOld <- NA
     }
@@ -553,7 +633,8 @@ shinyServer(function(input, output, session) {
                        naCol = NA)
     data.xts <- xts::xts(data[, -1L, drop = FALSE], order.by = data$DatesR, tz = "UTC")
     op <- getPlotPar()$par
-    dgTSe <- dygraphs::dygraph(data.xts, group = "ts", ylab = "flow error [mm/d]", main = "   ")
+    ylabDgTSe <- sprintf("flow error [mm/%s]", .TypeModelGR(input$HydroModel)$TimeUnit)
+    dgTSe <- dygraphs::dygraph(data.xts, group = "ts", ylab = ylabDgTSe, main = "   ")
     dgTSe <- dygraphs::dySeries(dgTSe, "Error"   , axis = "y" , color = "orangered")
     dgTSe <- dygraphs::dySeries(dgTSe, "ErrorOld", axis = "y" , color = "grey", strokePattern = "dashed")
     dgTSe <- dygraphs::dySeries(dgTSe, "naCol", axis = "y2", color = NA)
@@ -571,8 +652,8 @@ shinyServer(function(input, output, session) {
     dgTSe <- .DyShadingMulti(dygraph = dgTSe, color = rgb(0.5, 0.5, 0.5, alpha = 0.4),
                              ts = data$DatesR, idStart = idNA$start, IdStop = idNA$stop)
   })
-  
-  
+
+
   ## Plot state variables stores
   output$dyPlotSVs <- dygraphs::renderDygraph({
     if (length(getSim()$SIM$OutputsModel$DatesR) < 2) {
@@ -583,16 +664,12 @@ shinyServer(function(input, output, session) {
     #                    prod.  = OutputsModel$Prod,
     #                    rout.  = OutputsModel$Rout)
     data <- getData()$Tab[, c("DatesR", "prod.", "rout.", grep("^exp", colnames(getData()$Tab), value = TRUE))]
-    data.xts <- xts::xts(data[, -1L], order.by = data$DatesR, tzone = "UTC")
+    data.xts <- xts::xts(data[, -1L, drop = FALSE], order.by = data$DatesR, tzone = "UTC")
 
-    if (input$HydroModel == "GR6J") {
-      colors = c("#00008B", "#008B8B", "#10B510", "#FF0303")
-    } else {
-      colors = c("#00008B", "#008B8B")
-    }
-    
+    colors <- c("#00008B", "#008B8B", "#10B510", "#FF0303")[seq_len(ncol(data.xts))]
+
     op <- getPlotPar()$par
-    dgSVs <- dygraphs::dygraph(data.xts, group = "state_var", ylab = "store [mm]")
+    dgSVs <- dygraphs::dygraph(data.xts, group = "state_var", ylab = "store level [mm]")
     dgSVs <- dygraphs::dyOptions(dgSVs, colors = colors,
                                  fillGraph = TRUE, fillAlpha = 0.3,
                                  drawXAxis = FALSE, axisLineColor = op$fg, axisLabelColor = op$fg,
@@ -600,8 +677,8 @@ shinyServer(function(input, output, session) {
     dgSVs <- dygraphs::dyLegend(dgSVs, show = "always", width = 325)
     dgSVs <- dygraphs::dyCrosshair(dgSVs, direction = "vertical")
   })
-  
-  
+
+
   ## Plot state variables Q
   output$dyPlotSVq <- dygraphs::renderDygraph({
     if (length(getSim()$SIM$OutputsModel$DatesR) < 2) {
@@ -611,7 +688,7 @@ shinyServer(function(input, output, session) {
     # IndPlot <- which(OutputsModel$DatesR >= input$Period[1L] & OutputsModel$DatesR <= input$Period[2L])
     # OutputsModel2 <- sapply(OutputsModel[seq_len(which(names(OutputsModel) == "Qsim"))], function(x) x[IndPlot])
     # OutputsModel2 <- c(OutputsModel2, Qobs = list(getSim()$SIM$Qobs[IndPlot]))
-    # 
+    #
     # data <- data.frame(DatesR = OutputsModel2$DatesR,
     #                    Qr     = OutputsModel2$QR,
     #                    Qd     = OutputsModel2$QD,
@@ -622,15 +699,20 @@ shinyServer(function(input, output, session) {
     # } else {
     #   data$QrExp <- NA
     # }
-    
-    colSelec <- c("DatesR", "Qr", "Qd", grep("^QrExp", colnames(getData()$Tab), value = TRUE), "Qsim", "Qobs")
+
+    colSelec <- c("DatesR",
+                  grep("^Qr$"  , colnames(getData()$Tab), value = TRUE),
+                  grep("^Qd$"  , colnames(getData()$Tab), value = TRUE),
+                  grep("^QrExp", colnames(getData()$Tab), value = TRUE),
+                  "Qsim",
+                  "Qobs")
     if (length(getSim()$SIMold) == 2 & input$ShowOldQsim == "Yes") {
       colSelec <- c(colSelec, "QsimOld")
     }
-    
+
     data <- getData()$Tab[, colSelec]
     data.xts <- xts::xts(data[, -1L], order.by = data$DatesR, tzone = "UTC")
-    
+
     if (input$HydroModel == "GR6J") {
       names  <- c("Qd", "Qr", "QrExp")
       colors <- c("#FFD700", "#EE6300", "brown")
@@ -638,14 +720,16 @@ shinyServer(function(input, output, session) {
       names  <- c("Qd", "Qr")
       colors <- c("#FFD700", "#EE6300")
     }
-    
+
     op <- getPlotPar()$par
     dgSVq <- dygraphs::dygraph(data.xts, group = "state_var", ylab = paste0("flow [mm/", getPrep()$TMGR$TimeUnit, "]"), main = " ")
     dgSVq <- dygraphs::dyOptions(dgSVq, fillAlpha = 1.0,
                                  axisLineColor = op$fg, axisLabelColor = op$fg, titleHeight = 10,
                                  retainDateWindow = FALSE, useDataTimezone = TRUE)
-    dgSVq <- dygraphs::dyStackedRibbonGroup(dgSVq, name = names,
-                                            color = colors, strokeBorderColor = "black")
+    if (input$HydroModel != "GR2M") {
+      dgSVq <- dygraphs::dyStackedRibbonGroup(dgSVq, name = names,
+                                              color = colors, strokeBorderColor = "black")
+    }
     dgSVq <- dygraphs::dySeries(dgSVq, name = "Qobs", fillGraph = FALSE, drawPoints = TRUE, color = op$fg)
     dgSVq <- dygraphs::dySeries(dgSVq, name = "Qsim", fillGraph = FALSE, color = "orangered")
     if (length(getSim()$SIMold) == 2 & input$ShowOldQsim == "Yes") {
@@ -657,14 +741,14 @@ shinyServer(function(input, output, session) {
     dgSVq <- .DyShadingMulti(dygraph = dgSVq, color = rgb(0.5, 0.5, 0.5, alpha = 0.4),
                              ts = data$DatesR, idStart = idNA$start, IdStop = idNA$stop)
   })
-  
-  
+
+
   ## Plot model diagram precipitation
   output$dyPlotMDp <- dygraphs::renderDygraph({
     if (length(getSim()$SIM$OutputsModel$DatesR) < 2) {
       return(NULL)
     }
-    
+
     data <- data.frame(DatesR  = getSim()$SIM$OutputsModel$DatesR)
     if (grepl("CemaNeige", getSim()$SIM$TypeModel)) {
       data$Psol <- rowMeans(sapply(getSim()$SIM$OutputsModel$CemaNeigeLayers, function(x) x$Psol))
@@ -677,19 +761,27 @@ shinyServer(function(input, output, session) {
       col.Precip <- c("#428BCA")
     }
     data.xts <- xts::xts(data[, -1L, drop = FALSE], order.by = data$DatesR, tzone = "UTC")
-    
+    # dateEvent <- trunc(input$Event, units = ifelse(input$HydroModel == "GR2M", "months", "days"))
+    if (input$HydroModel == "GR2M") {
+      dateEvent <- trunc(input$EventGR2M, units = "months")
+    } else {
+      dateEvent <- trunc(input$Event, units = "days")
+    }
+
+    op <- getPlotPar()$par
     dgMDp <- dygraphs::dygraph(data.xts, group = "mod_diag", ylab = paste0("precip. [mm/", getPrep()$TMGR$TimeUnit, "]"))
     dgMDp <- dygraphs::dyOptions(dgMDp, colors = col.Precip, drawXAxis = FALSE,
+                                 axisLabelColor = op$fg,
                                  retainDateWindow = FALSE, useDataTimezone = TRUE)
     dgMDp <- dygraphs::dyStackedBarGroup(dgMDp, name = rev(grep("^P", colnames(data.xts), value = TRUE)),
                                          axis = "y", color = (col.Precip))
     dgMDp <- dygraphs::dyAxis(dgMDp, name = "y", valueRange = rev(Plim))
-    dgMDp <- dygraphs::dyEvent(dgMDp, input$Event, color = "orangered")
+    dgMDp <- dygraphs::dyEvent(dgMDp, dateEvent, color = "orangered")
     dgMDp <- dygraphs::dyLegend(dgMDp, show = "onmouseover", width = 225)
     dgMDp <- dygraphs::dyCrosshair(dgMDp, direction = "vertical")
   })
-  
-  
+
+
   ## Plot model diagram ETP
   output$dyPlotMDe <- dygraphs::renderDygraph({
     if (length(getSim()$SIM$OutputsModel$DatesR) < 2) {
@@ -699,26 +791,32 @@ shinyServer(function(input, output, session) {
     #                    PET    = getSim()$SIM$OutputsModel$PotEvap)
     data <- getData()$Tab[, c("DatesR", "PET")]
     data.xts <- xts::xts(data[, -1L, drop = FALSE], order.by = data$DatesR, tzone = "UTC")
-    
+    # dateEvent <- trunc(input$Event, units = ifelse(input$HydroModel == "GR2M", "months", "days"))
+    if (input$HydroModel == "GR2M") {
+      dateEvent <- trunc(input$EventGR2M, units = "months")
+    } else {
+      dateEvent <- trunc(input$Event, units = "days")
+    }
+
     op <- getPlotPar()$par
     dgMDe <- dygraphs::dygraph(data.xts, group = "mod_diag", ylab = paste0("PET [mm/", getPrep()$TMGR$TimeUnit, "]"), main = " ")
     dgMDe <- dygraphs::dyOptions(dgMDe, colors = "#A4C400", drawPoints = TRUE,
                                  strokeWidth = 0, pointSize = 2, drawXAxis = FALSE,
                                  axisLineColor = op$fg, axisLabelColor = op$fg, titleHeight = 10,
                                  retainDateWindow = FALSE, useDataTimezone = TRUE)
-    dgMDe <- dygraphs::dyEvent(dgMDe, input$Event, color = "orangered")
+    dgMDe <- dygraphs::dyEvent(dgMDe, dateEvent, color = "orangered")
     dgMDe <- dygraphs::dyLegend(dgMDe, show = "onmouseover", width = 225)
     dgMDe <- dygraphs::dyCrosshair(dgMDe, direction = "vertical")
   })
-  
-  
+
+
   ## Plot model diagram flow
   output$dyPlotMDq <- dygraphs::renderDygraph({
     if (length(getSim()$SIM$OutputsModel$DatesR) < 2) {
       return(NULL)
     }
     # if (length(getSim()$SIMold) == 2 & input$ShowOldQsim == "Yes") {
-    #   QsimOld <- getSim()$SIMold[[1]]$Qsim
+    #   QsimOld <- getSim()$SIMold[[1L]]$Qsim
     # } else {
     #   QsimOld <- NA
     # }
@@ -728,23 +826,30 @@ shinyServer(function(input, output, session) {
     # OutputsModel2 <- c(OutputsModel2, Qobs = list(getSim()$SIM$Qobs[IndPlot]))
     # OutputsModel2$Qsim <- ifelse(format(OutputsModel2$DatesR, "%Y%m%d") > format(input$Event, "%Y%m%d"), NA, OutputsModel2$Qsim)
     # OutputsModel2$Qold <- ifelse(format(OutputsModel2$DatesR, "%Y%m%d") > format(input$Event, "%Y%m%d"), NA, QsimOld[IndPlot])
-    # 
+    #
     # data <- data.frame(DatesR  = OutputsModel2$DatesR,
     #                    Qobs    = OutputsModel2$Qobs,
     #                    Qsim    = OutputsModel2$Qsim,
     #                    QsimOld = OutputsModel2$Qold)
+
+    # dateEvent <- trunc(input$Event, units = ifelse(input$HydroModel == "GR2M", "months", "days"))
+    if (input$HydroModel == "GR2M") {
+      dateEvent <- trunc(input$EventGR2M, units = "months")
+    } else {
+      dateEvent <- trunc(input$Event, units = "days")
+    }
     data <- getData()$Tab[, c("DatesR", "Qobs", "Qsim", "QsimOld")]
-    data$Qsim    <- ifelse(format(data$DatesR, "%Y%m%d") > format(input$Event, "%Y%m%d"), NA, data$Qsim)
-    data$QsimOld <- ifelse(format(data$DatesR, "%Y%m%d") > format(input$Event, "%Y%m%d"), NA, data$QsimOld)
+    data$Qsim    <- ifelse(format(data$DatesR, "%Y%m%d") > format(dateEvent, "%Y%m%d"), NA, data$Qsim)
+    data$QsimOld <- ifelse(format(data$DatesR, "%Y%m%d") > format(dateEvent, "%Y%m%d"), NA, data$QsimOld)
     data.xts <- xts::xts(data[, -1L, drop = FALSE], order.by = data$DatesR, tzone = "UTC")
-    
+
     op <- getPlotPar()$par
     dgMDq <- dygraphs::dygraph(data.xts, group = "mod_diag", ylab = paste0("flow [mm/", getPrep()$TMGR$TimeUnit, "]"), main = " ")
     dgMDq <- dygraphs::dyOptions(dgMDq, colors = c(op$fg, "orangered", "grey"), drawPoints = TRUE,
                                  axisLineColor = op$fg, axisLabelColor = op$fg, titleHeight = 10,
                                  retainDateWindow = FALSE, useDataTimezone = TRUE)
     dgMDq <- dygraphs::dySeries(dgMDq, name = "Qsim"   , drawPoints = FALSE)
-    dgMDq <- dygraphs::dyEvent(dgMDq, input$Event, color = "orangered")
+    dgMDq <- dygraphs::dyEvent(dgMDq, dateEvent, color = "orangered")
     dgMDq <- dygraphs::dySeries(dgMDq, name = "QsimOld", label = "Qold", drawPoints = FALSE, strokePattern = "dashed")
     dgMDq <- dygraphs::dyLegend(dgMDq, show = "onmouseover", width = 225)
     dgMDq <- dygraphs::dyCrosshair(dgMDq, direction = "vertical")
@@ -752,33 +857,42 @@ shinyServer(function(input, output, session) {
     dgMDq <- .DyShadingMulti(dygraph = dgMDq, color = rgb(0.5, 0.5, 0.5, alpha = 0.4),
                              ts = data$DatesR, idStart = idNA$start, IdStop = idNA$stop)
   })
-  
-  
+
+
   ## Plot model diagram chart
   output$stPlotMD <- renderPlot({
     if (length(getSim()$SIM$OutputsModel$DatesR) < 2) {
       return(NULL)
-    } 
+    }
     # OutputsModel <- getSim()$SIM$OutputsModel
     # IndPlot <- which(OutputsModel$DatesR >= input$Period[1L] & OutputsModel$DatesR <= input$Period[2L])
     # OutputsModel2 <- sapply(OutputsModel[seq_len(which(names(OutputsModel) == "Qsim"))], function(x) x[IndPlot])
     # OutputsModel2 <- c(OutputsModel2, Qobs = list(getSim()$SIM$Qobs[IndPlot]))
-    
+
     # OutputsModel2 <- getData()$OutputsModel
+    # dateEvent <- trunc(input$Event, units = ifelse(input$HydroModel == "GR2M", "months", "days"))
+    if (input$HydroModel == "GR2M") {
+      SimPer <- trunc(input$Period, units = "months")
+      dateEvent <- trunc(input$EventGR2M, units = "months")
+    } else {
+      SimPer <- trunc(input$Period, units = "days")
+      dateEvent <- trunc(input$Event, units = "days")
+    }
 
     par(getPlotPar()$par)
     try(.DiagramGR(OutputsModel = getData()$OutputsModel, Param = getSim()$PARAM,
-               SimPer = input$Period, EventDate = input$Event,
-               HydroModel = input$HydroModel, CemaNeige = input$SnowModel == "CemaNeige"),
+               SimPer = SimPer, EventDate = dateEvent,
+               HydroModel = input$HydroModel, CemaNeige = input$SnowModel == "CemaNeige",
+               Theme = .GlobalEnv$.ShinyGR.args$theme),
         silent = TRUE)
   }, bg = "transparent")
-  
-  
-  
-  
-  
+
+
+
+
+
   ## --------------- Criteria table
-  
+
   output$Criteria <- renderTable({
 
     ## Table created in order to choose order the criteria in the table output
@@ -786,9 +900,9 @@ shinyServer(function(input, output, session) {
                                               "KGE[Q]", "KGE[sqrt(Q)]", "KGE[1/Q]",
                                               "BIAS[Qsim/Qobs]"),
                                 ID        = 1:7, stringsAsFactors = FALSE)
-    
+
     if (length(getSim()$SIMold) == 2 & input$ShowOldQsim == "Yes") {
-      tabCrit_old <- getSim()$SIMold[[1]]$Crit$Value
+      tabCrit_old <- getSim()$SIMold[[1L]]$Crit$Value
       tabCrit_val <- cbind(getSim()$Crit, tabCrit_old)
       colnames(tabCrit_val) <- c(colnames(getSim()$Crit), "Qold")
       CellColHisto <- '<div style="color: #808080;"><span>9999</span></div>'
@@ -804,7 +918,7 @@ shinyServer(function(input, output, session) {
     tabCrit_out[tabCrit_out == " -99.99"] <- "< -99.99"
     colnames(tabCrit_out) <- gsub("Value", "Qsim", colnames(tabCrit_out))
     tabCrit_out$Criterion <- gsub("\\[", " [", tabCrit_out$Criterion)
-    
+
     ## Color the cell of the crietaia uses during the calibration
     if (CAL_click$valueButton >= 0) {
       CellColCalib <- '<div style="color: #FFFFFF; background-color: #A4C400; border: 5px solid #A4C400; position:relative; top: 0px; left: 5px; padding: 0px; margin: -5px -0px -8px -10px;">
@@ -815,14 +929,14 @@ shinyServer(function(input, output, session) {
     if (input$ShowOldQsim == "Yes" & length(getSim()$SIMold) > 1) {
       tabCrit_out[, "Qold"] <- apply(tabCrit_out[, "Qold", drop = FALSE], 1, function(x) gsub("9999", x, CellColHisto))
     }
-    
+
     return(tabCrit_out)
   }, align = c("r"), sanitize.text.function = function(x) x)
-  
-  
-  
+
+
+
   ## --------------- Download buttons
-  
+
   ## Download simulation table
   output$DownloadTab <- downloadHandler(
     filename = function() {
@@ -841,8 +955,8 @@ shinyServer(function(input, output, session) {
       write.table(TabSim, file = file, row.names = FALSE, sep = ";")
     }
   )
-  
-  
+
+
   ## Download plots
   output$DownloadPlot <- downloadHandler(
     filename = function() {
@@ -856,11 +970,20 @@ shinyServer(function(input, output, session) {
     content = function(file) {
       k <- 1.75
       ParamTitle <- c("X1", "X2"   , "X3", "X4", "X5", "X6")[seq_len(getPrep()$TMGR$NbParam)]
-      ParamUnits <- c("mm", "mm/%s", "mm", "%s",   "", "mm")[seq_len(getPrep()$TMGR$NbParam)]
+      ParamUnits <- c("mm", "mm/%s", "mm", "%s",   "", "mm")
+      if (input$HydroModel == "GR2M") {
+        ParamUnits[2L] <- "[-]%s"
+      }
+      ParamUnits <- ParamUnits[seq_len(getPrep()$TMGR$NbParam)]
       if (input$SnowModel == "CemaNeige") {
         ParamTitle <- c(ParamTitle, "C1", "C2")
         ParamUnits <- c(ParamUnits,  "", "mm/°C/%s")
       }
+      if (input$HydroModel == "GR2M") {
+        ParamUnits <- gsub("\\[-\\].*", "", ParamUnits)
+      }
+      ParamUnits <- sprintf("[%s]", ParamUnits)
+      ParamUnits <- gsub("\\[\\]", "[-]", ParamUnits)
       ParamTitle <- paste(ParamTitle, paste(getSim()$PARAM, sprintf(ParamUnits, getPrep()$TMGR$TimeUnit)), sep = " = ", collapse = ", ")
       ParamTitle <- gsub(" ,", ",", ParamTitle)
       PngTitle <- sprintf("%s - %s/%s\n%s\n%s", input$Dataset,
@@ -887,7 +1010,7 @@ shinyServer(function(input, output, session) {
         # IndPlot <- which(OutputsModel$DatesR >= input$Period[1L] & OutputsModel$DatesR <= input$Period[2L])
         # OutputsModel2 <- sapply(OutputsModel[seq_len(which(names(OutputsModel) == "Qsim"))], function(x) x[IndPlot])
         # OutputsModel2 <- c(OutputsModel2, Qobs = list(getSim()$SIM$Qobs[IndPlot]))
-        # 
+        #
         # data <- data.frame(DatesR = OutputsModel2$DatesR,
         #                    prod.  = OutputsModel2$Prod,
         #                    rout.  = OutputsModel2$Rout,
@@ -900,13 +1023,22 @@ shinyServer(function(input, output, session) {
         # } else {
         #   data$QrExp <- 0
         # }
-        data <- getData()$Tab[, c("DatesR", "prod.", "rout.", "Qr", "Qd", grep("^QrExp|exp", colnames(getData()$Tab), value = TRUE), "Qsim", "Qobs")]
+        colSelec <- c("DatesR",
+                      "prod.",
+                      "rout.",
+                      grep("^Qr$", colnames(getData()$Tab), value = TRUE),
+                      grep("^Qd$", colnames(getData()$Tab), value = TRUE),
+                      grep("^QrExp|exp", colnames(getData()$Tab), value = TRUE),
+                      "Qsim",
+                      "Qobs")
+        data <- getData()$Tab[, colSelec]
         par(mfrow = c(2, 1), oma = c(3, 0, 4, 0))
         par(mar = c(0.6, 4.0, 0.0, 2.0), xaxt = "n", cex = 0.8)
         if (input$HydroModel != "GR6J") {
-        plot(range(data$Dates), range(data$prod., data$rout.),
-             type = "n", xlab = "", ylab = "store [mm]")
-        } else {
+          plot(range(data$Dates), range(data$prod., data$rout., na.rm = TRUE),
+               type = "n", xlab = "", ylab = "store [mm]")
+        }
+        if (input$HydroModel == "GR6J") {
           data$exp. <- rowSums(data[, c("exp. (+)", "exp. (-)")], na.rm = TRUE)
           plot(range(data$Dates), range(data$prod., data$rout., data$rout., data$exp.),
                type = "n", xlab = "", ylab = "store [mm]")
@@ -923,21 +1055,28 @@ shinyServer(function(input, output, session) {
                  pt.bg = adjustcolor(c("darkblue", "cyan4"), alpha.f = 0.30),
                  col = c("darkblue", "cyan4"),
                  pch = 22)
-        } else {
+        }
+        if (input$HydroModel == "GR6J") {
           legend("topright", bty = "n", legend = c("prod.", "rout.", "exp. (+)", "exp. (-)"), cex = 0.8,
                  pt.bg = adjustcolor(c("darkblue", "cyan4", "#10B510", "#FF0303"), alpha.f = 0.30),
                  col = c("darkblue", "cyan4", "#10B510", "#FF0303"),
                  pch = 22)
         }
         par(mar = c(0.0, 4.0, 0.6, 2.0), xaxt = "s")
-        plot(data$DatesR, data$Qobs, type = "n", xlab = "", ylab = paste0("flow [mm/", getPrep()$TMGR$TimeUnit, "]"))
-        if (input$HydroModel != "GR6J") {
+        plot(data$DatesR, data$Qobs, type = "l", xlab = "", ylab = paste0("flow [mm/", getPrep()$TMGR$TimeUnit, "]"))
+        if (input$HydroModel != "GR6J" & input$HydroModel != "GR2M") {
           polygon(c(data$Dates, rev(range(data$Dates))), c(data$Qr+data$Qd, rep(0, 2)), col = "#FFD700", border = NA)
           polygon(c(data$Dates, rev(range(data$Dates))), c(data$Qr        , rep(0, 2)), col = "#EE6300", border = NA)
           legend("topright", bty = "n", legend = c("Qobs", "Qsim", "Qr", "Qd"), cex = 0.8,
                  col = c(par("fg"), "orangered", "#FFD700", "#EE6300"),
                  lwd = c(1, 1, NA, NA), pch = c(20, NA, 15, 15))
-        } else {
+        }
+        if (input$HydroModel == "GR2M") {
+          legend("topright", bty = "n", legend = c("Qobs", "Qsim"), cex = 0.8,
+                 col = c(par("fg"), "orangered"),
+                 lwd = c(1, 1), pch = c(20, NA))
+        }
+        if (input$HydroModel == "GR6J") {
           polygon(c(data$Dates, rev(range(data$Dates))), c(data$QrExp+data$Qr+data$Qd, rep(0, 2)), col = "#FFD700", border = NA)
           polygon(c(data$Dates, rev(range(data$Dates))), c(data$QrExp+data$Qr        , rep(0, 2)), col = "#EE6300", border = NA)
           polygon(c(data$Dates, rev(range(data$Dates))), c(data$QrExp                , rep(0, 2)), col = "brown"  , border = NA)
@@ -952,11 +1091,18 @@ shinyServer(function(input, output, session) {
         dev.off()
       }
       if (getPlotType() == 4) {
-        isCN <- input$SnowModel == "CemaNeige"
-        png(filename = file, width = 550*k, height = ifelse(isCN, 1000, 900)*k, pointsize = 12, res = 150)
+        if (input$HydroModel == "GR2M") {
+          dateEvent <- trunc(input$EventGR2M, units = "months")
+        } else {
+          dateEvent <- input$Event
+        }
+        isBigTitle <- any(input$SnowModel == "CemaNeige" | input$HydroModel %in% c("GR5J", "GR6J"))
+        plotHeight <- ifelse(isBigTitle, 1000, 900)*k
+        marginTop <- ifelse(isBigTitle, 7, 6)
+        png(filename = file, width = 550*k, height = plotHeight, pointsize = 12, res = 150)
         PngTitleMD <- sprintf("%s - %s/%s\n%s\n%s", input$Dataset,
                             input$HydroModel, ifelse(input$SnowModel == "CemaNeige", "CemaNeige", "No snow model"),
-                            input$Event,
+                            dateEvent,
                             ParamTitle)
         if (grepl("X5", PngTitleMD)) {
           PngTitleMD <- gsub(", X5", "\nX5", PngTitleMD)
@@ -964,20 +1110,20 @@ shinyServer(function(input, output, session) {
           PngTitleMD <- gsub(", C1", "\nC1", PngTitleMD)
         }
 
-        par(oma = c(0, 0, ifelse(isCN, 7, 6), 0))
+        par(oma = c(0, 0, marginTop, 0))
         .DiagramGR(OutputsModel = getData()$OutputsModel, Param = getSim()$PARAM,
-                   SimPer = input$Period, EventDate = input$Event,
+                   SimPer = input$Period, EventDate = dateEvent,
                    HydroModel = input$HydroModel, CemaNeige = input$SnowModel == "CemaNeige")
-        mtext(text = PngTitleMD, side = 3, outer = TRUE, cex = 1.2, line = ifelse(isCN, -0.15, 0.6))
+        mtext(text = PngTitleMD, side = 3, outer = TRUE, cex = 1.2, line = ifelse(isBigTitle, -0.15, 0.6))
         dev.off()
       }
     }
   )
-  
-  
-  
+
+
+
   ## --------------- Summary sheet
-  
+
   output$Sheet <- renderUI({
     codeRegex <- "\\D{1}\\d{7}"
     codeBH <- gsub(sprintf("(.*)(%s)(.*)", codeRegex), "\\2", input$DatasetSheet)
@@ -998,7 +1144,7 @@ shinyServer(function(input, output, session) {
       tags$p(tags$h1("Sorry, the summary sheet is not available for this dataset."),
              tags$br(),
              tags$h5("Only sheets of stations of the Banque Hydro French database are available."),
-             tags$h5("To show a summary sheet, the name of the chosen dataset has to contain the  Banque Hydro station code (8 characters : 1 letter and 7 numbers)."),
+             tags$h5("To display a summary sheet, the name of the chosen dataset has to contain the  Banque Hydro station code (8 characters : 1 letter and 7 numbers)."),
              txtFraDb, tags$a(href = urlFraDb, target = "_blank", rel = "noopener noreferrer", txtWebGR), ".",
              tags$br(),
              tags$br(),
@@ -1008,8 +1154,8 @@ shinyServer(function(input, output, session) {
                              title = paste("Visit", txtWebGR))))
     }
   })
-  
-  
-  
+
+
+
 })
 

@@ -4,10 +4,10 @@
 \alias{dyplot}
 
 
-\title{Interactive time series plotting of GR data}
+\title{Interactive plots for time series of PrepGR, CalGR and SimGR objects}
 
 
-\description{Interactive time series plotting of objects of classes \emph{PrepGR}, \emph{CalGR} or \emph{SimGR}.}
+\description{Interactive plots for time series of \emph{PrepGR}, \emph{CalGR} and \emph{SimGR} objects.}
 
 
 \usage{
@@ -21,35 +21,37 @@
 
 
 \arguments{
-  \item{x}{[object of class \emph{PrepGR}, \emph{CalGR} or \emph{SimGR}] see \code{\link{PrepGR}}, \code{\link{CalGR}}, \code{\link{SimGR}} for details}
+  \item{x}{[PrepGR], [CalGR] or [SimGR] containing the vector of dates (\emph{POSIXt}) and the time series of numeric values list perturbed inputs and DA model outputs (see \code{\link{PrepGR}}, \code{\link{CalGR}} and \code{\link{SimGR}})}
 
   \item{Qsup}{(optional) [numeric] additional time series of flows (at the same time step than argument \code{x}) [mm/time step]}
-  
-  \item{Qsup.name}{(optional) [character] a label for the legend of Qsup}
-  
-  \item{col.Precip}{(optional) [character] vector of 1 (total precip.) or 2 (liquid and solid precip. with CemaNeige) color codes or names for precipitation (these can be of the form \code{"#AABBCC"} or \code{"rgb(255, 100, 200)"} or \code{"yellow"}), see \code{\link{par}} and \code{\link{rgb}}}
 
-  \item{col.Q}{(optional) [character] vector of up to 3 color codes or names for observed (first value), simulated (second value, if provided) and additional (last value, if provided) flows, respectively (these can be of the form \code{"#AABBCC"} or \code{"rgb(255, 100, 200)"} or \code{"yellow"}), see \code{\link{par}} and \code{\link{rgb}}}  
-  
-  \item{col.na}{(optional) [character] color code or name for missing values(these can be of the form \code{"#AABBCC"} or \code{"rgb(255, 100, 200)"} or \code{"yellow"}), see \code{\link{par}} and \code{\link{rgb}}}
-  
+  \item{Qsup.name}{(optional) [character] a label for the legend of Qsup}
+
+  \item{col.Precip}{(optional) [character] vector of 1 (total precip.) or 2 (liquid and solid precip. with CemaNeige) color codes or names for precipitation (these can be of the form \code{"#AABBCC"} or \code{"rgb(255, 100, 200)"} or \code{"yellow"}), see \code{\link[graphics]{par}} and \code{\link[grDevices]{rgb}}}
+
+  \item{col.Q}{(optional) [character] vector of up to 3 color codes or names for observed (first value), simulated (second value, if provided) and additional (last value, if provided) flows, respectively (these can be of the form \code{"#AABBCC"} or \code{"rgb(255, 100, 200)"} or \code{"yellow"}), see \code{\link[graphics]{par}} and \code{\link[grDevices]{rgb}}}
+
+  \item{col.na}{(optional) [character] color code or name for missing values(these can be of the form \code{"#AABBCC"} or \code{"rgb(255, 100, 200)"} or \code{"yellow"}), see \code{\link[graphics]{par}} and \code{\link[grDevices]{rgb}}}
+
   \item{ylab}{(optional) [character] a label for the y-axis (flow and precipitation)}
-  
+
   \item{main}{(optional) [character] a main title for the plot}
-  
+
   \item{plot.na}{[boolean] indicating if the missing values are plotted on the x-axis}
-  
-  \item{RangeSelector}{(optional) [boolean] add a range selector to the bottom of the chart that allows users to pan and zoom to various date ranges (see \code{\link{dyRangeSelector}})}
-  
-  \item{Roller}{(optional) [numeric] number of time scale units (e.g. days, months, years) to average values over (see \code{\link{dyRoller}})}
-   
-  \item{LegendShow}{(optional) [character] when to display the legend. Specify \code{"always"} to always show the legend. Specify \code{"onmouseover"} to only display it when a user mouses over the chart. Specify \code{"follow"} (default) to have the legend show as overlay to the chart which follows the mouse. See \code{\link{dyLegend}}}   
-  
+
+  \item{RangeSelector}{(optional) [boolean] add a range selector to the bottom of the chart that allows users to pan and zoom to various date ranges (see \code{\link[dygraphs]{dyRangeSelector}})}
+
+  \item{Roller}{(optional) [numeric] number of time scale units (e.g. days, months, years) to average values over (see \code{\link[dygraphs]{dyRoller}})}
+
+  \item{LegendShow}{(optional) [character] when to display the legend. Specify \code{"always"} to always show the legend. Specify \code{"onmouseover"} to only display it when a user mouses over the chart. Specify \code{"follow"} (default) to have the legend show as overlay to the chart which follows the mouse. See \code{\link[dygraphs]{dyLegend}}}
+
   \item{...}{other parameters to be passed through to plotting functions}
 }
 
 
 \seealso{
+airGRteaching static \code{\link{plot}} functions
+\cr\cr
 \code{\link{PrepGR}}, \code{\link{CalGR}}, \code{\link{SimGR}}
 }
 

@@ -1,5 +1,5 @@
 
-# airGRteaching: Tools to Simplify the Use of the airGR Hydrological Package for Education (Including a Shiny Application
+# airGRteaching: Tools to Simplify the Use of the airGR Hydrological Package for Education (Including a Shiny Application)
 
 ## Overview
 
@@ -12,7 +12,7 @@ The package is mostly based on three families of functions:
 
 - the functions that allow to complete very simply a hydrological modelling exercise;
 - plotting functions to help students to explore observed data and to interpret the results of calibration and simulation of the GR models;
-- a function which runs a 'Shiny' graphical interface that allows for displaying in real-time model parameters impacts on hydrographs.
+- a function which runs a 'Shiny' graphical user interface that allows for displaying in real-time model parameters impacts on hydrographs.
 
 This package brings into R the hydrological modelling tools developed at INRAE-Antony ([Catchment Hydrology research group](https://webgr.inrae.fr/en/home/) of the HYCAR Research Unit, France).
 
@@ -26,7 +26,7 @@ install.packages("airGRteaching")
 This version of airGRteaching is designed to work with the package htmlwidgets >= 1.5.2.9000 (troubles with the package dygraphs using `dyplot()` and `ShinyGR()`)
 Install the latest version of 'htmlwidgets' from GitHub with the following command lines:
 
-``` {r eval=FALSE}
+``` r
 install.packages("remotes")
 remotes::install_github("ramnathv/htmlwidgets")
 ``` 
@@ -49,47 +49,49 @@ The devices allow to explore observed data and to interpret the results of calib
 
 
 
-## Shiny interface
+## Graphical user interface
 
-The package also provides the `ShinyGR()` function, which allows to run a Shiny interface. Thus its is possible to perform:
+The package also provides the `ShinyGR()` function, which allows to launch a Shiny interface. Thus its is possible to perform:
 
 - interactive flow simulations with parameters modifications;
 - automatic calibration;
 - display of internal variables evolution;
 - time period selection.
 
-A demonstrator of the graphical interface is available for free online on the [Sunshine website](https://sunshine.irstea.fr/).
+A demonstrator of the graphical interface is available for free online on the [Sunshine](https://sunshine.irstea.fr/) platform.
 
 
 ## Models
 
 The six hydrological models and the snow melt and accumulation model already available in airGR are available in airGRteaching.
-These models can be called within airGRteaching using the following model names: 
+These models can be called within airGRteaching using the following model names (&#42;: available in the Shiny interface): 
 
 - `GR4H`: four-parameter hourly lumped hydrological model (Mathevet, 2005)
 - `GR5H`: five-parameter hourly lumped hydrological model (Ficchi, 2017; Ficchi *et al.*, 2019)
 - `GR4J`&#42;: four-parameter daily lumped hydrological model (Perrin et al., 2003)
 - `GR5J`&#42;: five-parameter daily lumped hydrological model (Le Moine, 2008)
 - `GR6J`&#42;: six-parameter daily lumped hydrological model (Pushpalatha et al., 2011)
-- `GR2M`: two-parameter monthly lumped hydrological model (Mouelhi, 2003; Mouelhi et al., 2006a)
+- `GR2M`&#42;: two-parameter monthly lumped hydrological model (Mouelhi, 2003; Mouelhi et al., 2006a)
 - `GR1A`: one-parameter annual lumped hydrological model (Mouelhi, 2003; Mouelhi et al., 2006b)
 - `CemaNeige`: two-parameter degree-day snow melt and accumulation daily model (combined with GR4H, GR5H, GR4J, GR5J or GR6J) (Valéry et al., 2014)
-&#42;: available in the Shiny interface.
 
-For more information and to get started with the package, you can refer to the vignette (`vignette("get_started")`) and go on the [airGRteaching website](https://hydrogr.github.io/airGRteaching/).
+
+For more information and to get started with the package, you can refer to the vignette (`vignette("get_started", package = "airGRteaching")`) and go on the [airGRteaching website](https://hydrogr.github.io/airGRteaching/).
 
 
 ## References
 
-- Coron, L., G. Thirel, O. Delaigue, C. Perrin and V. Andréassian (2017), The Suite of Lumped GR Hydrological Models in an R Package. Environmental Modelling and Software, 94, 166–171. doi: 10.1016/j.envsoft.2017.05.002.
+- Coron, L., G. Thirel, O. Delaigue, C. Perrin and V. Andréassian (2017). The Suite of Lumped GR Hydrological Models in an R Package. Environmental Modelling and Software, 94, 166–171, doi: [10.1016/j.envsoft.2017.05.002](https://www.doi.org/10.1016/j.envsoft.2017.05.002).
 - Ficchi, A. (2017). An adaptive hydrological model for multiple time-steps: Diagnostics and improvements based on fluxes consistency. PhD thesis, Irstea (Antony), GRNE (Paris), France.
-- Ficchi, A., C. Perrin and V. Andréassian (2019). Hydrological modelling at multiple sub-daily time steps: model improvement via flux-matching. Journal of Hydrology, 575, 1308-1327. doi: 10.1016/j.jhydrol.2019.05.084.
-- Le Moine, N. (2008), Le bassin versant de surface vu par le souterrain : une voie d'amélioration des performances et du réalisme des modèles pluie-débit ?, PhD thesis (in French), UPMC - Cemagref Antony, Paris, France, 324 pp.
-- Mathevet, T. (2005), Quels modèles pluie-débit globaux pour le pas de temps horaire ? Développement empirique et comparaison de modèles sur un large échantillon de bassins versants, PhD thesis (in French), ENGREF - Cemagref Antony, Paris, France, 463 pp.
-- Mouelhi S. (2003), Vers une chaîne cohérente de modèles pluie-débit conceptuels globaux aux pas de temps pluriannuel, annuel, mensuel et journalier, PhD thesis (in French), ENGREF - Cemagref Antony, Paris, France, 323 pp.
-- Mouelhi, S., C. Michel, C. Perrin and V. Andréassian (2006a), Stepwise development of a two-parameter monthly water balance model, Journal of Hydrology, 318(1-4), 200-214, doi: 10.1016/j.jhydrol.2005.06.014.
-- Mouelhi, S., C. Michel, C. Perrin. & V. Andreassian (2006b), Linking stream flow to rainfall at the annual time step: the Manabe bucket model revisited, Journal of Hydrology, 328, 283-296, doi: 10.1016/j.jhydrol.2005.12.022.
-- Perrin, C., C. Michel and V. Andréassian (2003), Improvement of a parsimonious model for streamflow simulation, Journal of Hydrology, 279(1-4), 275-289, doi: 10.1016/S0022-1694(03)00225-7.
-- Pushpalatha, R., C. Perrin, N. Le Moine, T. Mathevet and V. Andréassian (2011), A downward structural sensitivity analysis of hydrological models to improve low-flow simulation, Journal of Hydrology, 411(1-2), 66-76, doi: 10.1016/j.jhydrol.2011.09.034.
-- Valéry, A., V. Andréassian and C. Perrin (2014), "As simple as possible but not simpler": What is useful in a temperature-based snow-accounting routine? Part 2 - Sensitivity analysis of the Cemaneige snow accounting routine on 380 catchments, Journal of Hydrology, 517(0): 1176-1187, doi: 10.1016/j.jhydrol.2014.04.058.
+- Ficchi, A., C. Perrin and V. Andréassian (2019). Hydrological modelling at multiple sub-daily time steps: model improvement via flux-matching. Journal of Hydrology, 575, 1308-1327, doi: [10.1016/j.jhydrol.2019.05.084](https://www.doi.org/10.1016/j.jhydrol.2019.05.084).
+- Le Moine, N. (2008). Le bassin versant de surface vu par le souterrain : une voie d'amélioration des performances et du réalisme des modèles pluie-débit ?, PhD thesis (in French), UPMC - Cemagref Antony, Paris, France, 324 pp.
+- Mathevet, T. (2005). Quels modèles pluie-débit globaux pour le pas de temps horaire ? Développement empirique et comparaison de modèles sur un large échantillon de bassins versants, PhD thesis (in French), ENGREF - Cemagref Antony, Paris, France, 463 pp.
+- Mouelhi S. (2003). Vers une chaîne cohérente de modèles pluie-débit conceptuels globaux aux pas de temps pluriannuel, annuel, mensuel et journalier, PhD thesis (in French), ENGREF - Cemagref Antony, Paris, France, 323 pp.
+- Mouelhi, S., C. Michel, C. Perrin and V. Andréassian (2006a). Stepwise development of a two-parameter monthly water balance model, Journal of Hydrology, 318(1-4), 200-214, doi: [10.1016/j.jhydrol.2005.06.014](https://www.doi.org/10.1016/j.jhydrol.2005.06.014).
+- Mouelhi, S., C. Michel, C. Perrin. and V. Andreassian (2006b). Linking stream flow to rainfall at the annual time step: the Manabe bucket model revisited, Journal of Hydrology, 328, 283-296, doi: [10.1016/j.jhydrol.2005.12.022](https://www.doi.org/10.1016/j.jhydrol.2005.12.022).
+- Perrin, C., C. Michel and V. Andréassian (2003). Improvement of a parsimonious model for streamflow simulation, Journal of Hydrology, 279(1-4), 275-289, doi: [10.1016/S0022-1694(03)00225-7](https://www.doi.org/10.1016/S0022-1694(03)00225-7).
+- Pushpalatha, R., C. Perrin, N. Le Moine, T. Mathevet and V. Andréassian (2011). A downward structural sensitivity analysis of hydrological models to improve low-flow simulation, Journal of Hydrology, 411(1-2), 66-76, doi: [10.1016/j.jhydrol.2011.09.034](https://www.doi.org/10.1016/j.jhydrol.2011.09.034).
+- Valéry, A., V. Andréassian and C. Perrin (2014). "As simple as possible but not simpler": What is useful in a temperature-based snow-accounting routine? Part 2 - Sensitivity analysis of the Cemaneige snow accounting routine on 380 catchments, Journal of Hydrology, 517(0): 1176-1187, doi: [10.1016/j.jhydrol.2014.04.058](https://www.doi.org/10.1016/j.jhydrol.2014.04.058).
+
+
 

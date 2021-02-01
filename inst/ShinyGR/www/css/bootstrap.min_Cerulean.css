@@ -22,7 +22,7 @@ border-color: #219EE5;
 background: #219EE5;
 }
 
-/* slider GR parameter X2 */
+/* slider GR2M parameter X2 */
 .js-irs-1 .irs-bar {
 border-top-color: #219EE5;
 border-bottom-color: #219EE5;
@@ -34,7 +34,7 @@ border-color: #219EE5;
 background: #219EE5;
 }
 
-/* slider GR parameter X3 */
+/* slider GR parameter X2 */
  .js-irs-2 .irs-bar {
 border-top-color: #219EE5;
 border-bottom-color: #219EE5;
@@ -46,7 +46,7 @@ border-color: #219EE5;
 background: #219EE5;
 }
 
-/* slider GR parameter X4 */
+/* slider GR parameter X3 */
  .js-irs-3 .irs-bar {
 border-top-color: #219EE5;
 border-bottom-color: #219EE5;
@@ -58,7 +58,7 @@ border-color: #219EE5;
 background: #219EE5;
 }
 
-/* slider GR parameter X5 */
+/* slider GR parameter X4 */
  .js-irs-4 .irs-bar {
 border-top-color: #219EE5;
 border-bottom-color: #219EE5;
@@ -70,7 +70,7 @@ border-color: #219EE5;
 background: #219EE5;
 }
 
-/* slider GR parameter X6 */
+/* slider GR parameter X5 */
  .js-irs-5 .irs-bar {
 border-top-color: #219EE5;
 border-bottom-color: #219EE5;
@@ -82,19 +82,19 @@ border-color: #219EE5;
 background: #219EE5;
 }
 
-/* slider GR parameter C1 */
+/* slider GR parameter X6 */
  .js-irs-6 .irs-bar {
-border-top-color: #A4C400;
-border-bottom-color: #A4C400;
+border-top-color: #219EE5;
+border-bottom-color: #219EE5;
 }
 .js-irs-6 .irs-bar-edge {
-border-color: #A4C400;
+border-color: #219EE5;
 }
 .js-irs-6 .irs-single, .js-irs-6 .irs-bar-edge, .js-irs-6 .irs-bar {
-background: #A4C400;
+background: #219EE5;
 }
 
-/* slider GR parameter C21 */
+/* slider GR parameter C1 */
  .js-irs-7 .irs-bar {
 border-top-color: #A4C400;
 border-bottom-color: #A4C400;
@@ -106,20 +106,20 @@ border-color: #A4C400;
 background: #A4C400;
 }
 
-
-/* slider time window */
+/* slider GR parameter C2 */
  .js-irs-8 .irs-bar {
-border-top-color: #219EE5;
-border-bottom-color: #219EE5;
+border-top-color: #A4C400;
+border-bottom-color: #A4C400;
 }
 .js-irs-8 .irs-bar-edge {
-border-color: #219EE5;
+border-color: #A4C400;
 }
-.js-irs-8 .irs-single, .js-irs-8 .irs-from, .js-irs-8 .irs-to, .js-irs-8 .irs-bar-edge, .js-irs-8 .irs-bar {
-background: #219EE5;
+.js-irs-8 .irs-single, .js-irs-8 .irs-bar-edge, .js-irs-8 .irs-bar {
+background: #A4C400;
 }
 
-/* slider target date */
+
+/* slider time window */
  .js-irs-9 .irs-bar {
 border-top-color: #219EE5;
 border-bottom-color: #219EE5;
@@ -127,5 +127,30 @@ border-bottom-color: #219EE5;
 .js-irs-9 .irs-bar-edge {
 border-color: #219EE5;
 }
-.js-irs-9 .irs-single, .js-irs-9 .irs-bar-edge, .js-irs-9 .irs-bar {
+.js-irs-9 .irs-single, .js-irs-9 .irs-from, .js-irs-9 .irs-to, .js-irs-9 .irs-bar-edge, .js-irs-9 .irs-bar {
 background: #219EE5;
+}
+
+/* slider target date */
+ .js-irs-10 .irs-bar {
+border-top-color: #219EE5;
+border-bottom-color: #219EE5;
+}
+.js-irs-10 .irs-bar-edge {
+border-color: #219EE5;
+}
+.js-irs-10 .irs-single, .js-irs-10 .irs-bar-edge, .js-irs-10 .irs-bar {
+background: #219EE5;
+}
+
+/* slider GR2M target date */
+ .js-irs-11 .irs-bar {
+border-top-color: #219EE5;
+border-bottom-color: #219EE5;
+}
+.js-irs-11 .irs-bar-edge {
+border-color: #219EE5;
+}
+.js-irs-11 .irs-single, .js-irs-11 .irs-bar-edge, .js-irs-11 .irs-bar {
+background: #219EE5;
+}

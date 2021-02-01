@@ -50,7 +50,7 @@ Before running a model, `r airGRteaching` functions require data and options wit
 For this step, you just have to use the `PrepGR()` function. You have to define:
 
   * `ObsDF`: `data.frame` of hydrometeorological observations time series
-  * `HydroModel`: the name of the hydrological model you want to run (GR1A, GR2M, GR4J, GR5J, GR6J or GR4H)
+  * `HydroModel`: the name of the hydrological model you want to run (GR1A, GR2M, GR4J, GR5J, GR6J, GR4H or GR5H)
   * `CemaNeige`: if you want or not to use the snowmelt and accumulation model
 
 If you want to use CemaNeige, you also have to define:
@@ -164,21 +164,23 @@ dyplot(SIM, main = "Simulation")
 ```
 
 
-### *Shiny* interface
+### Graphical user interface
 
-The `r airGRteaching` package also provides the `ShinyGR()` function, which allows to run the *Shiny* interface that is proposed on this page.
+The `r airGRteaching` package also provides the `ShinyGR()` function, which allows to launch a graphical user interface using the *shiny* package.
 
-The `ShinyGR()` function just needs:
+The `ShinyGR()` function needs at least:
 
-  * `ObsDF`: a `data.frame` (or a `list` of `data.frame`)
-  * `SimPer`: a vector (or list of vectors) of 2 dates to define the simulation period(s)
+  * `ObsDF`: a (list of) `data.frame` (or independant vector instead, see `?ShinyGR`)
+  * `SimPer`: a (list of) vector(s) of 2 dates to define the simulation period(s)
 
   
 ```{r, eval=FALSE}
 ShinyGR(ObsDF = BasinObs, SimPer = c("1994-01-01", "1998-12-31"))
 ```
 
-Only daily models are currently available (GR4J, GR5J, GR6J + CemaNeige).
+Only monthly and daily models are currently available (GR2M, GR4J, GR5J, GR6J + CemaNeige).
+
+If you want to use CemaNeige, you also have to define the same arguments desribed above for the `PrepGR()` function.
 
 It is also possible to change the interface look; different themes are proposed (`theme` argument).
 <div><center><image src="https://hydrogr.github.io/airGRteaching/fig/airGRteaching_ShinyUi_theme_rstudio.jpg" width="30%" height="30%"> <image src="https://hydrogr.github.io/airGRteaching/fig/airGRteaching_ShinyUi_theme_cerulean.jpg" width="30%" height="30%"> <image src="https://hydrogr.github.io/airGRteaching/fig/airGRteaching_ShinyUi_theme_cyborg.jpg" width="30%" height="30%"></img></center></div>

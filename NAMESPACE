@@ -4,39 +4,30 @@
 #####################################
 ##            S3 methods           ##
 #####################################
-S3method("plot","PrepGR")
-S3method("plot","CalGR")
-S3method("plot","SimGR")
-S3method("dyplot","default")
-S3method("dyplot","PrepGR")
-S3method("dyplot","CalGR")
-S3method("dyplot","SimGR")
-S3method("as.data.frame", "airGRt")
+S3method(as.data.frame, airGRt)
+S3method(dyplot, default)
+S3method(dyplot, PrepGR)
+S3method(dyplot, CalGR)
+S3method(dyplot, SimGR)
+S3method(plot, PrepGR)
+S3method(plot, CalGR)
+S3method(plot, SimGR)
 
 
 
 #####################################
 ##               Export            ##
 #####################################
-export(CalGR)
 export(PrepGR)
+export(CalGR)
 export(SimGR)
-export(plot)
-export(plot.PrepGR)
-export(plot.CalGR)
-export(plot.SimGR)
 export(dyplot)
-export(dyplot.default)
-#export(dyplot.PrepGR)
-#export(dyplot.CalGR)
-#export(dyplot.SimGR)
 export(ShinyGR)
-export(as.data.frame.airGRt)
-exportPattern(".DiagramGR")
-exportPattern(".TypeModelGR")
-exportPattern(".StartStop")
-exportPattern(".DyShadingMulti")
-exportPattern(".CheckUrl")
+export(.CheckUrl)
+export(.DiagramGR)
+export(.DyShadingMulti)
+export(.StartStop)
+export(.TypeModelGR)
 
 
 

@@ -4,23 +4,60 @@
 
 
 
-### 5 Release Notes (2020-10-19)
+### 0.2.10.112 Release Notes (2021-01-23)
 
 
 #### New features
 
-- in the <code>ShinyGR()</code> interface, there is a new tab panel that shows a summary sheets of basin if the name of the dataset contains the code station (8 characters : 1 letter and 7 numbers) of the Banque Hydro French database (so it is available only for the dataset of this database) ([#10](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/10))
+- GUI, launched by the `ShinyGR()` function, can now run on monthly time series, using the GR2M model ([#14](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/14))
+
+
+#### Bug fixes
+
+- Fix `plot.PrepGR()` when all `Qobs` are missing. The function now displays an empty plot for the observed discharges. ([#35](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/35))
 
 
 #### User-visible changes
 
-- the <code>theme</code> agument of the <code>ShinyGR()</code> function now works even if a wrong character case
+- `theme` agument of the `ShinyGR()` function now uses partial matching ([#12](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/12))
+- `as.data.frame.airGRt()`, `plot`, `plot.PrepGR()`, `plot.CalGR()` and `plot.SimGR()` functions are no longer exported by the namespace ([#30](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/30))
+
+
+#### Version control and issue tracking
+
+- implement automatic tests in the package ([#29](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/29))
 
 
 #### CRAN-compatibility updates
 
-- when the package is loaded or when the <code>dyplot()</code> and the <code>ShinyGR()</code> function are used, a message warns the users if they use a version of 'htmlwidgets' < 1.5.2.9000. The latest version of this package, available on GitHub, avoids troubles with the use of dynamic graphics of the 'dygraphs' package (called by the <code>dyplot&#42;()</code> and the <code>ShinyGR()</code> functions) ([#5](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/5))
+- now depends on R >= 3.6.0 in order to be sure to have the packages 'shiny' >= 1.1.0 and 'htmlwidgets' >= 1.5.3 available ([#5](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/5))
+- now depends on 'airGR' >= 1.6.9.27. 'airGRteaching' uses the new 'Ps' output of the `RunModel_GR2M` function ([#51](https://gitlab.irstea.fr/HYCAR-Hydro/airgr/-/issues/51)) and the new `SeriesAggreg()` function ([#25](https://gitlab.irstea.fr/HYCAR-Hydro/airgr/-/issues/25), [#41](https://gitlab.irstea.fr/HYCAR-Hydro/airgr/-/issues/41), [#43](https://gitlab.irstea.fr/HYCAR-Hydro/airgr/-/issues/43)) from 'airGR'
+- now suggests 'htmlwidgets' >= 1.5.3, available on the CRAN. It avoids troubles with the use of dynamic graphics of the 'dygraphs' package (called by the `dyplot*()` and the `ShinyGR()` functions) ([#5](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/5))
 
+____________________________________________________________________________________
+
+
+### 0.2.9.25 Release Notes (2020-10-19)
+
+
+#### New features
+
+- GUI, launched by the `ShinyGR()` function, now displays a new tab panel that shows a summary sheets of basin if the name of the dataset contains the code station (8 characters : 1 letter and 7 numbers) of the Banque Hydro French database (so it is available only for the dataset of this database) ([#10](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/10))
+
+
+#### Version control and issue tracking
+
+- users can now track [changes](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching) and [issues](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/issues)
+
+
+#### User-visible changes
+
+- the `theme` agument of the `ShinyGR()` function now works even if a wrong character case is used
+
+
+#### CRAN-compatibility updates
+
+- when the package is loaded or when the `dyplot()` and the `ShinyGR()` function are used, a message warns the users if they use a version of 'htmlwidgets' < 1.5.2.9000. The latest version of this package, available on GitHub, avoids troubles with the use of dynamic graphics of the 'dygraphs' package (called by the `dyplot*()` and the `ShinyGR()` functions) ([#5](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/5))
 
 ____________________________________________________________________________________
 
@@ -30,43 +67,35 @@ ________________________________________________________________________________
 
 #### New features
 
-- added <code>as.data.frame.airGRt()</code> method in order to create a <code>data.frame</code> from outputs of <code>PrepGR()</code>, <code>CalGR()</code> and <code>SimGR()</code> functions. This <code>data.frame</code> always presents the same structure and contains observed flow, simulated flow, simulated solid precipitation fraction, etc. When it does not make sense, the concerned column is assigned with <code>NA</code> values (e.g. Qsim with the <code>PrepGR()</code> function)
-
-- a digital object identifier (DOI) now allows to identify the manual of the 'airGRteaching' package. When you use airGRteaching in your work, please always cite both the article and the manual. The last one allows to know the version of the package that is used in order to enhance reproducible research. The references can be displayed with the <code>citation("airGRteaching")</code> command
-
-- two themes of alternative stylesheet are available (<code>"Inrae"</code> and <code>"Saclay"</code>)
+- added `as.data.frame.airGRt()` method in order to create a `data.frame` from outputs of `PrepGR()`, `CalGR()` and `SimGR()` functions. This `data.frame` always presents the same structure and contains observed flow, simulated flow, simulated solid precipitation fraction, etc. When it does not make sense, the concerned column is assigned with `NA` values (e.g. Qsim with the `PrepGR()` function)
+- a digital object identifier (DOI) now allows to identify the manual of the 'airGRteaching' package. When you use airGRteaching in your work, please always cite both the article and the manual. The last one allows to know the version of the package that is used in order to enhance reproducible research. The references can be displayed with the `citation("airGRteaching")` command
+- two themes of alternative stylesheet are available (`"Inrae"` and `"Saclay"`) using the `theme` agument of the `ShinyGR()` function
 
 
 #### Deprecated and defunct
 
-- The <code>CalGR</code> argument is now deprecated in the <code>SimGR()</code> function. It has been replaced by the use of the <code>Param</code> argument which can be set by an object of the class <code>CalGR</code> or by a vector of parameters
+- `CalGR` argument is now deprecated in the `SimGR()` function. It has been replaced by the use of the `Param` argument which can be set by an object of the class `CalGR` or by a vector of parameters
 
 
 #### Bug fixes
 
-- <code>ShinyGR()</code> now runs when independent arguments (<code>DatesR</code>, <code>Precip</code>, etc.) are used instead of the <code>ObsDF</code> argument
+- `ShinyGR()` now runs when independent arguments (`DatesR`, `Precip`, etc.) are used instead of the `ObsDF` argument
 
 
 #### User-visible changes
 
-- it is now possible to use the GR4H and GR5H hourly models with or without CemaNeige. For that, in the <code>PrepGR()</code>, the <code>HydroModel</code> argument could be set to <code>"GR4H"</code> or <code>"GR5H"</code>. In the GUI, launched by <code>ShinyGR()</code> function, nothing changed, only the daily models are available. So, now airGRteaching depends on the version of airGR >= 1.4.3.52) ([#7](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/7))
-
-- it is now possible to run the <code>PrepGR()</code> function when discharge is not provided in <code>Qobs</code>. If it is the case, the <code>CalGR()</code> function will return an error message because it is not possible to calibrate the model. The <code>SimGR()</code> function will return a warning message because it is not possible to compute any efficiency criterion
-
-- it is now possible to run the <code>ShinyGR()</code> function when discharge is not provided in <code>Qobs</code>
-
-- when observed discharge is provided in <code>ShinyGR()</code>, the first plotting panel now draws the flow error time series ([#4](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/4))
-
-- the <code>plot()</code> function is now exported
-
-- the <code>dyplot.PrepGR()</code>, <code>dyplot.CalGR()</code> and <code>dyplot.SimGR()</code> functions are no longer exported
-
-- there is now only one help page for all <code>plot.&#42;()</code> functions (use <code>?plot</code> to call it)
+- it is now possible to use the GR4H and GR5H hourly models with or without CemaNeige. For that, in the `PrepGR()`, the `HydroModel` argument could be set to `"GR4H"` or `"GR5H"`. In the GUI, launched by `ShinyGR()` function, nothing changed, only the daily models are available. So, now airGRteaching depends on the version of 'airGR' >= 1.4.3.52) ([#7](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/7))
+- it is now possible to run the `PrepGR()` function when discharge is not provided in `Qobs`. If it is the case, the `CalGR()` function will return an error message because it is not possible to calibrate the model. The `SimGR()` function will return a warning message because it is not possible to compute any efficiency criterion
+- it is now possible to run the `ShinyGR()` function when discharge is not provided in `Qobs`
+- when observed discharge is provided in `ShinyGR()`, the first plotting panel now draws the flow error time series ([#4](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/4))
+- `plot()` function is now exported
+- `dyplot.PrepGR()`, `dyplot.CalGR()` and `dyplot.SimGR()` functions are no longer exported
+- there is now only one help page for all `plot.*()` functions (use `?plot` to call it)
 
 
 #### CRAN-compatibility updates
 
-- when the package is loaded, a message warns the users if they use a version of 'htmlwidgets' < 1.5.1.9000. The latest version of this package, available on GitHub, avoids troubles with the use of dynamic graphics of the 'dygraphs' package (called by the <code>dyplot&#42;()</code> and the <code>ShinyGR()</code> functions) ([#5](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/5))
+- when the package is loaded, a message warns the users if they use a version of 'htmlwidgets' < 1.5.1.9000. The latest version of this package, available on GitHub, avoids troubles with the use of dynamic graphics of the 'dygraphs' package (called by the `dyplot*()` and the `ShinyGR()` functions) ([#5](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/5))
 
 ____________________________________________________________________________________
 
@@ -75,12 +104,12 @@ ________________________________________________________________________________
 
 #### Bug fixes
 
-- <code>ShinyGR()</code> can export the csv table again. It was broken due to modifications to the version 1.2.13.16 of the 'airGR' package
+- `ShinyGR()` can export the csv table again. It was broken due to modifications to the version 1.2.13.16 of the 'airGR' package
 
 
 #### User-visible changes
 
-- it is now possible to export the diagram plot of the model from the <code>ShinyGR()</code> interface
+- it is now possible to export the diagram plot of the model from the `ShinyGR()` interface
 
 ____________________________________________________________________________________
 
@@ -90,18 +119,15 @@ ________________________________________________________________________________
 
 #### Bug fixes
 
-- <code>ShinyGR()</code> may now run for any timezone
-
-- <code>ShinyGR()</code> takes into account the fact that on 1 time step <code>airGR::ErrorCrit_KGE</code> do not return CritName (temporary patch)
-
-- <code>ShinyGR()</code> takes into account the fact that the previous simulation could have a missing value criterion
-
-- <code>ShinyGR()</code> takes into account the fact the prevuous Qsim is sometimes to long of one value (temporary patch)
+- `ShinyGR()` may now run for any timezone
+- `ShinyGR()` takes into account the fact that on 1 time step `airGR::ErrorCrit_KGE` do not return CritName (temporary patch)
+- `ShinyGR()` takes into account the fact that the previous simulation could have a missing value criterion
+- `ShinyGR()` takes into account the fact the prevuous Qsim is sometimes to long of one value (temporary patch)
 
 
 #### User-visible changes
 
-- The WarmUp element returned by <code>CalGR()</code> and <code>SimGR()</code> now presents a timezone defined as UTC
+- the WarmUp element returned by `CalGR()` and `SimGR()` now presents a timezone defined as UTC
 
 ____________________________________________________________________________________
 
@@ -109,20 +135,17 @@ ________________________________________________________________________________
 ### 0.2.6.14 Release Notes (2019-04-03)
 
 
-#### CRAN-compatibility updates
-
-- now depends on the latest version (1.2.13.16) of the 'airGR' package: <code>CalGR()</code>, <code>SimGR()</code> and <code>ShinyGR()</code> have been updated
-
-- the 'htmlwidget' package is no longer imported
-
-
 #### User-visible changes
 
-- the CemaNeige model is now allowed when the model diagram is drawn in <code>ShinyGR()</code>
+- the CemaNeige model is now allowed when the model diagram is drawn in `ShinyGR()`
+- `.DiagramGR()` and `.TypeModelGR()` are now private functions
+- time format of "Period" and "Event" sliders of the `ShinyGR()` function is now `"%Y-%m-%d"` with the latest versions of the 'shiny' package (like it was with th old versions)
 
-- .DiagramGR() and <code>.TypeModelGR()</code> are now private functions
 
-- time format of "Period" and "Event" sliders of the <code>ShinyGR()</code> function is now <code>"%Y-%m-%d"</code> with the latest versions of the 'shiny' package (like it was with th old versions)
+#### CRAN-compatibility updates
+
+- now depends on the latest version (1.2.13.16) of the 'airGR' package: `CalGR()`, `SimGR()` and `ShinyGR()` have been updated
+- the 'htmlwidgets' package is no longer imported
 
 ____________________________________________________________________________________
 
@@ -130,16 +153,15 @@ ________________________________________________________________________________
 ### 0.2.3.2 Release Notes (2018-08-08)
 
 
-#### CRAN-compatibility updates
-
-- now depends on the latest version (1.1.1.6) of the 'dygraphs' package from CRAN (embeded 'dygraphs' functions have been removed)
-
-
 #### User-visible changes
 
 - the article reference is updated
+- `.DiagramGR()` no longer returns errors when inputs are not yet available in `ShinyGR()`
 
-- .DiagramGR() no longer returns errors when inputs are not yet available in <code>ShinyGR()</code>
+
+#### CRAN-compatibility updates
+
+- now depends on the latest version (1.1.1.6) of the 'dygraphs' package from CRAN (embeded 'dygraphs' functions have been removed)
 
 ____________________________________________________________________________________
 
@@ -149,7 +171,7 @@ ________________________________________________________________________________
 
 #### Bug fixes
 
-- bug fixed in <code>ShinyGR()</code>, the criteria values are now right on Unix system
+- bug fixed in `ShinyGR()`, the criteria values are now right on Unix system
 
 
 #### User-visible changes
@@ -173,21 +195,19 @@ ________________________________________________________________________________
 
 
 #### Bug fixes
-- bug fixed in <code>ShinyGR()</code> when C1 (or C2) is modified after calibration; the calibration button is now reset
-
-- bug fixed in warm-up, calibration and simulation periods checks in <code>CalGR()</code> and <code>SimGR()</code> functions
+- bug fixed in `ShinyGR()` when C1 (or C2) is modified after calibration; the calibration button is now reset
+- bug fixed in warm-up, calibration and simulation periods checks in `CalGR()` and `SimGR()` functions
 
 
 #### Deprecated and defunct
 
-- <code>ObsBV</code> argument has been renamed <code>ObsDF</code> in <code>PrepGR()</code> and <code>ShinyGR()</code> functions
+- `ObsBV` argument has been renamed `ObsDF` in `PrepGR()` and `ShinyGR()` functions
 
 
 #### User-visible changes
 
-- update and homogenization of the unit of time abbreviation in <code>.TypeModelGR()</code> and <code>ShinyGR()</code>
-
-- graphical parameters recorded and executed when the <code>plot.PrepGR()</code>, <code>plot.CalGR()</code> and <code>plot.SimGR()</code> functions exit
+- update and homogenization of the unit of time abbreviation in `.TypeModelGR()` and `ShinyGR()`
+- graphical parameters recorded and executed when the `plot.PrepGR()`, `plot.CalGR()` and `plot.SimGR()` functions exit
 
 ____________________________________________________________________________________
 
@@ -197,7 +217,7 @@ ________________________________________________________________________________
 
 #### Deprecated and defunct
 
-- <code>ObsGR()</code> function (and relatives arguments in <code>CalGR()</code> and <code>SimGR()</code> has been renamed PrepGR()
+- `ObsGR()` function (and relatives arguments in `CalGR()` and `SimGR()` has been renamed PrepGR()
 
 ____________________________________________________________________________________
 
@@ -207,31 +227,22 @@ ________________________________________________________________________________
 
 #### Bug fixes
 
-- missing exchange added on exp. store when plotting GR6J model diagram in <code>ShinyGR()</code>
-
-- exp store now appears exported png file of state variables plot in <code>ShinyGR()</code> when GR6J is used
-
-- animate button fixed in <code>ShinyGR()</code>
-
-- bug fixed in <code>ShinyGR()</code> to show previous sim. when model or dataset changes
-
-- bug fixed in <code>ShinyGR()</code> to show previous sim. when time window changes but keeps the same length
-
-- bug fixed to disable calibration when there is no Qobs in <code>ShinyGR()</code>
+- missing exchange added on exp. store when plotting GR6J model diagram in `ShinyGR()`
+- exp store now appears exported png file of state variables plot in `ShinyGR()` when GR6J is used
+- animate button fixed in `ShinyGR()`
+- bug fixed in `ShinyGR()` to show previous sim. when model or dataset changes
+- bug fixed in `ShinyGR()` to show previous sim. when time window changes but keeps the same length
+- bug fixed to disable calibration when there is no Qobs in `ShinyGR()`
 
 
 
 #### User-visible changes
 
-- it is now possible to draw the model diagram in <code>ShinyGR()</code> using the GR6J model
-
-- exp. store now appears in state variables plot in <code>ShinyGR()</code> when GR6J is used
-
-- update and homogenization of the unit of time abbreviation in <code>.TypeModelGR()</code> and <code>ShinyGR()</code>
-
-- write "< - 99.99" in the criteria table of <code>ShinyGR()</code> when a criterion is very low
-
-- <code>ShinyGR()</code> now allows a list format for <code>ObsBV</code> data.frame and CemaNeige inputs
+- it is now possible to draw the model diagram in `ShinyGR()` using the GR6J model
+- exp. store now appears in state variables plot in `ShinyGR()` when GR6J is used
+- update and homogenization of the unit of time abbreviation in `.TypeModelGR()` and `ShinyGR()`
+- write "< - 99.99" in the criteria table of `ShinyGR()` when a criterion is very low
+- `ShinyGR()` now allows a list format for `ObsBV` data.frame and CemaNeige inputs
 
 ____________________________________________________________________________________
 
@@ -241,19 +252,16 @@ ________________________________________________________________________________
 
 #### Bug fixes
 
-- <code>ObsGR()</code> function now returns an error if the time zone is not defined as <code>"UTC"</code>
-
-- in <code>ShinyGR()</code> background color defined to black when the Flatly theme is used
-
-- bug fixed in <code>ShinyGR()</code> when inputs are defined in vectors (not in a data.frame)
-
-- Psol et Pliq bars are reversed in <code>dyplot.default()</code>
+- `ObsGR()` function now returns an error if the time zone is not defined as `"UTC"`
+- in `ShinyGR()` background color defined to black when the Flatly theme is used
+- bug fixed in `ShinyGR()` when inputs are defined in vectors (not in a data.frame)
+- Psol et Pliq bars are reversed in `dyplot.default()`
 
 
 
 #### User-visible changes
 
-- new reactive to prepare data for plotting in the <code>ShinyGR()</code> interface
+- new reactive to prepare data for plotting in the `ShinyGR()` interface
 
 ____________________________________________________________________________________
 
@@ -263,11 +271,9 @@ ________________________________________________________________________________
 
 #### User-visible changes
 
-- <code>SimGR()</code> now runs only once to compute all <code>ErrorCrit</code>
-
-- it is now possible to show the table of the last simulation criteria in the <code>ShinyGR()</code> interface
-
-- it is now possible to export state variable plot from the <code>ShinyGR()</code> interface
+- `SimGR()` now runs only once to compute all `ErrorCrit`
+- it is now possible to show the table of the last simulation criteria in the `ShinyGR()` interface
+- it is now possible to export state variable plot from the `ShinyGR()` interface
 
 ____________________________________________________________________________________
 
@@ -277,21 +283,19 @@ ________________________________________________________________________________
 
 #### New features
 
-- <code>dyplot()</code> now allows to draw an additional time series of flow
+- `dyplot()` now allows to draw an additional time series of flow
 
 
 #### Bug fixes
 
-- bug fixed when zooming after changing snow model on plot to see the last simulation in <code>ShinyGR()</code>
-
-- <code>dyplot()</code> now plots Pliq and Psol when CemaNeige is used (<code>dyStackedBarGroup()</code> instead of the plotter argument)
+- bug fixed when zooming after changing snow model on plot to see the last simulation in `ShinyGR()`
+- `dyplot()` now plots Pliq and Psol when CemaNeige is used (`dyStackedBarGroup()` instead of the plotter argument)
 
 
 #### User-visible changes
 
-- disable and enable buttons in <code>ShinyGR()</code> interface (using the 'shinyjs' package)
-
-- it is now possible to register the last simulation and draw it on Model diagram of <code>ShinyGR()</code>
+- disable and enable buttons in `ShinyGR()` interface (using the 'shinyjs' package)
+- it is now possible to register the last simulation and draw it on Model diagram of `ShinyGR()`
 
 ____________________________________________________________________________________
 
@@ -301,19 +305,18 @@ ________________________________________________________________________________
 
 #### New features
 
-- it is now possible to export some plots and tables from <code>ShinyGR()</code> interface
-
-- in <code>ShinyGR()</code>, <code>TypeModel</code> inputIds renamed into <code>HydroModel</code>
+- it is now possible to export some plots and tables from `ShinyGR()` interface
+- in `ShinyGR()`, `TypeModel` inputIds renamed into `HydroModel`
 
 
 #### Bug fixes
 
-- period slider is linked to the dygraphs selected period
+- period slider is linked to the 'dygraphs' selected period
 
 
 #### Deprecated and defunct
 
-- deprecated <code>Param</code> arguments in <code>ShinyGR()</code>
+- deprecated `Param` arguments in `ShinyGR()`
 
 
 #### User-visible changes
@@ -322,7 +325,8 @@ ________________________________________________________________________________
 
 
 #### CRAN-compatibility updates
-- <code>dyplot()</code> updated to be compatible with dygraphs >= 1.1.1.4 (available only on GitHub)
+
+- `dyplot()` updated to be compatible with 'dygraphs' >= 1.1.1.4 (available only on GitHub)
 
 ____________________________________________________________________________________
 
@@ -332,12 +336,12 @@ ________________________________________________________________________________
 
 #### New features
 
-- <code>ShinyGR()</code> now use dygraph devices (except for model perf.)
+- `ShinyGR()` now use 'dygraphs' devices (except for model perf.)
 
 
 #### User-visible changes
 
-- <code>dyplot.default()</code> now draws precipitation as a true bar plot and not a step plot
+- `dyplot.default()` now draws precipitation as a true bar plot and not a step plot
 
 ____________________________________________________________________________________
 
@@ -346,14 +350,13 @@ ________________________________________________________________________________
 
 #### New features
 
-- added GR5J in the Model diagram of <code>ShinyGR()</code>
-
+- added GR5J in the Model diagram of `ShinyGR()`
 - it is now possible to choose the objective function to calibrate the model
 
 
 #### Bug fixes
 
-- NA values can be drawn by <code>dyplot*()</code> functions
+- NA values can be drawn by `dyplot*()` functions
 
 ____________________________________________________________________________________
 
@@ -363,22 +366,22 @@ ________________________________________________________________________________
 
 #### New features
 
-- <code>shiny.SimGR()</code> now presents a theme argument that allows to change the stylesheet
+- `shiny.SimGR()` now presents a theme argument that allows to change the stylesheet
 
 
 #### Deprecated and defunct
 
-- the <code>shiny.SimGR()</code> function has been renamed into <code>ShinyGR()</code>
+- the `shiny.SimGR()` function has been renamed into `ShinyGR()`
 
 
 #### Bug fixes
 
-- bug fixed in <code>ShinyGR()</code> to plot state variables with GRJ
+- bug fixed in `ShinyGR()` to plot state variables with GRJ
 
 
 #### User-visible changes
 
-- the <code>shiny.SimGR()</code> function has been renamed into <code>ShinyGR()</code>
+- the `shiny.SimGR()` function has been renamed into `ShinyGR()`
 
 ____________________________________________________________________________________
 
@@ -388,9 +391,8 @@ ________________________________________________________________________________
 
 #### User-visible changes
 
-- in <code>shiny.SimGR()</code> if the model diagram is plotted, the animation can be run only from the Event slider and no more from the "Period" slider
-
-- <code>SimGR()</code> now also returns the <code>OptionsCrit</code> value
+- in `shiny.SimGR()` if the model diagram is plotted, the animation can be run only from the Event slider and no more from the "Period" slider
+- `SimGR()` now also returns the `OptionsCrit` value
 
 
 #### CRAN-compatibility updates
@@ -405,18 +407,16 @@ ________________________________________________________________________________
 
 #### New features
 
-- it is now possible to calibrate the model in <code>shiny.SimGR()</code> and to draw new plots
-
-- <code>dyplot.default()</code> gains a <code>Roller</code> period argument
+- it is now possible to calibrate the model in `shiny.SimGR()` and to draw new plots
+- `dyplot.default()` gains a `Roller` period argument
 
 
 #### Deprecated and defunct
 
-- <code>TypeModelGR()</code> is now a private function
+- `TypeModelGR()` is now a private function
 
 
 #### Bug fixes
 
-- bug fixed, it is now possible to run <code>CalGR()</code> with <code>verbose = FALSE</code>
-
-- bug fixed in <code>plot.CalGR()</code> (it does not use anymore a global variable)
+- bug fixed, it is now possible to run `CalGR()` with `verbose = FALSE`
+- bug fixed in `plot.CalGR()` (it does not use anymore a global variable)

@@ -1,12 +1,9 @@
 ---
-title: "Get Started with airGRteaching"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteIndexEntry{Get Started with airGRteaching}
-  %\VignetteEncoding{UTF-8}
+output: 
+  html_document: 
+    keep_md: yes
+    self_contained: yes
 ---
-
 
 
 ```{r include=FALSE}
@@ -16,6 +13,21 @@ airGR         <- sprintf(formatGR, "airGR")
 airGRteaching <- sprintf(formatGR, "airGRteaching")
 ```
 
+
+<table  width="100%">
+<tbody>
+  <tr>
+  <td width="125"><img src="fig/logo_airGRteaching_CMJN_square_0125x0121.png" width="90%" height="90%"></td>
+  <td><h4>
+<font color="#0BA6AA">
+To obtain help regarding the use of the <strong><font color="#62003C">airGRteaching</font></strong> or <strong><font color="#62003C">airGR</font></strong> packages, or to suggest modifications, send an email to <font color="#62003C"><strong>airGR@inrae.fr</strong></font>
+</font>
+</h4>
+  </tr>
+</tbody>
+</table>
+
+<br>
 
 
 
@@ -29,7 +41,7 @@ library(airGRteaching)
 ### How to run the `r airGR` hydrological models in  only three simple steps with `r airGRteaching`
 
 
-#### Preparation of input data
+#### Preparation of observed data for modelling
 
 A `data.frame` of daily hydrometeorological observations time series at the catchment scale is needed. The required fields are:
 
@@ -40,7 +52,7 @@ A `data.frame` of daily hydrometeorological observations time series at the catc
   * *Qmm* : outlet discharge [mm/time step]
   
 ```{r, echo=3, eval=TRUE}
-data(L0123001, package = "airGR")
+data(L0123001)
 BasinObs <- BasinObs[, c("DatesR", "P", "E", "Qmm", "T")]
 head(BasinObs)
 ```
@@ -89,10 +101,10 @@ CAL <- CalGR(PrepGR = PREP, CalCrit = "KGE2",
 
 #### Simulation step
 
-To run a model, please use the `SimGR()` function. The `PrepGR` and `WupPer` arguments of `SimGR()` are similar to the ones of the `CalGR()` function. Here, `EffCrit` is used to calculate the performance of the model over the simulation period `SimPer` and `Param` is the object returned by the `CalGR()` function.
+To run a model, please use the `SimGR()` function. The `PrepGR` and `WupPer` arguments of `SimGR()` are similar to the ones of the `CalGR()` function. Here, `EffCrit` is used to calculate the performance of the model over the simulation period `SimPer` and `CalGR` is the object returned by the `CalGR()` function.
 
 ```{r, warning=FALSE}
-SIM <- SimGR(PrepGR = PREP, Param = CAL, EffCrit = "KGE2",
+SIM <- SimGR(PrepGR = PREP, CalGR = CAL, EffCrit = "KGE2",
              WupPer = NULL, SimPer = c("1994-01-01", "1998-12-31"))
 ```
 
@@ -110,35 +122,47 @@ head(as.data.frame(SIM))
 ```
 
 
-### Pre-defined graphical plots
+### Formating outputs
+
+The call of the `as.data.frame()` function with `PrepGR`, `CalGR` or `SimGR` objects allows to coerce the outputs to a data frame.
+
+```{r, warning=FALSE}
+head(as.data.frame(PREP))
+head(as.data.frame(CAL))
+head(as.data.frame(SIM))
+```
+
+
+### Pre-defined  graphical plots
 
 #### Static plots
 
 The call of the `plot()` function with a `PrepGR` object draws the observed precipitation and discharge time series.
 
-```{r, fig.width=7*1.5, fig.height=4.25*1.5, dev.args=list(pointsize=14), echo=-1}
+```{r, echo=-1}
 par(cex.lab = 0.6, cex.axis = 0.6)
 plot(PREP, main = "Observation")
 ```
+
 
 By default (with the argument `which = "perf"`), the call of the `plot()` function with a `CalGR` object draws the classical `r airGR` plot diagnostics (observed and simulated time series together with diagnostic plot)
 
 ```{r, echo=TRUE, eval=FALSE}
 plot(CAL, which = "perf")
 ```
-```{r, fig.width=7*1.5, fig.height=4.25*1.5, dev.args=list(pointsize=14), echo=FALSE, warning=FALSE}
+```{r, echo=FALSE, warning=FALSE}
 plot(CAL, which = "perf", cex.lab = 0.7, cex.axis = 0.7)
 ```
 
 With the `CalGR` object, if the argument `which` is set to `"iter"`, the `plot()` function draws the evolution of the parameters and the values of the objective function during the second step of the calibration (steepest descent local search algorithm):
 
-```{r, fig.width=7*1.5, fig.height=3.25*1.5, dev.args=list(pointsize=14)}
+```{r, fig.width=7, fig.height=3.25, dev.args=list(pointsize=8)}
 plot(CAL, which = "iter")
 ```
 
 With the `CalGR` object, if the argument `which` is set to `"ts"`, the `plot()` function simply draws the time series of the observed precipitation, and the observed and simulated flows:
 
-```{r, fig.width=7*1.5, fig.height=4.25*1.5, dev.args=list(pointsize=14), echo=-1}
+```{r, echo=-1}
 par(cex.lab = 0.7, cex.axis = 0.7)
 plot(CAL, which = "ts", main = "Calibration")
 ```
@@ -147,6 +171,8 @@ The call of the `plot()` function with a `SimGR` object draws the classical `r a
 ```{r, eval=FALSE}
 plot(SIM)
 ```
+
+<br>
 
 #### Dynamic plots
 
@@ -162,6 +188,10 @@ With this function, users can easily explore the data time series and also explo
 ```{r, eval=FALSE}
 dyplot(SIM, main = "Simulation")
 ```
+
+<iframe src="fig/ShinyGR_dyplot.html", width = "670", height = "350"></iframe> 
+
+<br>
 
 
 ### Graphical user interface
@@ -183,7 +213,6 @@ Only monthly and daily models are currently available (GR2M, GR4J, GR5J, GR6J + 
 If you want to use CemaNeige, you also have to define the same arguments desribed above for the `PrepGR()` function.
 
 It is also possible to change the interface look; different themes are proposed (`theme` argument).
-<div><center><image src="https://hydrogr.github.io/airGRteaching/fig/airGRteaching_ShinyUi_theme_rstudio.jpg" width="30%" height="30%"> <image src="https://hydrogr.github.io/airGRteaching/fig/airGRteaching_ShinyUi_theme_cerulean.jpg" width="30%" height="30%"> <image src="https://hydrogr.github.io/airGRteaching/fig/airGRteaching_ShinyUi_theme_cyborg.jpg" width="30%" height="30%"></img></center></div>
-<div><center><image src="https://hydrogr.github.io/airGRteaching/fig/airGRteaching_ShinyUi_theme_flatly.jpg" width="30%" height="30%"> <image src="https://hydrogr.github.io/airGRteaching/fig/airGRteaching_ShinyUi_theme_united.jpg" width="30%" height="30%"> <image src="https://hydrogr.github.io/airGRteaching/fig/airGRteaching_ShinyUi_theme_yeti.jpg" width="30%" height="30%"></center></div>
-
+<div><center><image src="fig/airGRteaching_GUI_MD_theme-RStudio_550x300.png" width="24%" height="24%"> <image src="fig/airGRteaching_GUI_MD_theme-Cerulean_550x300.png" width="24%" height="24%"> <image src="fig/airGRteaching_GUI_MD_theme-Cyborg_544x300.png" width="24%" height="24%"> <image src="fig/airGRteaching_GUI_MD_theme-Flatly_550x300.png" width="24%" height="24%"></center></div>
+<div><center><image src="fig/airGRteaching_GUI_MD_theme-Inrae_550x300.png" width="24%" height="24%"> <image src="fig/airGRteaching_GUI_MD_theme-Saclay_550x300.png" width="24%" height="24%"> <image src="fig/airGRteaching_GUI_MD_theme-United_550x300.png" width="24%" height="24%"> <image src="fig/airGRteaching_GUI_MD_theme-Yeti_550x300.png" width="24%" height="24%"></center></div>
 

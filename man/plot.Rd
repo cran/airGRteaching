@@ -6,10 +6,12 @@
 \alias{plot.SimGR}
 
 
-\title{Time series plotting GR observation objects}
+\title{Static plots for time series of PrepGR, CalGR and SimGR objects}
 
 
-\description{Time series plotting GR observation objects}
+\description{
+Static plots for time series of \emph{PrepGR}, \emph{CalGR} and \emph{SimGR} objects.
+Also plot of the evolution  of parameters and objective function during the calibration step for CalGR object.}
 
 
 \usage{
@@ -17,43 +19,50 @@
      col.Precip = "royalblue", col.Q = "black", col.na = "grey",
      xlab = NULL, ylab = NULL, main = NULL,
      plot.na = TRUE, ...)
-  
+
 \method{plot}{CalGR}(x, xlab = NULL, ylab = NULL, main = NULL,
      which = c("perf", "iter", "ts"), ...)
 
 \method{plot}{SimGR}(x, ...)
-  
+
 }
 
 
 \arguments{
-  \item{x}{[object of class \emph{PrepGR}] see \code{\link{PrepGR}} for details}
-  
-  \item{type}{[character] the type of plot that should be drawn (see \code{\link{plot}} for details)}
-  
-  \item{col.Precip}{(optional) [character]color code or name for precipitation, see \code{\link{par}}}
-  
-  \item{col.Q}{(optional) [character] color code or name for observed flow, see \code{\link{par}}}
-  
-  \item{col.na}{(optional) [character] color code or name for missing values, see \code{\link{par}}}
-  
-  \item{xlab}{(optional) [character] a label for the x-axis (see \code{\link{title}})}
-  
-  \item{ylab}{(optional) [character] a label for the y-axis (vector of 1 or 2 values for rainfall and flow respectively; see \code{\link{title}})}
-  
-  \item{main}{(optional) [character] a main title for the plot (see \code{\link{title}})}
-  
-  \item{plot.na}{[boolean] boolean indicating if the missing values are plotted on the x-axis}
-  
-  \item{...}{other parameters to be passed through to plotting functions}
+  \item{x}{[PrepGR], [CalGR] or [SimGR] containing the vector of dates (\emph{POSIXt}) and the time series of numeric values list perturbed inputs and DA model outputs (see \code{\link{PrepGR}}, \code{\link{CalGR}} and \code{\link{SimGR}})}
 
-  
+  \item{type}{[character] the type of plot that should be drawn (see \code{\link[graphics]{plot}} for details)}
+
+  \item{col.Precip}{(optional) [character]color code or name for precipitation, see \code{\link[graphics]{par}}}
+
+  \item{col.Q}{(optional) [character] color code or name for observed flow, see \code{\link[graphics]{par}}}
+
+  \item{col.na}{(optional) [character] color code or name for missing values, see \code{\link[graphics]{par}}}
+
+  \item{xlab}{(optional) [character] a label for the x-axis (see \code{\link[graphics]{title}})}
+
+  \item{ylab}{(optional) [character] a label for the y-axis (vector of 1 or 2 values for rainfall and flow respectively; see \code{\link[graphics]{title}})}
+
+  \item{main}{(optional) [character] a main title for the plot (see \code{\link[graphics]{title}})}
+
+  \item{plot.na}{[boolean] boolean indicating if the missing values are plotted on the x-axis}
+
   \item{which}{[character] choice of the plot type (\code{"perf"} (default): plot diagnostics; \code{"iter"}: parameter and calibration criterion values during the iterations of the steepest descent step of the airGR calibration algorithm; \code{"ts"}: time series of observed precipitation and observed and simulated flows)}
+
+  \item{...}{other parameters to be passed through to plotting functions}
 }
 
 
 \seealso{
-\code{\link{PrepGR}}
+airGR
+\code{\link[airGR]{plot.OutputsModel}}
+function
+\cr\cr
+airGRteaching
+\code{\link{dyplot}}
+function to display dynamic plots
+\cr\cr
+\code{\link{PrepGR}}, \code{\link{CalGR}}, \code{\link{SimGR}}
 }
 
 

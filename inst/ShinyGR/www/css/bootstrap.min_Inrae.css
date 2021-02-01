@@ -22,19 +22,7 @@ border-color: #00a3a6;
 background: #00a3a6;
 }
 
-/* slider GR parameter X2 */
-.js-irs-1 .irs-bar {
-border-top-color: #00a3a6;
-border-bottom-color: #00a3a6;
-} 
-.js-irs-0 .irs-bar-edge {
-border-color: #00a3a6;
-}
-.js-irs-0 .irs-single, .js-irs-0 .irs-bar-edge, .js-irs-0 .irs-bar {
-background: #00a3a6;
-}
-
-/* slider GR parameter X3 */
+/* slider GR2M parameter X2 */
 .js-irs-1 .irs-bar {
 border-top-color: #00a3a6;
 border-bottom-color: #00a3a6;
@@ -46,11 +34,11 @@ border-color: #00a3a6;
 background: #00a3a6;
 }
 
-/* slider GR parameter X4 */
- .js-irs-2 .irs-bar {
+/* slider GR parameter X2 */
+.js-irs-2 .irs-bar {
 border-top-color: #00a3a6;
 border-bottom-color: #00a3a6;
-}
+} 
 .js-irs-2 .irs-bar-edge {
 border-color: #00a3a6;
 }
@@ -58,10 +46,11 @@ border-color: #00a3a6;
 background: #00a3a6;
 }
 
- .js-irs-3 .irs-bar {
+/* slider GR parameter X3 */
+.js-irs-3 .irs-bar {
 border-top-color: #00a3a6;
 border-bottom-color: #00a3a6;
-}
+} 
 .js-irs-3 .irs-bar-edge {
 border-color: #00a3a6;
 }
@@ -69,7 +58,7 @@ border-color: #00a3a6;
 background: #00a3a6;
 }
 
-/* slider GR parameter X5 */
+/* slider GR parameter X4 */
  .js-irs-4 .irs-bar {
 border-top-color: #00a3a6;
 border-bottom-color: #00a3a6;
@@ -81,7 +70,7 @@ border-color: #00a3a6;
 background: #00a3a6;
 }
 
-/* slider GR parameter X6 */
+/* slider GR parameter X5 */
  .js-irs-5 .irs-bar {
 border-top-color: #00a3a6;
 border-bottom-color: #00a3a6;
@@ -93,19 +82,19 @@ border-color: #00a3a6;
 background: #00a3a6;
 }
 
-/* slider GR parameter C1 */
+/* slider GR parameter X6 */
  .js-irs-6 .irs-bar {
-border-top-color: #62003c;
-border-bottom-color: #62003c;
+border-top-color: #00a3a6;
+border-bottom-color: #00a3a6;
 }
 .js-irs-6 .irs-bar-edge {
-border-color: #62003c;
+border-color: #00a3a6;
 }
 .js-irs-6 .irs-single, .js-irs-6 .irs-bar-edge, .js-irs-6 .irs-bar {
-background: #62003c;
+background: #00a3a6;
 }
 
-/* slider GR parameter C2 */
+/* slider GR parameter C1 */
  .js-irs-7 .irs-bar {
 border-top-color: #62003c;
 border-bottom-color: #62003c;
@@ -117,7 +106,7 @@ border-color: #62003c;
 background: #62003c;
 }
 
-/* slider time window */
+/* slider GR parameter C2 */
  .js-irs-8 .irs-bar {
 border-top-color: #62003c;
 border-bottom-color: #62003c;
@@ -125,11 +114,11 @@ border-bottom-color: #62003c;
 .js-irs-8 .irs-bar-edge {
 border-color: #62003c;
 }
-.js-irs-8 .irs-single, .js-irs-8 .irs-from, .js-irs-8 .irs-to, .js-irs-8 .irs-bar-edge, .js-irs-8 .irs-bar {
+.js-irs-8 .irs-single, .js-irs-8 .irs-bar-edge, .js-irs-8 .irs-bar {
 background: #62003c;
 }
 
-/* slider target date */
+/* slider time window */
  .js-irs-9 .irs-bar {
 border-top-color: #62003c;
 border-bottom-color: #62003c;
@@ -137,7 +126,31 @@ border-bottom-color: #62003c;
 .js-irs-9 .irs-bar-edge {
 border-color: #62003c;
 }
-.js-irs-9 .irs-single, .js-irs-9 .irs-bar-edge, .js-irs-9 .irs-bar {
+.js-irs-9 .irs-single, .js-irs-9 .irs-from, .js-irs-9 .irs-to, .js-irs-9 .irs-bar-edge, .js-irs-9 .irs-bar {
+background: #62003c;
+}
+
+/* slider target date */
+ .js-irs-10 .irs-bar {
+border-top-color: #62003c;
+border-bottom-color: #62003c;
+}
+.js-irs-10 .irs-bar-edge {
+border-color: #62003c;
+}
+.js-irs-10 .irs-single, .js-irs-10 .irs-bar-edge, .js-irs-10 .irs-bar {
+background: #62003c;
+}
+
+/* slider GR2M target date */
+ .js-irs-11 .irs-bar {
+border-top-color: #62003c;
+border-bottom-color: #62003c;
+}
+.js-irs-11 .irs-bar-edge {
+border-color: #62003c;
+}
+.js-irs-11 .irs-single, .js-irs-11 .irs-bar-edge, .js-irs-11 .irs-bar {
 background: #62003c;
 }
 

@@ -6,7 +6,14 @@ output:
 ---
 
 
-
+```{r include=FALSE}
+formatGR           <- '<strong><font color="#0BA6AA">%s</font></strong>'
+GR_link            <- sprintf(formatGR, "<a href = 'https://webgr.inrae.fr/en/models/' title='GR models' rel='noopener noreferrer nofollow' onclick='window.open(this.href); return false;'>GR</a>")
+airGR              <- sprintf(formatGR, "airGR")
+airGR_link         <- sprintf(formatGR, "<a href = 'https://hydrogr.github.io/airGR/' title='airGR' rel='noopener noreferrer nofollow' onclick='window.open(this.href); return false;'>airGR</a>")
+airGRteaching      <- sprintf(formatGR, "airGRteaching")
+airGRteaching_link <- sprintf(formatGR, "<a href = 'https://hydrogr.github.io/airGRteaching/' title='airGRteaching' rel='noopener noreferrer nofollow' onclick='window.open(this.href); return false;'>airGRteaching</a>")
+```
 
 
 <table  width="100%">
@@ -14,7 +21,7 @@ output:
   <tr>
   <td width="110"><img src="fig/logo_inrae_saclay_CMJN.svg" width="87%" height="87%"></td>
   <td width="130"><img src="fig/logo_inrae_hydro_CMJN.svg" width="80%" height="80%"></td>
-  <td>The <strong><font color="#0BA6AA"><a href = 'https://webgr.inrae.fr/en/models/' onclick='window.open(this.href); return false;'>GR</a></font></strong> models and the <strong><font color="#0BA6AA"><a href = 'https://hydrogr.github.io/airGR/' onclick='window.open(this.href); return false;'>airGR</a></font></strong> &amp; <strong><font color="#0BA6AA"><a href = 'https://hydrogr.github.io/airGRteaching/' onclick='window.open(this.href); return false;'>airGRteaching</a></font></strong> packages are developed by the <strong><i><a href = 'https://webgr.inrae.fr/en/' onclick='window.open(this.href); return false;'>Catchment Hydrology Team</a></i></strong> of <strong><a href = 'http://www.inrae.fr/en/' onclick='window.open(this.href); return false;'><strong>INRAE</strong></a></strong> at Antony, France.
+  <td>The `r GR_link` models and the `r airGR_link` &amp; `r airGRteaching_link` packages are developed by the <strong><i><a href = 'https://webgr.inrae.fr/en/' onclick='window.open(this.href); return false;'>Catchment Hydrology Team</a></i></strong> of <strong><a href = 'http://www.inrae.fr/en/' onclick='window.open(this.href); return false;'><strong>INRAE</strong></a></strong> at Antony, France.
   </tr>
 </tbody>
 </table>
@@ -23,7 +30,7 @@ output:
 
 
 
-#### <strong><font color="#0BA6AA">airGRteaching</font></strong> authors and contributors
+#### `r airGRteaching` authors and contributors
 
 <table  width="100%">
 <tbody>
@@ -66,7 +73,7 @@ output:
 
 
 
-#### <strong><font color="#0BA6AA">airGR</font></strong> authors and contributors
+#### `r airGR` authors and contributors
 
 <table  width="100%">
 <tbody>

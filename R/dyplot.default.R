@@ -3,14 +3,14 @@ dyplot.default <- function(x, Qsup = NULL, Qsup.name = "Qsup",
                            ylab = NULL, main = NULL,
                            plot.na = TRUE, RangeSelector = TRUE, Roller = FALSE,
                            LegendShow = c("follow", "auto", "always", "onmouseover", "never"), ...) {
-  
+
   # barChartPrecip <- scan(file = system.file("plugins/barChartPrecip.js", package = "airGRteaching"),
   #                        what = "character", quiet = TRUE)
-  
+
   if (! any(class(x) %in% c("PrepGR", "CalGR", "SimGR"))) {
     stop("Non convenient data for x argument. Must be of class \"PrepGR\", \"CalGR\" or \"SimGR\"")
   }
-  
+
   if (is.null(ylab)) {
     yunit <- .TypeModelGR(x)$TimeUnit
     ylab  <- paste0(c("flow [mm/", "precip. [mm/"), yunit, "]")
@@ -18,11 +18,11 @@ dyplot.default <- function(x, Qsup = NULL, Qsup.name = "Qsup",
     if (length(ylab) < 2) {
       ylab <- c(ylab, "")
     }
-  } 
-  
+  }
+
   if (is.null(Qsup)) {
     Qsup <- as.numeric(rep(NA, length.out = length(x$Qobs)))
-  } 
+  }
   if (!is.numeric(Qsup)) {
     stop("'Qsup' must be numeric")
   }
@@ -32,8 +32,8 @@ dyplot.default <- function(x, Qsup = NULL, Qsup.name = "Qsup",
   if (!is.character(Qsup.name)) {
     Qsup.name <- as.character(Qsup.name)
   }
-  
-  
+
+
   if (any(class(x) %in% "PrepGR")) {
     data <- data.frame(DatesR = x$InputsModel$DatesR,
                        Precip = x$InputsModel$Precip,
@@ -44,7 +44,7 @@ dyplot.default <- function(x, Qsup = NULL, Qsup.name = "Qsup",
       data$Psol <- rowMeans(as.data.frame(x$InputsModel$LayerPrecip) * as.data.frame(x$InputsModel$LayerFracSolidPrecip), na.rm = TRUE)
       data$Pliq <- data$Precip - data$Psol
       data$Precip <- NULL
-    } 
+    }
   } else {
     data <- data.frame(DatesR = x$OutputsModel$DatesR,
                        Precip = x$OutputsModel$Precip,
@@ -58,8 +58,8 @@ dyplot.default <- function(x, Qsup = NULL, Qsup.name = "Qsup",
     }
   }
   data.xts <- xts::xts(data[, -1L], order.by = data$DatesR, tz = "UTC")
-  
-  
+
+
   rgba <- function(x, alpha = 1) {
     sprintf("rgba(%s, %f)", paste0(col2rgb(x), collapse = ", "), alpha)
   }
@@ -72,16 +72,16 @@ dyplot.default <- function(x, Qsup = NULL, Qsup.name = "Qsup",
   if (length(col.Precip) < 2) {
     col.Precip <- c(rgba(col.Precip), rgba(col.Precip, alpha = 0.5))
   }
-  
-  
+
+
   if (grepl("CemaNeige", x$TypeModel)) {
     Plim <- c(-1e-3, max(data$Psol+data$Pliq, na.rm = TRUE))
   } else {
     Plim <- c(-1e-3, max(data$Precip, na.rm = TRUE))
     col.Precip <- col.Precip[1L]
   }
-  
-  
+
+
   dg <- dygraphs::dygraph(data.xts, main = main, ...)
   dg <- dygraphs::dySeries(dygraph = dg, name = "Qobs", axis = "y", color = col.Q[1L], drawPoints = TRUE)
   dg <- dygraphs::dySeries(dygraph = dg, name = "Qsim", axis = "y", color = col.Q[2L])
@@ -109,7 +109,7 @@ dyplot.default <- function(x, Qsup = NULL, Qsup.name = "Qsup",
     dg <- dygraphs::dyLegend(dygraph = dg, show = LegendShow[1L])
   }
   dg <- dygraphs::dyOptions(dygraph = dg, useDataTimezone = TRUE)
-  
+
   return(dg)
-  
+
 }

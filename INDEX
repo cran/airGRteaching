@@ -2,35 +2,32 @@
 Modelling functions:
 ======================
 
-PrepGR                  Creation of the inputs required to the CalGR
-                        and SimGR functions
-CalGR                   Calibration algorithm optimises the error
-                        criterion selected as objective function
-SimGR                   Run GR hydrological models
+PrepGR          Creation of the inputs required to the CalGR
+                and SimGR functions
+CalGR           Calibration algorithm optimises the error
+                criterion selected as objective function
+SimGR           Run GR hydrological models
 
 
 Summarizing functions:
 ======================
 
-as.data.frame           Create a data.frame from outputs of PrepGR,
-                        CalGR or SimGR
+as.data.frame   Create a data.frame from outputs of PrepGR,
+                CalGR or SimGR
 
 
 Plotting functions:
 ======================	
 					
-dyplot                  Interactive time series plotting of PrepGR, CalGR
-                        and SimGR objects
-plot.PrepGR             Time series plotting GR objects from inputs
-plot.CalGR              Plotting of the evolution of parameters and
-                        objective function during the calibration step,
-                        and time series plotting GR objects from calibration
-                        outputs
-plot.SimGR              Synthetic plotting of model outputs
+dyplot          Interactive plots for time series of PrepGR, CalGR
+                and SimGR objects
+plot            Static plots for time series of PrepGR, CalGR
+                and SimGR objects. Also plot of the evolution 
+                of parameters and objective function during 
+                the calibration step for CalGR object
 
 
 Shiny interface:
 ======================
-
-ShinyGR                 Interactive Web applications to run the GR4J, GR5J
-                        and GR6J hydrological models whith or without CemaNeige						
+ShinyGR         Interactive Web applications to run the GR2M, GR4J, GR5J
+                and GR6J hydrological models whith or without CemaNeige						

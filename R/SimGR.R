@@ -1,15 +1,26 @@
 SimGR <- function(PrepGR, CalGR = NULL, Param, EffCrit = c("NSE", "KGE", "KGE2", "RMSE"),
                   WupPer = NULL, SimPer, transfo = c("", "sqrt", "log", "inv", "sort"), verbose = TRUE) {
- 
+
+  EffCrit <- match.arg(arg = EffCrit)
+  EffCrit <- sprintf("ErrorCrit_%s", EffCrit)
+  FUN_CRIT <- get(EffCrit)
+
+  if (! any(transfo %in% c("", "sqrt", "log", "inv", "sort"))) {
+    stop("Non convenient transformation \"transfo\"")
+  } else {
+    transfo <- transfo[1L]
+  }
+
+
   if (! any(class(PrepGR) %in% "PrepGR")) {
     stop("Non convenient data for argument \"PrepGR\". Must be of class \"PrepGR\"")
   }
-  
+
   isQobs <- !all(is.na(PrepGR$Qobs))
   if (!isQobs) {
     warning("\"PrepGR\" does not contain any Qobs values. The efficiency criterion is not computed")
   }
-  
+
   if (!missing(CalGR)) {
     warning("Deprecated \"CalGR\" argument. Use \"Param\" instead")
   }
@@ -30,7 +41,7 @@ SimGR <- function(PrepGR, CalGR = NULL, Param, EffCrit = c("NSE", "KGE", "KGE2",
   if (inherits(Param, "CalGR")) {
     Param <- Param$OutputsCalib$ParamFinalR
   }
-  
+
   WupInd <- NULL
   if (!is.null(WupPer)) {
     WupPer <- as.POSIXct(WupPer, tz = "UTC")
@@ -47,7 +58,7 @@ SimGR <- function(PrepGR, CalGR = NULL, Param, EffCrit = c("NSE", "KGE", "KGE2",
       }
     }
   }
- 
+
   SimPer <- as.POSIXct(SimPer, tz = "UTC")
   if (length(SimPer) != 2) {
     stop("Simulation period \"SimPer\" must be of length 2")
@@ -61,52 +72,38 @@ SimGR <- function(PrepGR, CalGR = NULL, Param, EffCrit = c("NSE", "KGE", "KGE2",
       SimInd <- which(PrepGR$InputsModel$DatesR == SimPer[1]):which(PrepGR$InputsModel$DatesR == SimPer[2])
     }
   }
-  
-  if (! any(EffCrit %in% c("NSE", "KGE", "KGE2", "RMSE"))) {
-    stop("Non convenient efficiency criteria \"EffCrit\"")
-  } else {
-    EffCrit <- EffCrit[1L]
-    EffCrit <- sprintf("ErrorCrit_%s", EffCrit)
-    FUN_CRIT <- get(EffCrit)
-  }
-  
-  if (! any(transfo %in% c("", "sqrt", "log", "inv", "sort"))) {
-    stop("Non convenient transformation \"transfo\"")
-  } else {
-    transfo <- transfo[1L]
-  }
 
-  
-  
-  MOD_opt <- CreateRunOptions(FUN_MOD = get(PrepGR$TypeModel), InputsModel = PrepGR$InputsModel, 
+
+
+  MOD_opt <- CreateRunOptions(FUN_MOD = get(PrepGR$TypeModel), InputsModel = PrepGR$InputsModel,
                               IndPeriod_WarmUp = WupInd, IndPeriod_Run = SimInd, verbose = verbose)
 
-  
+
   if (isQobs) {
-  MOD_crt <- CreateInputsCrit(FUN_CRIT = FUN_CRIT, InputsModel = PrepGR$InputsModel, 
+  MOD_crt <- CreateInputsCrit(FUN_CRIT = FUN_CRIT, InputsModel = PrepGR$InputsModel,
                               RunOptions = MOD_opt, Obs = PrepGR$Qobs[SimInd], transfo = transfo)
   } else {
     MOD_crt <- NULL
   }
-  
-  
-  SIM <- RunModel(InputsModel = PrepGR$InputsModel, RunOptions = MOD_opt, 
+
+
+  SIM <- RunModel(InputsModel = PrepGR$InputsModel, RunOptions = MOD_opt,
                   Param = Param, FUN_MOD = get(PrepGR$TypeModel))
-  
-  
+
+
   if (isQobs) {
     CRT <- ErrorCrit(InputsCrit = MOD_crt, OutputsModel = SIM, verbose = verbose)
   } else {
     CRT <- NULL
   }
-  
-  
+
+
   SimGR <- list(OptionsSimul = MOD_opt, OptionsCrit = MOD_crt, OutputsModel = SIM, Qobs = PrepGR$Qobs[SimInd],
                 TypeModel = PrepGR$TypeModel,
                 CalCrit = CalGR$CalCrit, EffCrit = CRT,
                 PeriodModel = list(WarmUp = as.POSIXct(PrepGR$InputsModel$DatesR[range(MOD_opt$IndPeriod_WarmUp)], tz = "UTC"),
                                    Run    = SimPer))
   class(SimGR) <- c("SimGR", "GR", "airGRt")
-  return(SimGR)  
-  
+  return(SimGR)
+
 }

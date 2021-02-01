@@ -1,15 +1,15 @@
 as.data.frame.airGRt <- function(x, row.names = NULL, ...) {
-  
+
   if (!(inherits(x, "PrepGR") | inherits(x, "CalGR") | inherits(x, "SimGR"))) {
     stop("'InputsCrit' must be of class 'PrepGR', 'CalGR', 'SimGR'")
   }
-  
+
   TMGR <- .TypeModelGR(x)
   myGR <- list()
-  
+
   myGR$FracSolid <- NA
   myGR$TempMean  <- NA
-  
+
   if (inherits(x, "PrepGR")) {
     if (TMGR$CemaNeige) {
       PrecipSol <- rowMeans(as.data.frame(x$InputsModel$LayerPrecip) * as.data.frame(x$InputsModel$LayerFracSolidPrecip), na.rm = TRUE)
@@ -41,7 +41,7 @@ as.data.frame.airGRt <- function(x, row.names = NULL, ...) {
     myGR$Precip  <- x$OutputsModel$Precip
     myGR$Qobs    <- x$Qobs
     myGR$Qsim    <- x$OutputsModel$Qsim
-  }    
+  }
 TabSim <- data.frame(Dates                     = myGR$DatesR,
                      PotEvap                   = myGR$PotEvap,
                      PrecipObs                 = myGR$Precip,

@@ -5,43 +5,45 @@ note    <- sprintf("R package version %s", version)
 
 citHeader("To cite airGRteaching in publications use these two references:")
 
-bibentry(bibtype    = "InProceedings",
-          author    = personList(as.person("O. Delaigue"), as.person("G. Thirel"), as.person("L. Coron"), as.person("P. Brigode")),
-          title     = "{airGR} and {airGRteaching}: Two Open-Source Tools for Rainfall-Runoff Modeling and Teaching Hydrology",
-          booktitle = "HIC 2018. 13th International Conference on Hydroinformatics",
-          editor    = "Goffredo La Loggia and Gabriele Freni and Valeria Puleo and Mauro De Marchis",
-          series    = "EPiC Series in Engineering",
-          volume    = "3",
-          pages     = "541-548",
-          year      = "2018",
-          publisher = "EasyChair",
-          bibsource = "EasyChair, https://easychair.org",
-          issn      = "2516-2330",
-          url       = "https://easychair.org/publications/paper/VQ52",
-          doi       = "10.29007/qsqj",
-         textVersion = 
-           paste("Delaigue, O., Thirel, G., Coron, L., Brigode, P.",
-                 "(2018).", 
+bibentry(bibtype     = "InProceedings",
+         author      = personList(as.person("O. Delaigue"), as.person("G. Thirel"), as.person("L. Coron"), as.person("P. Brigode")),
+         title       = "{airGR} and {airGRteaching}: Two Open-Source Tools for Rainfall-Runoff Modeling and Teaching Hydrology",
+         booktitle   = "HIC 2018. 13th International Conference on Hydroinformatics",
+         editor      = "Goffredo La Loggia and Gabriele Freni and Valeria Puleo and Mauro De Marchis",
+         series      = "EPiC Series in Engineering",
+         volume      = "3",
+         pages       = "541-548",
+         year        = "2018",
+         publisher   = "EasyChair",
+         bibsource   = "EasyChair, https://easychair.org",
+         issn        = "2516-2330",
+         url         = "https://easychair.org/publications/paper/VQ52",
+         doi         = "10.29007/qsqj",
+         textVersion =
+           paste("Delaigue, O., Thirel, G., Coron, L. and Brigode, P.",
+                 "(2018).",
                  "airGR and airGRteaching: Two open-source tools for rainfall-runoff modeling and teaching hydrology.",
-                 "HIC 2018. 13th International Conference on Hydroinformatics",
-                 "(eds. G.L. Loggia, G. Freni, V. Puleo & M.D. Marchis),",
-                 "vol. 3 of EPiC Series in Engineering, p. 541-548, EasyChair, DOI: 10.29007/qsqj.",
+                 "HIC 2018. 13th International Conference on Hydroinformatics.",
+                 "EPiC Series in Engineering (eds. G.L. Loggia, G. Freni, V. Puleo & M.D. Marchis),",
+                 "3, 541-548, EasyChair,",
+                 "doi: 10.29007/qsqj.",
                  sep = " ")
 )
 
-bibentry(bibtype ="Manual",
-         title = "{airGRteaching}: Teaching Hydrological Modelling with {GR} ({Shiny} Interface Included)",
-         author = personList(as.person("O. Delaigue"), as.person("L. Coron"), as.person("P. Brigode")),
-         journal = "R News",
-         year = year,
-         note = note,
-         url = "https://CRAN.R-project.org/package=airGRteaching",
-         doi = "10.15454/W0SSKT",
-         textVersion = 
-           paste0("Delaigue, O., Coron, L., Brigode, P. (",
+bibentry(bibtype     = "Manual",
+         title       = "{airGRteaching}: Teaching Hydrological Modelling with {GR} ({Shiny} Interface Included)",
+         author      = personList(as.person("O. Delaigue"), as.person("L. Coron"), as.person("P. Brigode")),
+         journal     = "R News",
+         year        = year,
+         note        = note,
+         url         = "https://CRAN.R-project.org/package=airGRteaching",
+         doi         = "10.15454/W0SSKT",
+         textVersion =
+           paste0("Delaigue, O., Coron, L. and Brigode, P. (",
                   year,
                   "). airGRteaching: Teaching Hydrological Modelling with GR (Shiny Interface Included). ",
-                  note,
-                  ". DOI: 10.15454/W0SSKT. URL: https://CRAN.R-project.org/package=airGRteaching."
+                  note, ", ",
+                  "doi: 10.15454/W0SSKT", ", ",
+                  "URL: https://CRAN.R-project.org/package=airGRteaching."
                   )
 )

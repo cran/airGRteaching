@@ -63,7 +63,7 @@ Before running a model, <strong><font color="#0BA6AA">airGRteaching</font></stro
 For this step, you just have to use the `PrepGR()` function. You have to define:
 
   * `ObsDF`: `data.frame` of hydrometeorological observations time series
-  * `HydroModel`: the name of the hydrological model you want to run (GR1A, GR2M, GR4J, GR5J, GR6J or GR4H)
+  * `HydroModel`: the name of the hydrological model you want to run (GR1A, GR2M, GR4J, GR5J, GR6J, GR4H or GR5H)
   * `CemaNeige`: if you want or not to use the snowmelt and accumulation model
 
 If you want to use CemaNeige, you also have to define:
@@ -135,6 +135,145 @@ SIM <- SimGR(PrepGR = PREP, CalGR = CAL, EffCrit = "KGE2",
 
 <br>
 
+
+### Formating outputs
+
+The call of the `as.data.frame()` function with `PrepGR`, `CalGR` or `SimGR` objects allows to coerce the outputs to a data frame.
+
+
+```r
+head(as.data.frame(PREP))
+```
+
+```
+##        Dates PotEvap PrecipObs PrecipFracSolid_CemaNeige TempMeanSim_CemaNeige
+## 1 1984-01-01     0.2       4.1                        NA                    NA
+## 2 1984-01-02     0.2      15.9                        NA                    NA
+## 3 1984-01-03     0.3       0.8                        NA                    NA
+## 4 1984-01-04     0.3       0.0                        NA                    NA
+## 5 1984-01-05     0.1       0.0                        NA                    NA
+## 6 1984-01-06     0.3       0.0                        NA                    NA
+##     Qobs Qsim
+## 1 0.6336   NA
+## 2 0.8256   NA
+## 3 2.9280   NA
+## 4 1.8240   NA
+## 5 1.5000   NA
+## 6 1.3560   NA
+```
+
+```r
+head(as.data.frame(CAL))
+```
+
+```
+##        Dates PotEvap PrecipObs PrecipFracSolid_CemaNeige TempMeanSim_CemaNeige
+## 1 1990-01-01     0.3       0.0                        NA                    NA
+## 2 1990-01-02     0.4       9.3                        NA                    NA
+## 3 1990-01-03     0.4       3.2                        NA                    NA
+## 4 1990-01-04     0.3       7.3                        NA                    NA
+## 5 1990-01-05     0.1       0.0                        NA                    NA
+## 6 1990-01-06     0.1       0.0                        NA                    NA
+##    Qobs     Qsim
+## 1 1.992 2.523954
+## 2 1.800 2.446199
+## 3 2.856 2.943436
+## 4 2.400 3.286214
+## 5 3.312 3.512572
+## 6 3.072 3.224969
+```
+
+```r
+head(as.data.frame(SIM))
+```
+
+```
+##        Dates PotEvap PrecipObs PrecipFracSolid_CemaNeige TempMeanSim_CemaNeige
+## 1 1994-01-01     0.4       2.2                        NA                    NA
+## 2 1994-01-02     0.4       0.0                        NA                    NA
+## 3 1994-01-03     0.6       0.7                        NA                    NA
+## 4 1994-01-04     0.6       3.2                        NA                    NA
+## 5 1994-01-05     0.6      35.1                        NA                    NA
+## 6 1994-01-06     0.5      21.3                        NA                    NA
+##    Qobs     Qsim
+## 1 2.904 3.593023
+## 2 2.832 3.414026
+## 3 2.364 2.988078
+## 4 2.544 2.668972
+## 5 2.640 3.526016
+## 6 8.928 8.819935
+```
+
+
+### Formating outputs
+
+The call of the `as.data.frame()` function with `PrepGR`, `CalGR` or `SimGR` objects allows to coerce the outputs to a data frame.
+
+
+```r
+head(as.data.frame(PREP))
+```
+
+```
+##        Dates PotEvap PrecipObs PrecipFracSolid_CemaNeige TempMeanSim_CemaNeige
+## 1 1984-01-01     0.2       4.1                        NA                    NA
+## 2 1984-01-02     0.2      15.9                        NA                    NA
+## 3 1984-01-03     0.3       0.8                        NA                    NA
+## 4 1984-01-04     0.3       0.0                        NA                    NA
+## 5 1984-01-05     0.1       0.0                        NA                    NA
+## 6 1984-01-06     0.3       0.0                        NA                    NA
+##     Qobs Qsim
+## 1 0.6336   NA
+## 2 0.8256   NA
+## 3 2.9280   NA
+## 4 1.8240   NA
+## 5 1.5000   NA
+## 6 1.3560   NA
+```
+
+```r
+head(as.data.frame(CAL))
+```
+
+```
+##        Dates PotEvap PrecipObs PrecipFracSolid_CemaNeige TempMeanSim_CemaNeige
+## 1 1990-01-01     0.3       0.0                        NA                    NA
+## 2 1990-01-02     0.4       9.3                        NA                    NA
+## 3 1990-01-03     0.4       3.2                        NA                    NA
+## 4 1990-01-04     0.3       7.3                        NA                    NA
+## 5 1990-01-05     0.1       0.0                        NA                    NA
+## 6 1990-01-06     0.1       0.0                        NA                    NA
+##    Qobs     Qsim
+## 1 1.992 2.523954
+## 2 1.800 2.446199
+## 3 2.856 2.943436
+## 4 2.400 3.286214
+## 5 3.312 3.512572
+## 6 3.072 3.224969
+```
+
+```r
+head(as.data.frame(SIM))
+```
+
+```
+##        Dates PotEvap PrecipObs PrecipFracSolid_CemaNeige TempMeanSim_CemaNeige
+## 1 1994-01-01     0.4       2.2                        NA                    NA
+## 2 1994-01-02     0.4       0.0                        NA                    NA
+## 3 1994-01-03     0.6       0.7                        NA                    NA
+## 4 1994-01-04     0.6       3.2                        NA                    NA
+## 5 1994-01-05     0.6      35.1                        NA                    NA
+## 6 1994-01-06     0.5      21.3                        NA                    NA
+##    Qobs     Qsim
+## 1 2.904 3.593023
+## 2 2.832 3.414026
+## 3 2.364 2.988078
+## 4 2.544 2.668972
+## 5 2.640 3.526016
+## 6 8.928 8.819935
+```
+
+
 ### Pre-defined  graphical plots
 
 #### Static plots
@@ -146,7 +285,7 @@ The call of the `plot()` function with a `PrepGR` object draws the observed prec
 plot(PREP, main = "Observation")
 ```
 
-![](tab_fun_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+![](tab_fun_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
 
 
 By default (with the argument `which = "perf"`), the call of the `plot()` function with a `CalGR` object draws the classical <strong><font color="#0BA6AA">airGR</font></strong> plot diagnostics (observed and simulated time series together with diagnostic plot)
@@ -155,7 +294,7 @@ By default (with the argument `which = "perf"`), the call of the `plot()` functi
 ```r
 plot(CAL, which = "perf")
 ```
-![](tab_fun_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
+![](tab_fun_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
 
 With the `CalGR` object, if the argument `which` is set to `"iter"`, the `plot()` function draws the evolution of the parameters and the values of the objective function during the second step of the calibration (steepest descent local search algorithm):
 
@@ -164,7 +303,7 @@ With the `CalGR` object, if the argument `which` is set to `"iter"`, the `plot()
 plot(CAL, which = "iter")
 ```
 
-![](tab_fun_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
+![](tab_fun_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
 
 With the `CalGR` object, if the argument `which` is set to `"ts"`, the `plot()` function simply draws the time series of the observed precipitation, and the observed and simulated flows:
 
@@ -173,7 +312,7 @@ With the `CalGR` object, if the argument `which` is set to `"ts"`, the `plot()` 
 plot(CAL, which = "ts", main = "Calibration")
 ```
 
-![](tab_fun_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
+![](tab_fun_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
 
 The call of the `plot()` function with a `SimGR` object draws the classical <strong><font color="#0BA6AA">airGR</font></strong> plot diagnostics.
 
@@ -203,14 +342,15 @@ dyplot(SIM, main = "Simulation")
 
 <br>
 
-### *Shiny* interface
 
-The <strong><font color="#0BA6AA">airGRteaching</font></strong> package also provides the `ShinyGR()` function, which allows to run the *Shiny* interface that is proposed on this page.
+### Graphical user interface
 
-The `ShinyGR()` function just needs:
+The <strong><font color="#0BA6AA">airGRteaching</font></strong> package also provides the `ShinyGR()` function, which allows to launch a graphical user interface using the *shiny* package.
 
-  * `ObsDF`: a `data.frame` (or a `list` of `data.frame`)
-  * `SimPer`: a vector (or list of vectors) of 2 dates to define the simulation period(s)
+The `ShinyGR()` function needs at least:
+
+  * `ObsDF`: a (list of) `data.frame` (or independant vector instead, see `?ShinyGR`)
+  * `SimPer`: a (list of) vector(s) of 2 dates to define the simulation period(s)
 
   
 
@@ -218,10 +358,11 @@ The `ShinyGR()` function just needs:
 ShinyGR(ObsDF = BasinObs, SimPer = c("1994-01-01", "1998-12-31"))
 ```
 
-Only daily models are currently available (GR4J, GR5J, GR6J + CemaNeige).
+Only monthly and daily models are currently available (GR2M, GR4J, GR5J, GR6J + CemaNeige).
+
+If you want to use CemaNeige, you also have to define the same arguments desribed above for the `PrepGR()` function.
 
 It is also possible to change the interface look; different themes are proposed (`theme` argument).
-<div><center><image src="fig/theme_rstudio.jpg" width="32%" height="32%"> <image src="fig/theme_cerulean.jpg" width="32%" height="32%"> <image src="fig/theme_cyborg.jpg" width="32%" height="32%"></img></center></div>
-<div><center><image src="fig/theme_flatly.jpg" width="32%" height="32%"> <image src="fig/theme_united.jpg" width="32%" height="32%"> <image src="fig/theme_yeti.jpg" width="32%" height="32%"></center></div>
-
+<div><center><image src="fig/airGRteaching_GUI_MD_theme-RStudio_550x300.png" width="24%" height="24%"> <image src="fig/airGRteaching_GUI_MD_theme-Cerulean_550x300.png" width="24%" height="24%"> <image src="fig/airGRteaching_GUI_MD_theme-Cyborg_544x300.png" width="24%" height="24%"> <image src="fig/airGRteaching_GUI_MD_theme-Flatly_550x300.png" width="24%" height="24%"></center></div>
+<div><center><image src="fig/airGRteaching_GUI_MD_theme-Inrae_550x300.png" width="24%" height="24%"> <image src="fig/airGRteaching_GUI_MD_theme-Saclay_550x300.png" width="24%" height="24%"> <image src="fig/airGRteaching_GUI_MD_theme-United_550x300.png" width="24%" height="24%"> <image src="fig/airGRteaching_GUI_MD_theme-Yeti_550x300.png" width="24%" height="24%"></center></div>
 

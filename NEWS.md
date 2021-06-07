@@ -4,6 +4,15 @@
 
 
 
+### 0.2.11 Release Notes (2021-06-04)
+
+#### Bug fixes
+
+- Fix `ShinyGR()` when the date column of `ObsDF` has another name as 'DatesR'. ([#38](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/38))
+
+____________________________________________________________________________________
+
+
 ### 0.2.10.112 Release Notes (2021-01-23)
 
 
@@ -47,7 +56,7 @@ ________________________________________________________________________________
 
 #### Version control and issue tracking
 
-- users can now track [changes](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching) and [issues](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/issues)
+- users can now track [changes](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching) and [issues](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues)
 
 
 #### User-visible changes

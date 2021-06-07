@@ -178,7 +178,7 @@ The `ShinyGR()` function needs at least:
 ShinyGR(ObsDF = BasinObs, SimPer = c("1994-01-01", "1998-12-31"))
 ```
 
-Only monthly and daily models are currently available (GR2M, GR4J, GR5J, GR6J + CemaNeige).
+Only the monthly model (GR2M) and the daily models (GR4J, GR5J, GR6J + CemaNeige) are currently available.
 
 If you want to use CemaNeige, you also have to define the same arguments desribed above for the `PrepGR()` function.
 

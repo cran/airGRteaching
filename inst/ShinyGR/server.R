@@ -22,7 +22,7 @@ shinyServer(function(input, output, session) {
     if (is.null(.ShinyGR.args$ObsDF[[input$Dataset]])) {
       datesDataset <- .ShinyGR.args$DatesR[1:2]
     } else{
-      datesDataset <- .ShinyGR.args$ObsDF[[input$Dataset]]$DatesR[1:2]
+      datesDataset <- .ShinyGR.args$ObsDF[[input$Dataset]][[1]][1:2]
     }
     nbDaysDataset <- as.numeric(diff(datesDataset), units = "days")
     if (nbDaysDataset %in% 29:31) {
@@ -60,7 +60,7 @@ shinyServer(function(input, output, session) {
     if (is.null(ObsDF)) {
       datesDataset <- .ShinyGR.args$DatesR[1:2]
     } else{
-      datesDataset <- .ShinyGR.args$ObsDF[[input$Dataset]]$DatesR[1:2]
+      datesDataset <- .ShinyGR.args$ObsDF[[input$Dataset]][[1]][1:2]
     }
     nbDaysDataset <- as.numeric(diff(datesDataset), units = "days")
     if (nbDaysDataset %in% 29:31) {

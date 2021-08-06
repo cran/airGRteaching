@@ -5,20 +5,15 @@ SimGR <- function(PrepGR, CalGR = NULL, Param, EffCrit = c("NSE", "KGE", "KGE2",
   EffCrit <- sprintf("ErrorCrit_%s", EffCrit)
   FUN_CRIT <- get(EffCrit)
 
-  if (! any(transfo %in% c("", "sqrt", "log", "inv", "sort"))) {
+  if (!any(transfo %in% c("", "sqrt", "log", "inv", "sort"))) {
     stop("Non convenient transformation \"transfo\"")
   } else {
     transfo <- transfo[1L]
   }
 
 
-  if (! any(class(PrepGR) %in% "PrepGR")) {
+  if (!inherits(PrepGR, "PrepGR")) {
     stop("Non convenient data for argument \"PrepGR\". Must be of class \"PrepGR\"")
-  }
-
-  isQobs <- !all(is.na(PrepGR$Qobs))
-  if (!isQobs) {
-    warning("\"PrepGR\" does not contain any Qobs values. The efficiency criterion is not computed")
   }
 
   if (!missing(CalGR)) {
@@ -28,7 +23,7 @@ SimGR <- function(PrepGR, CalGR = NULL, Param, EffCrit = c("NSE", "KGE", "KGE2",
   if (missing(Param)) {
     Param <- NULL
   }
-  if (! any(class(CalGR) %in% "CalGR") & !is.null(CalGR)) {
+  if (!inherits(CalGR, "CalGR") & !is.null(CalGR)) {
     stop("Non convenient data  for argument \"CalGR\". Must be of class \"CalGR\"")
   }
   if (is.null(CalGR) & is.null(Param)) {
@@ -74,16 +69,17 @@ SimGR <- function(PrepGR, CalGR = NULL, Param, EffCrit = c("NSE", "KGE", "KGE2",
   }
 
 
-
   MOD_opt <- CreateRunOptions(FUN_MOD = get(PrepGR$TypeModel), InputsModel = PrepGR$InputsModel,
                               IndPeriod_WarmUp = WupInd, IndPeriod_Run = SimInd, verbose = verbose)
 
 
-  if (isQobs) {
-  MOD_crt <- CreateInputsCrit(FUN_CRIT = FUN_CRIT, InputsModel = PrepGR$InputsModel,
-                              RunOptions = MOD_opt, Obs = PrepGR$Qobs[SimInd], transfo = transfo)
-  } else {
-    MOD_crt <- NULL
+  # NA in Qobs
+  isQobs <- !all(is.na(PrepGR$Qobs))
+  isQobsSimPer <- !all(is.na(PrepGR$Qobs[SimInd]))
+  if (!isQobs) {
+    warning("\"PrepGR\" does not contain any Qobs values. The efficiency criterion is not computed")
+  } else if (!isQobsSimPer) {
+    message("\"PrepGR\" does not contain any Qobs values on \"SimPer\". The efficiency criterion is not computed")
   }
 
 
@@ -91,9 +87,12 @@ SimGR <- function(PrepGR, CalGR = NULL, Param, EffCrit = c("NSE", "KGE", "KGE2",
                   Param = Param, FUN_MOD = get(PrepGR$TypeModel))
 
 
-  if (isQobs) {
+  if (isQobsSimPer) {
+    MOD_crt <- CreateInputsCrit(FUN_CRIT = FUN_CRIT, InputsModel = PrepGR$InputsModel,
+                                RunOptions = MOD_opt, Obs = PrepGR$Qobs[SimInd], transfo = transfo)
     CRT <- ErrorCrit(InputsCrit = MOD_crt, OutputsModel = SIM, verbose = verbose)
   } else {
+    MOD_crt <- NULL
     CRT <- NULL
   }
 
@@ -103,7 +102,7 @@ SimGR <- function(PrepGR, CalGR = NULL, Param, EffCrit = c("NSE", "KGE", "KGE2",
                 CalCrit = CalGR$CalCrit, EffCrit = CRT,
                 PeriodModel = list(WarmUp = as.POSIXct(PrepGR$InputsModel$DatesR[range(MOD_opt$IndPeriod_WarmUp)], tz = "UTC"),
                                    Run    = SimPer))
-  class(SimGR) <- c("SimGR", "GR", "airGRt")
+  class(SimGR) <- c("SimGR", "GR")
   return(SimGR)
 
 }

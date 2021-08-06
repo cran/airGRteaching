@@ -5,14 +5,14 @@ CalGR <- function(PrepGR, CalCrit = c("NSE", "KGE", "KGE2", "RMSE"),
   CalCrit <- sprintf("ErrorCrit_%s", CalCrit)
   FUN_CRIT <- get(CalCrit)
 
-  if (! any(transfo %in% c("", "sqrt", "log", "inv", "sort"))) {
+  if (!any(transfo %in% c("", "sqrt", "log", "inv", "sort"))) {
     stop("Non convenient transformation \"transfo\"")
   } else {
     transfo <- transfo[1L]
   }
 
 
-  if (! any(class(PrepGR) %in% "PrepGR")) {
+  if (!inherits(PrepGR, "PrepGR")) {
     stop("Non convenient data for argument \"PrepGR\". Must be of class \"PrepGR\"")
   }
 
@@ -80,7 +80,7 @@ CalGR <- function(PrepGR, CalCrit = c("NSE", "KGE", "KGE2", "RMSE"),
                 TypeModel = PrepGR$TypeModel, CalCrit = CalCrit,
                 PeriodModel = list(WarmUp = as.POSIXct(PrepGR$InputsModel$DatesR[range(MOD_opt$IndPeriod_WarmUp)], tz = "UTC"),
                                    Run    = CalPer))
-  class(CalGR) <- c("CalGR", "GR", "airGRt")
+  class(CalGR) <- c("CalGR", "GR")
   return(CalGR)
 
 }

@@ -2,8 +2,8 @@ Package: airGRteaching
 Type: Package
 Title: Teaching Hydrological Modelling with the GR Rainfall-Runoff
         Models ('Shiny' Interface Included)
-Version: 0.2.11
-Date: 2021-06-04
+Version: 0.2.12
+Date: 2021-08-06
 Authors@R: c(
   person("Olivier", "Delaigue", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-7668-8468"), email = "airGR@inrae.fr"),
   person("Laurent", "Coron", role = c("aut"), comment = c(ORCID = "0000-0002-1503-6204")),
@@ -13,7 +13,7 @@ Authors@R: c(
 Depends: R (>= 3.6.0), airGR (>= 1.6.9.27)
 Imports: dygraphs (>= 1.1.1.6), markdown, plotrix, shiny (>= 1.1.0),
         shinyjs (>= 1.0), xts, graphics, grDevices, stats, utils
-Suggests: knitr, rmarkdown, htmlwidgets (>= 1.5.3)
+Suggests: knitr, rmarkdown, testthat, htmlwidgets (>= 1.5.3)
 Description: Add-on package to the 'airGR' package that simplifies its use and is aimed at being used for teaching hydrology. The package provides 1) three functions that allow to complete very simply a hydrological modelling exercise 2) plotting functions to help students to explore observed data and to interpret the results of calibration and simulation of the GR ('Génie rural') models 3) a 'Shiny' graphical interface that allows for displaying the impact of model parameters on hydrographs and models internal variables.
 License: GPL-2
 NeedsCompilation: no
@@ -21,11 +21,11 @@ URL: https://hydrogr.github.io/airGRteaching/
 BugReports: https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues
 Encoding: UTF-8
 VignetteBuilder: knitr
-Packaged: 2021-06-07 15:32:36 UTC; olivier.delaigue
+Packaged: 2021-08-06 07:51:56 UTC; olivier.delaigue
 Author: Olivier Delaigue [aut, cre] (<https://orcid.org/0000-0002-7668-8468>),
   Laurent Coron [aut] (<https://orcid.org/0000-0002-1503-6204>),
   Pierre Brigode [aut] (<https://orcid.org/0000-0001-8257-0741>),
   Guillaume Thirel [ctb] (<https://orcid.org/0000-0002-1444-1830>)
 Maintainer: Olivier Delaigue <airGR@inrae.fr>
 Repository: CRAN
-Date/Publication: 2021-06-07 15:50:02 UTC
+Date/Publication: 2021-08-06 08:20:10 UTC

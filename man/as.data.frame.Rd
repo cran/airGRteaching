@@ -1,6 +1,8 @@
 \encoding{UTF-8}
 \name{as.data.frame}
-\alias{as.data.frame.airGRt}
+\alias{as.data.frame.PrepGR}
+\alias{as.data.frame.CalGR}
+\alias{as.data.frame.SimGR}
 \alias{as.data.frame}
 
 
@@ -11,12 +13,16 @@
 
 
 \usage{
-\method{as.data.frame}{airGRt}(x, row.names = NULL, ...)
+\method{as.data.frame}{PrepGR}(x, row.names = NULL, ...)
+
+\method{as.data.frame}{CalGR}(x, row.names = NULL, ...)
+
+\method{as.data.frame}{SimGR}(x, row.names = NULL, ...)
 }
 
 
 \arguments{
-  \item{x}{[object of class \emph{airGRt}] typically an object of class \code{\link{PrepGR}}, \code{\link{CalGR}} or \code{\link{SimGR}}}
+  \item{x}{[\code{\link{PrepGR}}], [\code{\link{CalGR}}] or [\code{\link{SimGR}}] objects}
   \item{row.names}{\code{NULL} or a character vector giving the row names for the data.frame. Missing values are not allowed}
   \item{...}{additional arguments to be passed to or from methods}
 }

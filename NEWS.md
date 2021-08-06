@@ -4,11 +4,40 @@
 
 
 
-### 0.2.11 Release Notes (2021-06-04)
+### 0.2.12 Release Notes (2021-08-06)
 
 #### Bug fixes
 
-- Fix `ShinyGR()` when the date column of `ObsDF` has another name as 'DatesR'. ([#38](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/38))
+- bug fixed in the GUI launched by `ShinyGR()`, it is possible to the export the GR2M model diagram PNG file again. ([#40](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/40))
+- bug fixed in `SimGR()` which can now simulate a period with no observed flow. Previously, it could only be run in this case when the observed flow was missing from the output of `PrepGR()` on the whole period and not just on a subperiod. ([#43](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/43))
+
+
+#### User-visible changes
+
+- displaying a message when the package is attached from RStudio and also when the GUI is launched by `ShinyGR()` in order to warn users about GUI instability problems. ([#46](https://gitlab.irstea.fr/HYCAR-Hydro/airgr/-/issues/46))
+- added explanation of the use of the GR5H model in the `PrepGR()` help page. ([#41](https://gitlab.irstea.fr/HYCAR-Hydro/airgr/-/issues/41))
+- the text relating to the GR2M model in the 'GUI Help' image displayed by the GUI launched by `ShinyGR()` is corrected. ([#42](https://gitlab.irstea.fr/HYCAR-Hydro/airgr/-/issues/42))
+- replace the use of `class()` by `inherits()` in order to test the classes of inputs in all functions. ([#45](https://gitlab.irstea.fr/HYCAR-Hydro/airgr/-/issues/45))
+
+
+#### Version control and issue tracking
+
+- automatic tests implemented in the package. ([#44](https://gitlab.irstea.fr/HYCAR-Hydro/airgr/-/issues/44))
+
+____________________________________________________________________________________
+
+
+### 0.2.11 Release Notes (2021-06-07)
+
+#### Bug fixes
+
+- bug fixed in `ShinyGR()` when the date column of `ObsDF` has another name as 'DatesR'. ([#38](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/38))
+
+
+#### User-visible changes
+
+- the `as.data.frame` S3 methods have been set for classes `PrepGR`, `CalGR` and `SimGR`. ([#39](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/39))
+- the useless `airGRt` class and the `as.data.frame.airGRt` S3 method no longer exist ([#39](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/39))
 
 ____________________________________________________________________________________
 
@@ -23,7 +52,7 @@ ________________________________________________________________________________
 
 #### Bug fixes
 
-- Fix `plot.PrepGR()` when all `Qobs` are missing. The function now displays an empty plot for the observed discharges. ([#35](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/35))
+- bug fixed in `plot.PrepGR()` when all `Qobs` are missing. The function now displays an empty plot for the observed discharges ([#35](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/35))
 
 
 #### User-visible changes
@@ -66,7 +95,7 @@ ________________________________________________________________________________
 
 #### CRAN-compatibility updates
 
-- when the package is loaded or when the `dyplot()` and the `ShinyGR()` function are used, a message warns the users if they use a version of 'htmlwidgets' < 1.5.2.9000. The latest version of this package, available on GitHub, avoids troubles with the use of dynamic graphics of the 'dygraphs' package (called by the `dyplot*()` and the `ShinyGR()` functions) ([#5](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/5))
+- when the package is attached or when the `dyplot()` and the `ShinyGR()` function are used, a message warns the users if they use a version of 'htmlwidgets' < 1.5.2.9000. The latest version of this package, available on GitHub, avoids troubles with the use of dynamic graphics of the 'dygraphs' package (called by the `dyplot*()` and the `ShinyGR()` functions) ([#5](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/5))
 
 ____________________________________________________________________________________
 

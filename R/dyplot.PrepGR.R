@@ -1,6 +1,6 @@
 dyplot.PrepGR <- function(x, ...) {
 
-  if (! any(class(x) %in% "PrepGR")) {
+  if (!inherits(x, "PrepGR")) {
     stop("Non convenient data for x argument. Must be of class \"PrepGR\"")
   }
 

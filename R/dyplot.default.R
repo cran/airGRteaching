@@ -7,7 +7,7 @@ dyplot.default <- function(x, Qsup = NULL, Qsup.name = "Qsup",
   # barChartPrecip <- scan(file = system.file("plugins/barChartPrecip.js", package = "airGRteaching"),
   #                        what = "character", quiet = TRUE)
 
-  if (! any(class(x) %in% c("PrepGR", "CalGR", "SimGR"))) {
+  if (!inherits(x, c("PrepGR", "CalGR", "SimGR"))) {
     stop("Non convenient data for x argument. Must be of class \"PrepGR\", \"CalGR\" or \"SimGR\"")
   }
 
@@ -34,7 +34,7 @@ dyplot.default <- function(x, Qsup = NULL, Qsup.name = "Qsup",
   }
 
 
-  if (any(class(x) %in% "PrepGR")) {
+  if (inherits(x, "PrepGR")) {
     data <- data.frame(DatesR = x$InputsModel$DatesR,
                        Precip = x$InputsModel$Precip,
                        Qobs   = x$Qobs,

@@ -44,7 +44,7 @@ PrepGR <- function(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL, Q
                         TempMean = TempMean)
   }
 
-  if (! any(attributes(ObsDF$DatesR[1])$tzone %in%  "UTC")) {
+  if (!any(attributes(ObsDF$DatesR[1])$tzone %in%  "UTC")) {
     stop("Non convenient date format. Time zone must be defined as \"UTC\"")
   }
 
@@ -67,7 +67,7 @@ PrepGR <- function(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL, Q
 
 
   PrepGR <- list(InputsModel = MOD_obs, Qobs = ObsDF$Qobs, TypeModel = TypeModel)
-  class(PrepGR) <- c("PrepGR", "GR", "airGRt")
+  class(PrepGR) <- c("PrepGR", "GR")
   return(PrepGR)
 
 }

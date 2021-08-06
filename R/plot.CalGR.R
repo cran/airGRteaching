@@ -1,9 +1,9 @@
 plot.CalGR <- function(x, xlab = NULL, ylab =  NULL, main = NULL, which = c("perf", "iter", "ts"), ...) {
 
-  if (! any(class(x) %in% "CalGR")) {
+  if (!inherits(x, "CalGR")) {
     stop("Non convenient data for x argument. Must be of class \"CalGR\"")
   }
-  if (! any(which %in% c("perf", "iter", "ts"))) {
+  if (!any(which %in% c("perf", "iter", "ts"))) {
     stop("Non convenient data for which argument. Must be of class \"perf\", \"iter\" or \"ts\"")
   }
 

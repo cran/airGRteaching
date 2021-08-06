@@ -1,7 +1,7 @@
 plot.PrepGR <- function(x, type = "l", col.Precip = "royalblue", col.Q = "black", col.na = "grey",
                        xlab = NULL, ylab =  NULL, main = NULL, plot.na = TRUE, ...) {
 
-  if (! any(class(x) %in% "PrepGR")) {
+  if (!inherits(x, "PrepGR")) {
     stop("Non convenient data for x argument. Must be of class \"PrepGR\"")
   }
 

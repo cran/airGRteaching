@@ -6,6 +6,12 @@
     base::packageStartupMessage("\tinstall.packages(\"remotes\")\n\tremotes::install_github(\"ramnathv/htmlwidgets\")")
     base::packageStartupMessage("\n---------------------------\n")
   }
+  if (.Platform$GUI == "RStudio") {
+    base::packageStartupMessage("\n---------------------------\n")
+    base::packageStartupMessage("The Shiny graphical user interface launched by the 'ShinyGR' function is sometimes unstable on latest versions of Rstudio")
+    base::packageStartupMessage("It is better to launch the GUI from the Rgui or from R into a terminal")
+    base::packageStartupMessage("\n---------------------------\n")
+  }
 }
 
 
@@ -81,7 +87,7 @@ if (getRversion() >= "2.15.1") {
   if (!is.list(x)) {
     x <- list(TypeModel = x)
   }
-  if (any(class(x) %in% c("PrepGR", "CalGR", "SimGR")) || names(x) %in% "TypeModel") {
+  if (inherits(x, c("PrepGR", "CalGR", "SimGR")) || names(x) %in% "TypeModel") {
     x <- x$TypeModel
   }
 
@@ -349,11 +355,11 @@ if (getRversion() >= "2.15.1") {
            y0 = y_interception, y1 = y_rendement)
 
   if (HydroModel != "GR2M") {
-  # Ecriture
-  plotrix::boxed.labels(x = xy_P[1], y = y_interception, labels = "Pn",
-                        bg = col_mod_bg, border = NA, xpad = xpad, ypad = ypad)
-  plotrix::boxed.labels(x = xy_E[1], y = y_interception, labels = "En",
-                        bg = col_mod_bg, border = NA, xpad = xpad, ypad = ypad)
+    # Ecriture
+    plotrix::boxed.labels(x = xy_P[1], y = y_interception, labels = "Pn",
+                          bg = col_mod_bg, border = NA, xpad = xpad, ypad = ypad)
+    plotrix::boxed.labels(x = xy_E[1], y = y_interception, labels = "En",
+                          bg = col_mod_bg, border = NA, xpad = xpad, ypad = ypad)
   }
 
   # ETP
@@ -736,9 +742,9 @@ if (getRversion() >= "2.15.1") {
              y0 = xy_min_EXPO[2], y1 = xy_min_EXPO[2]-logExpMax*fact_resExp-tmp_triche)
     text(x = 30, y = xy_min_EXPO[2]+00, labels = "Exp.\nstore", cex = 1.4, pos = 4)
     points(x = 180, y = xy_min_EXPO[2]+20, pch = 43, # +
-         cex = 2.0, col = "#10B510")
+           cex = 2.0, col = "#10B510")
     points(x = 178, y = xy_min_EXPO[2]-20, pch = 95, # -
-         cex = 1.6, col = "#FF0303")
+           cex = 1.6, col = "#FF0303")
 
     # Valeur de QrExp
     if (OutputsModel$QR[i_pdt] != 0) {
@@ -774,23 +780,23 @@ if (getRversion() >= "2.15.1") {
   # --------------------------------------------------------------------------------
 
   if (HydroModel != "GR2M") {
-  # Actual exchange Q9
-  arrows(x0 = xy_min_ROUT[1]+base_res, x1 = 1025,
-         y0 = y_Ech_Q9               , y1 = y_Ech_Q9,
-         length = 0.075, angle = 20, code = 3)
-  pch <- ifelse(OutputsModel$AExch1[i_pdt] < 0, tri_R, tri_L)
-  points(x = xy_min_ROUT[1]+base_res+130, y = y_Ech_Q9,
-         type = "p", pch = pch, col = col_P,
-         cex = cex_tri(OutputsModel$AExch1[i_pdt], fact = fact_triangle, max = cex_max_poly))
+    # Actual exchange Q9
+    arrows(x0 = xy_min_ROUT[1]+base_res, x1 = 1025,
+           y0 = y_Ech_Q9               , y1 = y_Ech_Q9,
+           length = 0.075, angle = 20, code = 3)
+    pch <- ifelse(OutputsModel$AExch1[i_pdt] < 0, tri_R, tri_L)
+    points(x = xy_min_ROUT[1]+base_res+130, y = y_Ech_Q9,
+           type = "p", pch = pch, col = col_P,
+           cex = cex_tri(OutputsModel$AExch1[i_pdt], fact = fact_triangle, max = cex_max_poly))
 
-  # Actual exchange Q1
-  arrows(x0 = xy_Q1[1], x1 = 1025,
-         y0 = y_Ech_Q1, y1 = y_Ech_Q1,
-         length = 0.075, angle = 20, code = 3)
-  pch <- ifelse(OutputsModel$AExch2[i_pdt] < 0, tri_R, tri_L)
-  points(x = xy_Q1[1]+100, y = y_Ech_Q1,
-         type = "p", pch = pch, col = col_P,
-         cex = cex_tri(OutputsModel$AExch2[i_pdt], fact = fact_triangle, max = cex_max_poly))
+    # Actual exchange Q1
+    arrows(x0 = xy_Q1[1], x1 = 1025,
+           y0 = y_Ech_Q1, y1 = y_Ech_Q1,
+           length = 0.075, angle = 20, code = 3)
+    pch <- ifelse(OutputsModel$AExch2[i_pdt] < 0, tri_R, tri_L)
+    points(x = xy_Q1[1]+100, y = y_Ech_Q1,
+           type = "p", pch = pch, col = col_P,
+           cex = cex_tri(OutputsModel$AExch2[i_pdt], fact = fact_triangle, max = cex_max_poly))
   }
 
   if (HydroModel == "GR2M") {
@@ -798,14 +804,14 @@ if (getRversion() >= "2.15.1") {
     arrows(x0 = xy_min_ROUT[1]+base_res, x1 = 1025,
            y0 = y_Ech_Q9               , y1 = y_Ech_Q9,
            length = 0.075, angle = 20, code = 3)
-    pch <- ifelse(OutputsModel$Exch[i_pdt] < 0, tri_R, tri_L)
+    pch <- ifelse(OutputsModel$AExch[i_pdt] < 0, tri_R, tri_L)
     points(x = xy_min_ROUT[1]+base_res+80, y = y_Ech_Q9,
            type = "p", pch = pch, col = col_P,
-           cex = cex_tri(OutputsModel$Exch[i_pdt], fact = fact_triangle, max = cex_max_poly))
+           cex = cex_tri(OutputsModel$AExch[i_pdt], fact = fact_triangle, max = cex_max_poly))
   }
 
   # Actual exchange Q9 exp.
-  if (HydroModel%in% c("GR6J")) {
+  if (HydroModel %in% c("GR6J")) {
     arrows(x0 = xy_min_EXPO[1]+base_res[1], x1 = 1025,
            y0 = xy_min_EXPO[2], y1 = xy_min_EXPO[2],
            length = 0.075, angle = 20, code = 3)
@@ -815,7 +821,7 @@ if (getRversion() >= "2.15.1") {
            cex = cex_tri(OutputsModel$Exch[i_pdt], fact = fact_triangle, max = cex_max_poly))
   }
 
-  if (HydroModel%in% c("GR4J", "GR6J")) {
+  if (HydroModel %in% c("GR4J", "GR6J")) {
 
     # --------------------------------------------------------------------------------
     # UH 1 & 2 PLOT

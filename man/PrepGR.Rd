@@ -63,7 +63,9 @@ function
 
 \details{
 If the \code{ObsDF} argument is provided, \code{DatesR}, \code{Precip}, \code{PotEvap}, \code{Qobs} and \code{TempMean} are not necessary, and vice-versa. If one variable is provided in \code{ObsDF} and also separately, then only the data included in \code{ObsDF} are used.
-\cr \cr
+\cr\cr
+If \code{HydroModel = "GR5H"}, by default, this model is used without the interception store (i.e. without specifying \code{Imax}; see \code{\link[airGR]{RunModel_GR5H}}).
+\cr\cr
 If the \code{CemaNeige} argument is set to \code{TRUE}, the default version of CemaNeige is used (i.e. without the Linear Hysteresis, see the details part in \code{\link[airGR]{CreateRunOptions}}).
 \cr\cr
 The \code{PrepGR} function can be used even if no observed discharges are available. In this case, it is necessary to provide observed discharges time series equal to NA: this means that either the \code{ObsDF} observed discharges column or the \code{Qobs} arguments, depending on the format of data you provide, must be provided and filled with NAs.

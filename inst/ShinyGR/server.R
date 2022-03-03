@@ -176,7 +176,7 @@ shinyServer(function(input, output, session) {
       CAL_click$valueButton <- CAL_click$valueButton - 1
       CAL_click$valueButton <- ifelse(CAL_click$valueButton < -1, -1, CAL_click$valueButton)
       if (CAL_click$valueButton < 0) {
-        updateActionButton(session, inputId = "CalButton", label = "Run", icon = icon("refresh"))
+        updateActionButton(session, inputId = "CalButton", label = "Run", icon = icon("sync"))
         if (!getPrep()$isUngauged) {
           shinyjs::enable("CalButton")
         }
@@ -1110,7 +1110,7 @@ shinyServer(function(input, output, session) {
           PngTitleMD <- gsub(", C1", "\nC1", PngTitleMD)
         }
 
-        par(oma = c(0, 0, marginTop, 0))
+        par(oma = c(0, 1, marginTop, 1))
         .DiagramGR(OutputsModel = getData()$OutputsModel, Param = getSim()$PARAM,
                    SimPer = input$Period, EventDate = dateEvent,
                    HydroModel = input$HydroModel, CemaNeige = input$SnowModel == "CemaNeige")

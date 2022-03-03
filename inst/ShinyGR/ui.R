@@ -33,7 +33,7 @@ navbarPage(title       = div("airGRteaching",
 
 
            tabPanel(title = "Modelling",
-                    icon  = icon("area-chart"),
+                    icon  = icon("chart-area"),
                     shinyjs::useShinyjs(), # set up shinyjs
 
 
@@ -132,7 +132,7 @@ navbarPage(title       = div("airGRteaching",
                                                                                choices = c("NSE [Q]", "NSE [sqrt(Q)]", "NSE [1/Q]",
                                                                                            "KGE [Q]", "KGE [sqrt(Q)]", "KGE [1/Q]"))),
                                                  column(width = 6, actionButton("CalButton", label = "Run", width = "100%",
-                                                                                icon = icon("refresh"),
+                                                                                icon = icon("sync"),
                                                                                 style = ifelse(.GlobalEnv$.ShinyGR.args$theme != "Cerulean",
                                                                                                "color:#ffffff; background-color:#A4C400; border-color:#A4C400; margin-top:25px; padding:6px;",
                                                                                                "color:#565656; background-color:#ECF0F1; border-color:#DCDCDC; margin-top:25px; padding:6px;")))
@@ -248,7 +248,7 @@ navbarPage(title       = div("airGRteaching",
                                                         title = "Click to open in a new window")))),
                       ),
                       tabPanel(title = "About",
-                               icon  = icon("navicon"),
+                               icon  = icon("bars"),
                                fluidRow(column(width = 6, includeMarkdown("www/tab_about.md")),
                                         column(width = 5, includeMarkdown("www/tab_authors.md"))),
                       )

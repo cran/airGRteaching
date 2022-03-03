@@ -2,8 +2,6 @@ ShinyGR <- function(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL, 
                     ZInputs = NULL, HypsoData = NULL, NLayers = 5, SimPer, NamesObsBV = NULL,
                     theme = "RStudio") {
 
-  .onAttach()
-
   theme <- match.arg(arg = theme,
                      choices = c("RStudio", "Cerulean", "Cyborg", "Flatly", "Inrae", "Saclay", "United", "Yeti"))
 

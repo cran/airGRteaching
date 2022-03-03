@@ -12,7 +12,7 @@ PrepGR <- function(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL, Q
 
   if (!is.null(ObsDF)) {
     if (ncol(ObsDF) >= 5) {
-      TempMean <- ObsDF[, 5L]
+      TempMean <- ObsDF[, 5L, drop = TRUE]
     }
   }
 
@@ -37,10 +37,10 @@ PrepGR <- function(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL, Q
   }
 
   if (!is.null(ObsDF)) {
-    ObsDF <- data.frame(DatesR   = ObsDF[, 1L],
-                        Precip   = ObsDF[, 2L],
-                        PotEvap  = ObsDF[, 3L],
-                        Qobs     = ObsDF[, 4L],
+    ObsDF <- data.frame(DatesR   = ObsDF[, 1L, drop = TRUE],
+                        Precip   = ObsDF[, 2L, drop = TRUE],
+                        PotEvap  = ObsDF[, 3L, drop = TRUE],
+                        Qobs     = ObsDF[, 4L, drop = TRUE],
                         TempMean = TempMean)
   }
 

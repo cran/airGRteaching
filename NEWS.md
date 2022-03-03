@@ -4,7 +4,35 @@
 
 
 
+### 0.2.13 Release Notes (2022-02-03)
+
+
+#### Bug fixes
+
+- bug fixed in `PrepGR()` and by consequence in `ShinyGR()` when the dataset given to the `ObsDF` argument is a `tibble` object. ([#49](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/49))
+
+
+#### User-visible changes
+
+- in order to avoid duplicated warning messages, the use of the `.onAttach()` command has been removed from the `ShinyGR()` function, because it is already call from the `dyplot()` function which is use in `ShinyGR()`. ([#50](https://gitlab.irstea.fr/HYCAR-Hydro/airgr/-/issues/50))
+- the 'Model diagram' plot exported from the GUI launched by `ShinyGR()` has been resized to avoid to wide title when the the parameter values are large. ([#54](https://gitlab.irstea.fr/HYCAR-Hydro/airgr/-/issues/54))
+- the deprecated icon names from 'Font Awesome' have been updated to avoid warning messages when the `ShinyGR()` function is used. ([#51](https://gitlab.irstea.fr/HYCAR-Hydro/airgr/-/issues/51))
+
+
+#### Version control and issue tracking
+
+- the CI/CD runner now uses a R docker image. ([#55](https://gitlab.irstea.fr/HYCAR-Hydro/airgr/-/issues/55))
+
+
+#### CRAN-compatibility updates
+
+- The `FUN_CRIT` deprecated argument (since 'airGR' 1.2.13.16) has been removed from the use of `Calibration()` call by the `CalGR()` function. ([#56](https://gitlab.irstea.fr/HYCAR-Hydro/airgr/-/issues/56))
+
+____________________________________________________________________________________
+
+
 ### 0.2.12 Release Notes (2021-08-06)
+
 
 #### Bug fixes
 
@@ -28,6 +56,7 @@ ________________________________________________________________________________
 
 
 ### 0.2.11 Release Notes (2021-06-07)
+
 
 #### Bug fixes
 
@@ -139,6 +168,7 @@ ________________________________________________________________________________
 
 
 ### 0.2.6.29 Release Notes (2019-05-02)
+
 
 #### Bug fixes
 
@@ -273,7 +303,6 @@ ________________________________________________________________________________
 - bug fixed to disable calibration when there is no Qobs in `ShinyGR()`
 
 
-
 #### User-visible changes
 
 - it is now possible to draw the model diagram in `ShinyGR()` using the GR6J model
@@ -294,7 +323,6 @@ ________________________________________________________________________________
 - in `ShinyGR()` background color defined to black when the Flatly theme is used
 - bug fixed in `ShinyGR()` when inputs are defined in vectors (not in a data.frame)
 - Psol et Pliq bars are reversed in `dyplot.default()`
-
 
 
 #### User-visible changes
@@ -385,6 +413,7 @@ ________________________________________________________________________________
 
 
 ### 0.1.3.9 Release Notes (2017-06-22)
+
 
 #### New features
 

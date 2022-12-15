@@ -1,0 +1,453 @@
+---
+title: "Reconstitution de débits"
+author: "Pierre Brigode & Olivier Delaigue"
+bibliography: 
+  - V00_airGRteaching_ref.bib
+  - airGR_galaxy.bib
+output: 
+  rmarkdown::html_vignette
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Reconstitution de débits}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+```{r, warning=FALSE, include=FALSE}
+R_bib <- toBibtex(citation())
+R_bib <- gsub("@Manual\\{", "@Manual{Rsoftware_man", R_bib)
+airGR_bib <- toBibtex(citation("airGR"))
+airGR_bib <- gsub("@Article\\{", "@Article{airGR_art", airGR_bib)
+airGR_bib <- gsub("@Manual\\{", "@Manual{airGR_man", airGR_bib)
+airGRteaching_bib <- toBibtex(citation("airGRteaching"))
+airGRteaching_bib <- gsub("@Manual\\{", "@Manual{airGRteaching_man", airGRteaching_bib)
+airGRteaching_bib <- gsub("@InProceedings\\{", "@InProceedings{airGRteaching_pcd", airGRteaching_bib)
+airGRdatasets_bib <- toBibtex(citation("airGRdatasets"))
+airGRdatasets_bib <- gsub("@Manual\\{", "@Manual{airGRdatasets_man", airGRdatasets_bib)
+options(encoding = "UTF-8")
+writeLines(text = c(R_bib, airGR_bib, airGRteaching_bib, airGRdatasets_bib), con = "airGR_galaxy.bib")
+options(encoding = "native.enc")
+```
+
+```{r, include=FALSE}
+formatGR      <- '<strong><font color="#0BA6AA">%s</font></strong>'
+GR            <- sprintf(formatGR, "GR")
+airGR         <- sprintf(formatGR, "airGR")
+airGRteaching <- sprintf(formatGR, "airGRteaching")
+```
+
+```{r, setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.path = "figure/")
+Sys.setlocale("LC_TIME", "fr_FR.UTF-8")
+library(airGRteaching)
+colorize <- function(x, color) {
+  if (knitr::is_latex_output()) {
+    sprintf("\\textcolor{%s}{%s}", color, x)
+  } else if (knitr::is_html_output()) {
+    sprintf("<span style='color: %s;'>%s</span>", color, x)
+  } else {
+    x
+  }
+}
+```
+
+```{r, format_ts_1, eval=TRUE, echo=FALSE, results='hide'}
+# Catchment data loading
+library(airGRdatasets)
+data("Y643401001", package = "airGRdatasets")
+
+# Catchment metadata
+str(Y643401001$Meta)
+
+# Observed daily time series
+ts_obs_d <- Y643401001$TS
+
+# Summary of the time series
+summary(ts_obs_d)
+```
+
+```{r, include=FALSE}
+area <- Y643401001$Meta$Area
+name_sta <- gsub("the ", "", Y643401001$Meta$Name)
+name_riv <- gsub("(the )(.*)( at.*)", "\\2", name_sta)
+year_na <- format(ts_obs_d[is.na(ts_obs_d$Qmmd), "Date"], format = "%Y")
+year_na <- names(sort(table(year_na), decreasing = TRUE)[1])
+```
+
+```{r, v01_set_per, eval=TRUE, echo=FALSE}
+# Calibration period
+per_cal_wup <- c("2003-01-01", "2004-12-01")
+per_cal_run <- c("2005-01-01", "2010-12-01")
+
+# Evaluation period 
+per_eva_wup <- c("2009-01-01", "2010-12-01")
+per_eva_run <- c("2011-01-01", "2018-12-01")
+
+# Simulation period
+per_sim_wup <- c("1999-01-01", "2000-12-01")
+per_sim_run <- c("2001-01-01", "2018-12-01")
+```
+
+```{r, v01_regime, eval=TRUE, echo=FALSE}
+# Monthly aggregation of observed daily time series
+ts_obs_m <- SeriesAggreg(ts_obs_d[, c("Date", "Ptot", "Evap", "Qmmd", "Temp")],
+                         Format = "%Y%m",
+                         ConvertFun = c("sum", "sum", "sum", "mean"))
+```
+
+```{r, eval=TRUE, echo=FALSE}
+# Information for the vignette
+per_all_pct <- range(ts_obs_m$Date)
+per_all_for <- format(range(ts_obs_m$Date), format = "%Y")
+per_cal_wup_pct <- as.POSIXct(per_cal_wup, tz = "UTC")
+per_cal_wup_for <- format(per_cal_wup_pct, format = "%B %Y")
+per_cal_run_pct <- as.POSIXct(per_cal_run, tz = "UTC")
+per_cal_run_for <- format(per_cal_run_pct, format = "%B %Y")
+per_eva_wup_pct <- as.POSIXct(per_eva_wup, tz = "UTC")
+per_eva_wup_for <- format(per_eva_wup_pct, format = "%B %Y")
+per_eva_run_pct <- as.POSIXct(per_eva_run, tz = "UTC")
+per_eva_run_for <- format(per_eva_run_pct, format = "%B %Y")
+per_sim_wup_pct <- as.POSIXct(per_sim_wup, tz = "UTC")
+per_sim_wup_for <- format(per_sim_wup_pct, format = "%B %Y")
+per_sim_run_pct <- as.POSIXct(per_sim_run, tz = "UTC")
+per_sim_run_for <- format(per_sim_run_pct, format = "%B %Y")
+```
+
+
+
+# Énoncé
+
+
+## Contexte
+
+Le bassin versant `r name_sta` est un bassin de `r round(area)` km² pour lequel les débits mesurés sont disponibles de `r per_all_for[1L]` à `r per_all_for[2L]`, mais avec quelques lacunes (notamment durant l'année `r year_na`).
+
+L’exercice consiste à utiliser les données hydro-climatiques disponibles sur le bassin versant de  et un modèle pluie-débit pour reconstituer les données manquantes par simulation hydrologique (cf. figure suivante). On doit pour cela s’assurer au préalable, par une procédure de calage-évaluation, que le modèle est d’un niveau de performance suffisant pour réaliser cet exercice de reconstitution.
+
+Ce travail sera réalisé en quatre étapes :
+
+1. Calage manuel du modèle pluie-débit (sur la période dite de "calage")
+2. Calage automatique du modèle pluie-débit (sur la période dite de "calage").
+3. Evaluation des jeux de paramètres obtenus (sur la période dite d' "évaluation").
+4. Reconstitution hydrologique par modélisation pluie-débit (sur la période dite de "simulation").
+
+```{r, v01_fig_presentation, echo=FALSE, eval=TRUE, fig.width=7*1.5, fig.height=3*1.5, dev.args=list(pointsize=12), out.width='98%'}
+ind_na <- as.matrix(airGRteaching:::.StartStop(ts_obs_m$Qmmd, FUN = is.na))
+
+plot(x = ts_obs_m$Date, y = ts_obs_m$Qmmd, 
+     xlab = "time [months]", ylab = "flow [mm/month]",
+     type = "l", lwd = 1, 
+     panel.first = rect(xleft  = ts_obs_m$Date[ind_na[, 1]], ybottom = -1e6, 
+                        xright = ts_obs_m$Date[ind_na[, 2]], ytop    = +1e6,
+                        col = "lightgrey", border = NA))
+text(x = ts_obs_m$Date[floor(apply(ind_na, MARGIN = 1, median))], 
+     y = quantile(range(ts_obs_m$Qmmd, na.rm = TRUE), probs = 0.75), 
+     labels = "?", cex = 8, font = 2, col = "orangered")
+```
+
+
+## Consignes
+
+Cette section vise à définir les conditions de calage et de simulation du modèle hydrologique (période de calage des paramètres, périodes d'initialisation du modèle, critère de calage, etc.).
+
+### Modèle pluie-débit
+
+Vous utiliserez le modèle GR2M [@mouelhi_stepwise_2006]. Il s'agit d'un modèle pluie-débit conceptuel et global, fonctionnant au pas de temps mensuel et possédant deux paramètres. Il nécessite en entrée des séries temporelles continues de précipitations et d'évapotranspirations potentielles (ETP) mensuelles.
+
+Ce modèle est utilisable facilement grâce au package `r airGRteaching` [@airGRteaching_man; @airGRteaching_pcd], développé pour le [logiciel R](https://cran.r-project.org/) par l'[équipe Hydrologie des bassins versants de l'unité de recherche HYCAR](https://webgr.inrae.fr/) ([INRAE](https://www.inrae.fr/), France).
+
+Les séries temporelles de précipitations, d'ETP et de débits peuvent être facilement mises en forme grâce à la fonction `PrepGR()`. On peut réaliser une simulation pluie-débit grâce à la fonction `SimGR()` et un calage des paramètres grâce à la fonction `CalGR()`. 
+
+### Période de calage (et d’initialisation)
+
+GR2M, comme de nombreux modèles pluie-débit conceptuels, est constitué de réservoirs, dont les niveaux initiaux en début de simulation sont inconnus et ne peuvent pas être estimés par mesure. On doit donc choisir ces niveaux initiaux de manière arbitraire (ou en se basant sur un a priori). Cela peut induire des erreurs fortes du modèle, dans le cas où les conditions initiales estimées s’écartent de ce qu’elles devraient être en fonction des conditions climatiques antérieures. Pour limiter ces erreurs, une période d'initialisation (également appelée période de mise en route, ou de \textit{warm-up} en anglais) est généralement considérée. Cette période, précédant la période de simulation, est utilisée pour permettre d'avoir des niveaux dans les réservoirs idnépendant de ces conditions initiales. Elle doit donc être plus longue que la mémoire du bassin aux conditions climatiques antérieures. Sur beaucoup de bassins versants, cette mémoire des conditions antérieures n’excède pas une année, mais sur d’autres présentant un comportement pluri-annuel, par exemple du fait de nappes, il peut être nécessaire de considérer plusieurs années pour l’initialisation du modèle. Durant cette période d'initialisation, les erreurs du modèle ne sont pas utilisées dans le calcul des critères de performance. Cela signifie qu’il n’est pas nécessaire de disposer de données de débit observé sur la période d’initialisation, mais seulement de données climatiques.  
+
+Dans cet exercice, une période de  `r as.numeric(round(diff(per_cal_wup_pct)/365.2425*12+1))` mois sera considérée, et débutera en `r per_cal_wup_for[1L]` et s'achèvera en `r per_cal_wup_for[2L]`. Le pas de temps suivant (`r per_cal_run_for[1L]`) constituera le premier pas de temps du calage du modèle.
+
+La période à considérer pour caler les paramètres de GR2M sur le bassin versant débute de ce fait en `r per_cal_run_for[1L]` et s'achèvera en `r per_cal_run_for[2L]`. 
+
+### Critère de calage
+
+Le critère de calage considéré dans cet exercice est le critère de Nash et Sutcliffe [@nash_river_1970], noté $NSE$ par la suite (cf. équation suivante). Ce critère est largement utilisé en modélisation hydrologique.
+
+Le critère NSE, borné entre $-\infty$ et $1$, permet de quantifier la performance d’un modèle de manière relative, en comparant une série de débits simulés avec un modèle dit "naïf", ici la moyenne des débits observés (i.e. une série de débits constituée en chaque pas de temps par la moyenne des débits observés). Ainsi, une valeur de NSE égale à 1 signifie une concordance parfaite entre les séries de débits observés et simulés (ce qui n'est jamais le cas), alors qu’une valeur de NSE inférieure à 0 signifie que la simulation considérée est moins performante que la simulation du modèle "naïf". Le calcul de $NSE$ est détaillé dans l’équation suivante, dans laquelle $Q_{obs,t}$ est le débit observé au pas de temps $t$, $Q_{sim,t}$ est le débit simulé au pas de temps $t$, $\overline{Q_{obs}}$ est la moyenne des débits observés, et $n$ est le nombre d’observations :
+
+\begin{equation}
+NSE = 1-\frac{\sum_{t=1}^{n}(Q_{obs,t}-Q_{sim,t})^{2}}{\sum_{t=1}^{n}(Q_{obs,t}-\overline{Q_{obs}})^{2}}
+\end{equation}
+
+Les différents éléments nécessaires pour le calcul du critère de calage doivent être renseignés en argument de la fonction `CalGR()`.
+
+### Estimation manuelle des paramètres de GR2M
+
+Cette tâche, pouvant être fastidieuse (mais très formatrice) et nécessitant une expertise certaine, est à réaliser en testant plusieurs jeux de paramètres de GR2M et en analysant la qualité des simulations produites sur la période de calage. Dans cet exercice, un maximum de 10 jeux de paramètres du modèle seront à tester. Le premier jeu de paramètres à tester est constitué des valeurs médianes des paramètres de GR2M, définies par @mouelhi_stepwise_2006 après de nombreux calages du modèle sur différents bassins versants. Ces valeurs ainsi que les bornes de variations associées sont égales à : 
+
+* X1 : 380 [mm] (140 [mm] $\leq$ X1 $\leq$ 2640 [mm]) ;
+* X2 : 0.92 [-] (0.21 [-] $\leq$ X2 $\leq$ 1.31 [-]).
+
+### Calage automatique des paramètres de GR2M
+
+L'estimation automatique de paramètres vise à utiliser un algorithme de recherche dans l’espace des paramètres. Cet algorithme va générer automatiquement des jeux de paramètres, les tester, et en générer d'autres en fonction des performances de ceux d'ores et déjà testés, jusqu’à converger vers un optimum. L'algorithme développé par @michel_hydrologie_1991 sera utilisé dans cet exercice.
+
+### Période d'évaluation
+
+La période d'évaluation (ou de contrôle) est une période sur laquelle on applique un modèle préalablement calé sur une autre période. Il s’agit d’un mode d’utilisation classique d’un modèle, que l’on confronte à des situations inconnues. L'indépendance de la période d'évaluation par rapport à celle de calage permet de garantir que le modèle ne bénéficie pas d’information déjà connue. L’objectif de ce test est d’évaluer si le modèle est capable dans de nouvelles conditions climatiques, de maintenir le même niveau de performance (donc d’erreur) que celui rencontré en calage. Si oui, on peut estimer que les paramètres du modèle dépendent peu des conditions de la période de calage et donc que le modèle est transposable à des conditions différentes (on dit qu’il est robuste). Si non, il faut rechercher les causes de cette baisse de performance. 
+
+Sur cette période d'évaluation, on peut évaluer les performances du modèle avec le même critère que celui utilisé pour le calage, mais on peut aussi compléter l’analyse avec d’autres critères.
+
+Dans cet exercice, la période d'évaluation débutera en `r per_eva_run_for[1L]`, s'achèvera en `r per_eva_run_for[2L]`, et sera précédée par une période d'initilisation débutant en `r per_eva_wup_for[1L]` et s'achevant en `r per_eva_wup_for[2L]`.
+
+### Période de simulation
+
+La simulation finale vise, pour cet exercice, à reconstituer les débits du bassin versant `r name_sta` pour les mois sans mesures. Afin d'avoir une seule simulation couvrant l'ensemble de la période étudiée, cette simulation débutera en `r per_sim_run_for[1L]` et s'achèvera en `r per_sim_run_for[2L]`, avec une période d'initialisation de 24 mois débutant en `r per_sim_wup_for[1L]` et s'achevant en `r per_sim_wup_for[2L]`.
+
+
+## Données disponibles
+
+Les données disponibles pour la modélisation pluie-débit sont les suivantes :
+
+* une chronique journalière de précipitations totales (liquides + solides) [mm/jour] (`Ptot`);
+* une chronique journalière d’ETP calculée grâce à la formule d’@oudin_which_2005 [mm/jour] (`Evap`);
+* une chronique journalière de débits exprimés en lame d'eau [mm/jour] (`Qmmd`).
+
+Les séries temporelles journalières peuvent être agrégées au pas de temps mensuel grâce à la fonction `SeriesAggreg()`.
+
+
+
+# Éléments de correction
+
+
+## Chargement et mise en forme des données
+
+Les lignes de codes présentées ci-après permettent de lire les données nécessaires au calage du modèle pluie-débit GR2M et de définir les périodes temporelles de travail (période d’initialisation, période de calage et période d'évaluation) :
+
+```{r, format_ts_1, echo=TRUE}
+```
+
+```{r, v01_set_per, echo=TRUE}
+```
+
+
+## Préparation des données pour GR2M
+
+Les lignes de codes présentées ci-après visent à préparer les données disponibles pour leur utilisation par GR2M, grâce à aux fonctions `SeriesAggreg()` et `PrepGR()`.
+
+```{r, v01_regime, echo=TRUE}
+```
+
+```{r, echo=TRUE, eval=TRUE, warning=FALSE}
+# Data processing for GR2M
+prep <- PrepGR(DatesR     = ts_obs_m$Date,
+               Precip     = ts_obs_m$Ptot,
+               PotEvap    = ts_obs_m$Evap, 
+               Qobs       = ts_obs_m$Qmmd,
+               HydroModel = "GR2M", 
+               CemaNeige  = FALSE)
+```
+
+
+## Calage manuel
+
+Les lignes de code présentées ci-après illustrent les étapes nécessaires pour réaliser une simulation pluie-débit à partir d'un jeu de paramètres donné (ici le jeu constitué des valeurs par défault de GR2M) et pour calculer le critère NSE associé à cette simulation.
+
+```{r, echo=TRUE, eval=TRUE}
+# Parameter set to test
+i_param_gr2m <- c(X1 = 380, X2 = 0.92)
+
+# Simulation over the calibration period
+i_sim_manu <- SimGR(PrepGR  = prep, 
+                    Param   = i_param_gr2m,
+                    EffCrit = "NSE",
+                    WupPer  = per_cal_wup, 
+                    SimPer  = per_cal_run,
+                    verbose = TRUE)
+```
+
+```{r, echo=TRUE, eval=TRUE}
+# Calibration criterion
+GetCrit(i_sim_manu)
+```
+
+```{r, v01_fig_cal_manu_gr2m, echo=TRUE, eval=TRUE, warning=FALSE, fig.width=7*1.5, fig.height=5*1.5, dev.args=list(pointsize=16), out.width='98%'}
+# Graphical assessment of the calibration performance
+plot(i_sim_manu)
+```
+
+Le premier jeu de paramères testé (valeurs de GR2M par défaut) permet d'obtenir un critère NSE de `r round(GetCrit(i_sim_manu), digits = 3)`, ce qui est une bonne performance générale. La figure précédente permet, quant à elle, de comparer la simulation obtenue avec les débits observés.
+
+À vous de jouer désormais ! Le jeu consiste à tester différentes valeurs des paramètres de GR2M, de réaliser une simulation et de calculer le critère NSE pour chaque jeu testé afin d'identifier le jeu semblant être optimal. L'analyse des hydrogrammes simulés, couplée à la comparaison de valeurs de NSE, permettra de "guider" la modification des valeurs des paramètres. Pour ce faire, vous pouvez intégrer le code précédent dans une boucle. À chaque itération, vous testez un nouveau jeu de paramètres et calculez le critère correspondant. Vous pouvez ainsi trouver le "meilleur" jeu de paramètres.
+
+
+## Calage automatique
+
+Les lignes de codes présentées ci-après permettent de caler le modèle GR2M sur la période dite de "calage".
+
+```{r, v01_fig_cal_auto_gr2m, echo=TRUE, eval=TRUE, fig.width=7*1.5, fig.height=5*1.5, dev.args=list(pointsize=16), out.width='98%'}
+# Calibration
+cal_auto <- CalGR(PrepGR  = prep, 
+                  CalCrit = "NSE",
+                  WupPer  = per_cal_wup, 
+                  CalPer  = per_cal_run,
+                  verbose = TRUE)
+
+# Graphical assessment of the calibration performance
+plot(cal_auto)
+```
+
+```{r, echo=TRUE, eval=TRUE}
+# Get parameter values
+param_cal <- GetParam(cal_auto)
+param_cal
+```
+
+```{r, echo=TRUE, eval=TRUE}
+# Get criterion value
+GetCrit(cal_auto)
+```
+
+Les deux paramètres et la valeur du critère de calage ($NSE$) obtenus après la procédure de calage automatique sont :
+
+* X1 = `r round(param_cal[1], digits = 0)` [mm]
+* X2 = `r round(param_cal[2], digits = 3)` [-]
+* $NSE$ = `r round(GetCrit(cal_auto), digits = 3)` [-]
+
+Les performances obtenues en calage sont jugées bonnes, avec un critère $NSE$ égal à `r round(GetCrit(cal_auto), digits = 3)`.
+
+Les lignes de codes présentées ci-après permettent de stocker dans un même tableau les débits observés et les débits simulés avec le jeu de paramètres obtenu par calage automatique, afin de les comparer.
+
+```{r, v01_ts_q, echo=TRUE, eval=TRUE}
+# Combination of observed and simulated streamflow time series on the calibration period
+ts_cal <- as.data.frame(cal_auto)
+
+# Combination of observed and simulated streamflow time series on the entire period
+ts_cal_all <- merge(x = ts_obs_m[, "Date", drop = FALSE], y = ts_cal, 
+                    by.x = "Date", by.y = "Dates", 
+                    all.x = TRUE)
+```
+
+La figure suivante représente les séries de débits observés et simulés sur la période de calage.
+
+```{r, v01_fig_cal, echo=FALSE, eval=TRUE, fig.width=7*1.5, fig.height=3*1.5, dev.args=list(pointsize=12), out.width='98%'}
+ind_wup <- ts_obs_m$Date >= per_cal_wup_pct[1] & ts_obs_m$Date <= per_cal_run_pct[1]
+ind_wup <- range(which(ind_wup))
+
+plot(x = ts_obs_m$Date, y = ts_obs_m$Qmmd, 
+     xlab = "time [months]", ylab = "flow [mm/month]",
+     main = "Simulation on the calibration period",
+     type = "l", lwd = 1, 
+     panel.first = list(rect(xleft  = ts_obs_m$Date[ind_na[, 1]], ybottom = -1e6, 
+                             xright = ts_obs_m$Date[ind_na[, 2]], ytop    = +1e6,
+                             col = "lightgrey", border = NA),
+                        rect(xleft  = ts_obs_m$Date[ind_wup[1]], ybottom = -1e6, 
+                             xright = ts_obs_m$Date[ind_wup[2]], ytop    = +1e6,
+                             col = adjustcolor("orangered", 0.6), border = NA)))
+lines(ts_cal$Date, ts_cal$Qsim, lwd = 1, col = "orangered")
+
+legend("topright", 
+       legend = c("Qobs", "Qsim", "warm-up", "NA"), 
+       pch = c(NA, NA, 15, 15), 
+       lwd = c(1, 1, NA, NA), pt.cex = c(NA, NA, 2, 2), 
+       col = c("black", "orangered", adjustcolor("orangered", 0.6), "lightgray"),
+       bg = "white")
+```
+
+
+## Evaluation
+
+Les lignes de codes présentées ci-après permettent d’utiliser le jeu de paramètres obtenus par calage automatique pour réaliser une simulation sur la période d'évaluation (`r paste(format(per_eva_run_pct, format = "%Y"), sep = "", collapse = "-")`) et de calculer le score $NSE$ associé à cette simulation. Ce score constitue la performance en "contrôle" du modèle.
+
+```{r, v01_eval, echo=TRUE, eval=TRUE}
+# Simulation over the evaluation period
+eva <- SimGR(PrepGR  = prep, 
+             Param   = param_cal,
+             WupPer  = per_eva_wup, 
+             SimPer  = per_eva_run,
+             EffCrit = "NSE",
+             verbose = FALSE)
+
+# Get the criterion value
+GetCrit(eva)
+
+# Combination of observed and simulated streamflow time series
+ts_eva <- as.data.frame(eva)
+```
+
+La performance obtenue par le modèle en évaluation est de `r round(GetCrit(eva), digits = 3)`.
+
+La figure suivante représente les séries de débits observés et simulés sur la période d'évaluation.
+
+```{r, v01_fig_eval, echo=FALSE, eval=TRUE, fig.width=7*1.5, fig.height=3*1.5, dev.args=list(pointsize=12), out.width='98%'}
+ind_wup <- range(which(ts_obs_m$Date >= per_eva_wup_pct[1] & ts_obs_m$Date <= per_eva_run_pct[1]))
+
+plot(x = ts_obs_m$Date, y = ts_obs_m$Qmmd, 
+     xlab = "time [months]", ylab = "flow [mm/month]",
+     main = "Simulation on the evaluation period",
+     type = "l", lwd = 1, 
+     panel.first = list(rect(xleft  = ts_obs_m$Date[ind_na[, 1]], ybottom = -1e6, 
+                             xright = ts_obs_m$Date[ind_na[, 2]], ytop    = +1e6,
+                             col = "lightgrey", border = NA),
+                        rect(xleft  = ts_obs_m$Date[ind_wup[1]], ybottom = -1e6, 
+                             xright = ts_obs_m$Date[ind_wup[2]], ytop    = +1e6,
+                             col = adjustcolor("orangered", 0.6), border = NA)))
+lines(ts_eva$Date, ts_eva$Qsim, lwd = 1, col = "orangered")
+
+legend("topright", 
+       legend = c("Qobs", "Qsim", "warm-up", "NA"), 
+       pch = c(NA, NA, 15, 15), 
+       lwd = c(1, 1, NA, NA), pt.cex = c(NA, NA, 2, 2), 
+       col = c("black", "orangered",  adjustcolor("orangered", 0.6), "lightgray"),
+       bg = "white")
+```
+
+
+## Reconstitution
+
+Les lignes de codes présentées ci-après permettent d’utiliser les paramètres obtenus par calage automatique pour simuler le débit sur l'ensemble de la période étudiée.
+
+```{r, v01_sim, echo=TRUE, eval=TRUE}
+# Simulation over the entire period
+sim <- SimGR(PrepGR  = prep, 
+             Param   = param_cal,
+             WupPer  = per_sim_wup, 
+             SimPer  = per_sim_run,
+             EffCrit = "NSE",
+             verbose = FALSE)
+```
+
+```{r, echo=TRUE, eval=TRUE}
+# Get the criterion value
+GetCrit(sim)
+
+# Combination of observed and simulated streamflow time series
+ts_sim <- as.data.frame(sim)
+```
+
+Les résultats de la simulation finale sont illustrés sur la figure suivante.
+
+```{r, v01_fig_sim, echo=FALSE, eval=TRUE, fig.width=7*1.5, fig.height=3*1.5, dev.args=list(pointsize=12), out.width='98%'}
+ind_wup <- range(which(ts_obs_m$Date >= per_sim_wup_pct[1] & ts_obs_m$Date <= per_sim_run_pct[1]))
+
+plot(x = ts_obs_m$Date, y = ts_obs_m$Qmmd, 
+     xlab = "time [months]", ylab = "flow [mm/month]",
+     main = "Simulation on the entire period",
+     type = "l", lwd = 1, 
+     panel.first = list(rect(xleft  = ts_obs_m$Date[ind_na[, 1]], ybottom = -1e6, 
+                             xright = ts_obs_m$Date[ind_na[, 2]], ytop    = +1e6,
+                             col = "lightgrey", border = NA),
+                        rect(xleft  = ts_obs_m$Date[ind_wup[1]], ybottom = -1e6, 
+                             xright = ts_obs_m$Date[ind_wup[2]], ytop    = +1e6,
+                             col = adjustcolor("orangered", 0.6), border = NA)))
+lines(ts_sim$Date, ts_sim$Qsim, lwd = 1, col = "orangered")
+
+legend("topright", 
+       legend = c("Qobs", "Qsim", "warm-up", "NA"), 
+       pch = c(NA, NA, 15, 15), 
+       lwd = c(1, 1, NA, NA), pt.cex = c(NA, NA, 2, 2), 
+       col = c("black", "orangered",  adjustcolor("orangered", 0.6), "lightgray"),
+       bg = "white")
+```
+
+
+
+# Références
+

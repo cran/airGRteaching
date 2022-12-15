@@ -1,5 +1,6 @@
 ---
 title: "Get Started with airGRteaching"
+author: "Olivier Delaigue"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
@@ -9,7 +10,7 @@ vignette: >
 
 
 
-```{r include=FALSE}
+```{r, include=FALSE}
 formatGR      <- '<strong><font color="#0BA6AA">%s</font></strong>'
 GR            <- sprintf(formatGR, "GR")
 airGR         <- sprintf(formatGR, "airGR")
@@ -19,7 +20,7 @@ airGRteaching <- sprintf(formatGR, "airGRteaching")
 
 
 
-```{r setup, include=FALSE}
+```{r, setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(airGRteaching)
 ```

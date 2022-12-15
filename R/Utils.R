@@ -6,12 +6,12 @@
     base::packageStartupMessage("\tinstall.packages(\"remotes\")\n\tremotes::install_github(\"ramnathv/htmlwidgets\")")
     base::packageStartupMessage("\n---------------------------\n")
   }
-  if (.Platform$GUI == "RStudio") {
-    base::packageStartupMessage("\n---------------------------\n")
-    base::packageStartupMessage("The Shiny graphical user interface launched by the 'ShinyGR' function is sometimes unstable on latest versions of RStudio")
-    base::packageStartupMessage("It is better to launch the GUI from the Rgui or from R into a terminal")
-    base::packageStartupMessage("\n---------------------------\n")
-  }
+  # if (.Platform$GUI == "RStudio") {
+  #   base::packageStartupMessage("\n---------------------------\n")
+  #   base::packageStartupMessage("The Shiny graphical user interface launched by the 'ShinyGR' function is sometimes unstable on latest versions of RStudio")
+  #   base::packageStartupMessage("It is better to launch the GUI from the Rgui or from R into a terminal")
+  #   base::packageStartupMessage("\n---------------------------\n")
+  # }
 }
 
 

@@ -1,0 +1,452 @@
+---
+title: "Streamflow reconstruction"
+author: "Pierre Brigode & Olivier Delaigue"
+bibliography: 
+  - V00_airGRteaching_ref.bib
+  - airGR_galaxy.bib
+output: 
+  rmarkdown::html_vignette
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Streamflow reconstruction}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+```{r, warning=FALSE, include=FALSE}
+R_bib <- toBibtex(citation())
+R_bib <- gsub("@Manual\\{", "@Manual{Rsoftware_man", R_bib)
+airGR_bib <- toBibtex(citation("airGR"))
+airGR_bib <- gsub("@Article\\{", "@Article{airGR_art", airGR_bib)
+airGR_bib <- gsub("@Manual\\{", "@Manual{airGR_man", airGR_bib)
+airGRteaching_bib <- toBibtex(citation("airGRteaching"))
+airGRteaching_bib <- gsub("@Manual\\{", "@Manual{airGRteaching_man", airGRteaching_bib)
+airGRteaching_bib <- gsub("@InProceedings\\{", "@InProceedings{airGRteaching_pcd", airGRteaching_bib)
+airGRdatasets_bib <- toBibtex(citation("airGRdatasets"))
+airGRdatasets_bib <- gsub("@Manual\\{", "@Manual{airGRdatasets_man", airGRdatasets_bib)
+options(encoding = "UTF-8")
+writeLines(text = c(R_bib, airGR_bib, airGRteaching_bib, airGRdatasets_bib), con = "airGR_galaxy.bib")
+options(encoding = "native.enc")
+```
+
+```{r, include=FALSE}
+formatGR      <- '<strong><font color="#0BA6AA">%s</font></strong>'
+GR            <- sprintf(formatGR, "GR")
+airGR         <- sprintf(formatGR, "airGR")
+airGRteaching <- sprintf(formatGR, "airGRteaching")
+```
+
+```{r, setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.path = "figure/")
+Sys.setlocale("LC_TIME", "English")
+library(airGRteaching)
+colorize <- function(x, color) {
+  if (knitr::is_latex_output()) {
+    sprintf("\\textcolor{%s}{%s}", color, x)
+  } else if (knitr::is_html_output()) {
+    sprintf("<span style='color: %s;'>%s</span>", color, x)
+  } else {
+    x
+  }
+}
+```
+
+```{r, format_ts_1, eval=TRUE, echo=FALSE, results='hide'}
+# Catchment data loading
+library(airGRdatasets)
+data("Y643401001", package = "airGRdatasets")
+
+# Catchment metadata
+str(Y643401001$Meta)
+
+# Observed daily time series
+ts_obs_d <- Y643401001$TS
+
+# Summary of the time series
+summary(ts_obs_d)
+```
+
+```{r, include=FALSE}
+area <- Y643401001$Meta$Area
+name_sta <- gsub("the ", "", Y643401001$Meta$Name)
+name_riv <- gsub("(the )(.*)( at.*)", "\\2", name_sta)
+year_na <- format(ts_obs_d[is.na(ts_obs_d$Qmmd), "Date"], format = "%Y")
+year_na <- names(sort(table(year_na), decreasing = TRUE)[1])
+```
+
+```{r, v01_set_per, eval=TRUE, echo=FALSE}
+# Calibration period
+per_cal_wup <- c("2003-01-01", "2004-12-01")
+per_cal_run <- c("2005-01-01", "2010-12-01")
+
+# Evaluation period 
+per_eva_wup <- c("2009-01-01", "2010-12-01")
+per_eva_run <- c("2011-01-01", "2018-12-01")
+
+# Simulation period
+per_sim_wup <- c("1999-01-01", "2000-12-01")
+per_sim_run <- c("2001-01-01", "2018-12-01")
+```
+
+```{r, v01_regime, eval=TRUE, echo=FALSE}
+# Monthly aggregation of observed daily time series
+ts_obs_m <- SeriesAggreg(ts_obs_d[, c("Date", "Ptot", "Evap", "Qmmd", "Temp")],
+                         Format = "%Y%m",
+                         ConvertFun = c("sum", "sum", "sum", "mean"))
+```
+
+```{r, eval=TRUE, echo=FALSE}
+# Information for the vignette
+per_all_pct <- range(ts_obs_m$Date)
+per_all_for <- format(range(ts_obs_m$Date), format = "%Y")
+per_cal_wup_pct <- as.POSIXct(per_cal_wup, tz = "UTC")
+per_cal_wup_for <- format(per_cal_wup_pct, format = "%B %Y")
+per_cal_run_pct <- as.POSIXct(per_cal_run, tz = "UTC")
+per_cal_run_for <- format(per_cal_run_pct, format = "%B %Y")
+per_eva_wup_pct <- as.POSIXct(per_eva_wup, tz = "UTC")
+per_eva_wup_for <- format(per_eva_wup_pct, format = "%B %Y")
+per_eva_run_pct <- as.POSIXct(per_eva_run, tz = "UTC")
+per_eva_run_for <- format(per_eva_run_pct, format = "%B %Y")
+per_sim_wup_pct <- as.POSIXct(per_sim_wup, tz = "UTC")
+per_sim_wup_for <- format(per_sim_wup_pct, format = "%B %Y")
+per_sim_run_pct <- as.POSIXct(per_sim_run, tz = "UTC")
+per_sim_run_for <- format(per_sim_run_pct, format = "%B %Y")
+```
+
+
+
+# Objective
+
+
+## Context
+
+The `r name_sta` is a catchment of `r round(area)` km² for which measured streamflows are available from `r per_all_for[1L]` to `r per_all_for[2L]`, but with missing data (e.g. for the year `r year_na`).
+
+The exercise consists in using the hydro-climatic data available on the catchment and a rainfall-runoff model to reconstitute the missing data through hydrological simulation (see following figure). To do this, we must first ensure, through a calibration-evaluation procedure, that the model has a sufficient level of performance to carry out this reconstruction exercise.
+
+This work will be performed in four steps:
+
+1. Manual calibration of the rainfall-runoff model (over the so-called "calibration" period)
+2. Automatic calibration of the rainfall-runoff model (over the "calibration" period).
+3. Evaluation of the obtained parameter sets (over the "evaluation" period).
+4. Hydrological reconstruction by rainfall-runoff modelling (during the "simulation" period).
+
+```{r, v01_fig_presentation, echo=FALSE, eval=TRUE, fig.width=7*1.5, fig.height=3*1.5, dev.args=list(pointsize=12), out.width='98%'}
+ind_na <- as.matrix(airGRteaching:::.StartStop(ts_obs_m$Qmmd, FUN = is.na))
+
+plot(x = ts_obs_m$Date, y = ts_obs_m$Qmmd, 
+     xlab = "time [months]", ylab = "flow [mm/month]",
+     type = "l", lwd = 1, 
+     panel.first = rect(xleft  = ts_obs_m$Date[ind_na[, 1]], ybottom = -1e6, 
+                        xright = ts_obs_m$Date[ind_na[, 2]], ytop    = +1e6,
+                        col = "lightgrey", border = NA))
+text(x = ts_obs_m$Date[floor(apply(ind_na, MARGIN = 1, median))], 
+     y = quantile(range(ts_obs_m$Qmmd, na.rm = TRUE), probs = 0.75), 
+     labels = "?", cex = 8, font = 2, col = "orangered")
+```
+
+
+## Instructions
+
+This section aims to define the calibration and simulation conditions of the hydrological model (parameter calibration period, model initialization period, calibration criterion, etc.).
+
+### Rainfall-runoff model
+
+You will used the GR2M model [@mouelhi_stepwise_2006]. It is a conceptual and lumped rainfall-runoff model, operating on a monthly time step and having two parameters. It requires as input continuous time series of monthly precipitation and potential evapotranspiration.
+
+This model is easily usable thanks to the `r airGRteaching` package [@airGRteaching_man; @airGRteaching_pcd], developped for the [R software](https://cran.r-project.org/) by the [Catchment Hydrology research group of the HYCAR reaserch unit](https://webgr.inrae.fr/en/home/) ([INRAE](https://www.inrae.fr/en), France).
+
+The time series of observed precipitation, PE and streamflow can be easily formatted using the `PrepGR()` function. A rainfall-runoff simulation can be performed with the `SimGR()` function, an a parameter calibration using the `CalGR()`.
+
+### Calibration (and warm-up) period
+
+GR2M, like many conceptual rainfall-runoff models, consists of conceptual reservoirs, whose initial levels at the beginning of the simulation are unknown and cannot be estimated by measurement. These initial levels must therefore be chosen arbitrarily (or based on an a priori). This can induce large errors in the model in the case where the estimated initial conditions deviate from what they should be according to the previous climatic conditions. To limit these errors, a warm-up period is generally considered. This period, which precedes the simulation period, is used to ensure that the levels in the reservoirs are independent of the initial conditions. It must therefore be longer than the memory of the catchment at the previous climatic conditions. In many catchments, this memory of previous conditions does not exceed one year, but in others that have a multi-year behavior, for example because of groundwater, it may be necessary to consider several years for the initialization of the model. During this warm-up period, the model errors are not used in the calculation of the performance criteria. This means that it is not necessary to have observed streamflow data over the warm-up period, only climate data are necessary. 
+
+In this exercise, a period of `r as.numeric(round(diff(per_cal_wup_pct)/365.2425*12+1))` months will be considered, starting in `r per_cal_wup_for[1L]` and ending in `r per_cal_wup_for[2L]`. The next time step (`r per_cal_run_for[1L]`) will be the first time step of the model calibration.
+
+The period to be considered for the calibration of the GR2M parameters on the `r name_sta` catchment starts in `r per_cal_run_for[1L]` and ends in `r per_cal_run_for[2L]`. 
+
+###  Calibration criteria
+
+The calibration criterion to be considered in this exercise is the Nash and Sutcliffe criterion [@nash_river_1970], noted $NSE$ hereafter (see following equation). This criterion is widely used in hydrological modelling.
+
+The NSE criterion, bounded between $-\infty$ and $1$, allows to quantify the performance of a model in a relative way, by comparing a series of simulated streamflows with a so-called "naive" model, here the average of the observed streamflows (i.e. a series of streamflows constituted in each time step by the average of the observed streamflows). Thus, a NSE value equal to 1 indicates a perfect agreement between the series of observed and simulated streamflows (which is never the case), whereas a NSE value lower than 0 means that the simulation considered is less efficient than the simulation of the "naive" model. The calculation of $NSE$ is detailed in the following equation, where $Q_{obs,t}$ is the observed streamflow at time step $t$, $Q_{sim,t}$ is the simulated streamflow at time step $t$, $\overline{Q_{obs}}$ is the average of the observed streamflows, and $n$ is the number of observations:
+
+\begin{equation}
+NSE = 1-\frac{\sum_{t=1}^{n}(Q_{obs,t}-Q_{sim,t})^{2}}{\sum_{t=1}^{n}(Q_{obs,t}-\overline{Q_{obs}})^{2}}
+\end{equation}
+
+The elements necessary for the calculation of the calibration criterion have to be set as arguments of the `CalGR()` function.
+
+### Manual estimation of GR2M parameters
+
+This task, which can be tedious (but very formative) and requires a certain expertise, is to be carried out by testing several sets of GR2M parameters and by analyzing the quality of the simulations produced over the calibration period. In this exercise, a maximum of 10 sets of model parameters will be tested. The first set of parameters to be tested is composed of the median values of the GR2M parameters, defined by @mouelhi_stepwise_2006 after numerous calibrations of the model on different catchments. These values as well as the associated bounds of variation are equal to:
+
+* X1 : 380 [mm] (140 [mm] $\leq$ X1 $\leq$ 2640 [mm]) ;
+* X2 : 0.92 [-] (0.21 [-] $\leq$ X2 $\leq$ 1.31 [-]).
+
+### Automatic calibration of GR2M parameters
+
+Automatic parameter estimation aims at using a search algorithm in the parameter space. This algorithm will automatically generate sets of parameters, test them, and generate others according to the performance of those already tested, until converging to an optimum. The algorithm developed by @michel_hydrologie_1991 will be used in this exercise.
+
+### Evaluation period
+
+The evaluation period is a period on which a model previously calibrated on another period is applied. This is a classic way of using a model, which is confronted with unknown situations. The independence of the evaluation period from the calibration period ensures that the model does not benefit from already known information. The objective of this test is to evaluate if the model is able to maintain the same level of performance (and therefore error) under new climatic conditions as those encountered during calibration. If so, we can estimate that the parameters of the model depend little on the conditions of the calibration period and therefore that the model is transposable to different conditions (we say that it is robust). If not, we must understood the causes of this decrease in performance. 
+
+Over this evaluation period, we can evaluate the model performance using the same criterion as the one used for calibration, but we can also complete the analysis using other criteria.
+
+In this exercise, the evaluation period will start in `r per_eva_run_for[1L]`, end in `r per_eva_run_for[2L]`, and will be preceded by an warm-up period starting in `r per_eva_wup_for[1L]` and ending in `r per_eva_wup_for[2L]`.
+
+### Simulation period
+
+The final aims of this exercise is to reconstruct the streamflows of the catchment for the months without measurements using simulated streamflows. In order to have a single simulation covering the entire study period, this simulation will start in `r per_sim_run_for[1L]` and end in `r per_sim_run_for[2L]`, with a warm-up period of 24 months starting in January `r per_sim_wup_for[1L]` and ending in `r per_sim_wup_for[2L]`.
+
+
+## Data available
+
+The data set available to the rainfall-runoff modelling consists of:
+
+* a time series of daily total precipitation (liquid + solid) [mm/day] (`Ptot`);
+* a time series of daily potential evapotranspiration calculated with the @oudin_which_2005 formula [mm/day] (`Evap`);
+* a time series of daily streamflows expressed as a specific discharge [mm/day] (`Qmmd`).
+
+The daily time series can be aggregated to a monthly time step using the `SeriesAggreg()` function.
+
+
+
+# Command lines for the production of simulations
+
+
+## Loading and formatting of data
+
+The following command lines allow to read the data necessary for the calibration of the GR2M rainfall-runoff model and to define the considered temporal periods (warm-up period, calibration period and evaluation period):
+
+```{r, format_ts_1, echo=TRUE}
+```
+
+```{r, v01_set_per, echo=TRUE}
+```
+
+
+## Preparing the data for GR2M
+
+The following command lines are intended to prepare the available data for use by GR2M, using the `SeriesAggreg()` and `PrepGR()` functions.
+
+```{r, v01_regime, echo=TRUE}
+```
+
+```{r, echo=TRUE, eval=TRUE, warning=FALSE}
+# Data processing for GR2M
+prep <- PrepGR(DatesR     = ts_obs_m$Date,
+               Precip     = ts_obs_m$Ptot,
+               PotEvap    = ts_obs_m$Evap, 
+               Qobs       = ts_obs_m$Qmmd,
+               HydroModel = "GR2M", 
+               CemaNeige  = FALSE)
+```
+
+
+## Manual calibration
+
+The following command lines illustrate the steps required to perform a rainfall-runoff simulation using a given set of parameters (here the set of default values of GR2M) and to calculate the NSE criterion associated with this simulation. 
+
+```{r, echo=TRUE, eval=TRUE}
+# Parameter set to test
+i_param_gr2m <- c(X1 = 380, X2 = 0.92)
+
+# Simulation over the calibration period
+i_sim_manu <- SimGR(PrepGR  = prep, 
+                    Param   = i_param_gr2m,
+                    EffCrit = "NSE",
+                    WupPer  = per_cal_wup, 
+                    SimPer  = per_cal_run,
+                    verbose = TRUE)
+```
+
+```{r, echo=TRUE, eval=TRUE}
+# Calibration criterion
+GetCrit(i_sim_manu)
+```
+
+```{r, v01_fig_cal_manu_gr2m, echo=TRUE, eval=TRUE, warning=FALSE, fig.width=7*1.5, fig.height=5*1.5, dev.args=list(pointsize=16), out.width='98%'}
+# Graphical assessment of the calibration performance
+plot(i_sim_manu)
+```
+
+The first set of parameters tested (default GR2M values) gives an NSE criterion of `r round(GetCrit(i_sim_manu), digits = 3)`, which is a good overall performance. The precedent figure allows us to compare the simulation obtained with the observed streamflows.
+
+Now it's your turn to play! The game consists in testing different values of the GR2M parameters, to perform a simulation and to calculate the NSE criterion for each tested set in order to identify the set that seems to be optimal. For each parameter, plot the evolution of the "objective" function versus the parameter value. The analysis of the simulated hydrographs, coupled with the comparison of NSE values, will allow to "guide" the modification of the parameters values. To do so, you can embed the previous code in a loop. At each iteration you test a new parameter set and compute the corresponding criterion. This way you can find the "best" parameter set.
+
+
+## Automatic calibration
+
+The following command lines allow the GR2M model to be calibrated over the so-called "calibration" period.
+
+```{r, v01_fig_cal_auto_gr2m, echo=TRUE, eval=TRUE, fig.width=7*1.5, fig.height=5*1.5, dev.args=list(pointsize=16), out.width='98%'}
+# Calibration
+cal_auto <- CalGR(PrepGR  = prep, 
+                  CalCrit = "NSE",
+                  WupPer  = per_cal_wup, 
+                  CalPer  = per_cal_run,
+                  verbose = TRUE)
+
+# Graphical assessment of the calibration performance
+plot(cal_auto)
+```
+
+```{r, echo=TRUE, eval=TRUE}
+# Get parameter values
+param_cal <- GetParam(cal_auto)
+param_cal
+```
+
+```{r, echo=TRUE, eval=TRUE}
+# Get criterion value
+GetCrit(cal_auto)
+```
+
+The two parameters and the value of the calibration criterion ($NSE$) obtained after the automatic calibration procedure are:
+
+* X1 = `r round(param_cal[1], digits = 0)` [mm]
+* X2 = `r round(param_cal[2], digits = 3)` [-]
+* $NSE$ = `r round(GetCrit(cal_auto), digits = 3)` [-]
+
+The performance obtained in calibration is considered good, with a criterion $NSE$ equal to `r round(GetCrit(cal_auto), digits = 3)`.
+
+The following command lines  allow to store in the same table the observed streamflows and the simulated streamflows with the set of parameters obtained by automatic calibration, in order to compare them.
+
+```{r, v01_ts_q, echo=TRUE, eval=TRUE}
+# Combination of observed and simulated streamflow time series on the calibration period
+ts_cal <- as.data.frame(cal_auto)
+
+# Combination of observed and simulated streamflow time series on the entire period
+ts_cal_all <- merge(x = ts_obs_m[, "Date", drop = FALSE], y = ts_cal, 
+                    by.x = "Date", by.y = "Dates", 
+                    all.x = TRUE)
+```
+
+The following figure shows the observed and simulated streamflow series over the calibration period.
+
+```{r, v01_fig_cal, echo=FALSE, eval=TRUE, fig.width=7*1.5, fig.height=3*1.5, dev.args=list(pointsize=12), out.width='98%'}
+ind_wup <- ts_obs_m$Date >= per_cal_wup_pct[1] & ts_obs_m$Date <= per_cal_run_pct[1]
+ind_wup <- range(which(ind_wup))
+
+plot(x = ts_obs_m$Date, y = ts_obs_m$Qmmd, 
+     xlab = "time [months]", ylab = "flow [mm/month]",
+     main = "Simulation on the calibration period",
+     type = "l", lwd = 1, 
+     panel.first = list(rect(xleft  = ts_obs_m$Date[ind_na[, 1]], ybottom = -1e6, 
+                             xright = ts_obs_m$Date[ind_na[, 2]], ytop    = +1e6,
+                             col = "lightgrey", border = NA),
+                        rect(xleft  = ts_obs_m$Date[ind_wup[1]], ybottom = -1e6, 
+                             xright = ts_obs_m$Date[ind_wup[2]], ytop    = +1e6,
+                             col = adjustcolor("orangered", 0.6), border = NA)))
+lines(ts_cal$Date, ts_cal$Qsim, lwd = 1, col = "orangered")
+
+legend("topright", 
+       legend = c("Qobs", "Qsim", "warm-up", "NA"), 
+       pch = c(NA, NA, 15, 15), 
+       lwd = c(1, 1, NA, NA), pt.cex = c(NA, NA, 2, 2), 
+       col = c("black", "orangered", adjustcolor("orangered", 0.6), "lightgray"),
+       bg = "white")
+```
+
+
+## Evaluation
+
+The following command lines allow us to use the parameter set obtained by automatic calibration to carry out a simulation over the evaluation period (`r paste(format(per_eva_run_pct, format = "%Y"), sep = "", collapse = "-")`) and to calculate the score $NSE$ associated with this simulation. This score constitutes the evaluation performance of the model.
+
+```{r, v01_eval, echo=TRUE, eval=TRUE}
+# Simulation over the evaluation period
+eva <- SimGR(PrepGR  = prep, 
+             Param   = param_cal,
+             WupPer  = per_eva_wup, 
+             SimPer  = per_eva_run,
+             EffCrit = "NSE",
+             verbose = FALSE)
+
+# Get the criterion value
+GetCrit(eva)
+
+# Combination of observed and simulated streamflow time series
+ts_eva <- as.data.frame(eva)
+```
+
+The performance obtained by the model in evaluation is `r round(GetCrit(eva), digits = 3)`.
+
+The following figure represents the observed and simulated streamflow series over the evaluation period.
+
+```{r, v01_fig_eval, echo=FALSE, eval=TRUE, fig.width=7*1.5, fig.height=3*1.5, dev.args=list(pointsize=12), out.width='98%'}
+ind_wup <- range(which(ts_obs_m$Date >= per_eva_wup_pct[1] & ts_obs_m$Date <= per_eva_run_pct[1]))
+
+plot(x = ts_obs_m$Date, y = ts_obs_m$Qmmd, 
+     xlab = "time [months]", ylab = "flow [mm/month]",
+     main = "Simulation on the evaluation period",
+     type = "l", lwd = 1, 
+     panel.first = list(rect(xleft  = ts_obs_m$Date[ind_na[, 1]], ybottom = -1e6, 
+                             xright = ts_obs_m$Date[ind_na[, 2]], ytop    = +1e6,
+                             col = "lightgrey", border = NA),
+                        rect(xleft  = ts_obs_m$Date[ind_wup[1]], ybottom = -1e6, 
+                             xright = ts_obs_m$Date[ind_wup[2]], ytop    = +1e6,
+                             col = adjustcolor("orangered", 0.6), border = NA)))
+lines(ts_eva$Date, ts_eva$Qsim, lwd = 1, col = "orangered")
+
+legend("topright", 
+       legend = c("Qobs", "Qsim", "warm-up", "NA"), 
+       pch = c(NA, NA, 15, 15), 
+       lwd = c(1, 1, NA, NA), pt.cex = c(NA, NA, 2, 2), 
+       col = c("black", "orangered",  adjustcolor("orangered", 0.6), "lightgray"),
+       bg = "white")
+```
+
+
+## Reconstitution
+
+The following command lines allow the use of the parameters obtained by automatic calibration to simulate the streamflow over the entire period studied.
+
+```{r, v01_sim, echo=TRUE, eval=TRUE}
+# Simulation over the entire period
+sim <- SimGR(PrepGR  = prep, 
+             Param   = param_cal,
+             WupPer  = per_sim_wup, 
+             SimPer  = per_sim_run,
+             EffCrit = "NSE",
+             verbose = FALSE)
+```
+
+```{r, echo=TRUE, eval=TRUE}
+# Get the criterion value
+GetCrit(sim)
+
+# Combination of observed and simulated streamflow time series
+ts_sim <- as.data.frame(sim)
+```
+
+The results of the final simulation are shown in the following figure.
+
+```{r, v01_fig_sim, echo=FALSE, eval=TRUE, fig.width=7*1.5, fig.height=3*1.5, dev.args=list(pointsize=12), out.width='98%'}
+ind_wup <- range(which(ts_obs_m$Date >= per_sim_wup_pct[1] & ts_obs_m$Date <= per_sim_run_pct[1]))
+
+plot(x = ts_obs_m$Date, y = ts_obs_m$Qmmd, 
+     xlab = "time [months]", ylab = "flow [mm/month]",
+     main = "Simulation on the entire period",
+     type = "l", lwd = 1, 
+     panel.first = list(rect(xleft  = ts_obs_m$Date[ind_na[, 1]], ybottom = -1e6, 
+                             xright = ts_obs_m$Date[ind_na[, 2]], ytop    = +1e6,
+                             col = "lightgrey", border = NA),
+                        rect(xleft  = ts_obs_m$Date[ind_wup[1]], ybottom = -1e6, 
+                             xright = ts_obs_m$Date[ind_wup[2]], ytop    = +1e6,
+                             col = adjustcolor("orangered", 0.6), border = NA)))
+lines(ts_sim$Date, ts_sim$Qsim, lwd = 1, col = "orangered")
+
+legend("topright", 
+       legend = c("Qobs", "Qsim", "warm-up", "NA"), 
+       pch = c(NA, NA, 15, 15), 
+       lwd = c(1, 1, NA, NA), pt.cex = c(NA, NA, 2, 2), 
+       col = c("black", "orangered",  adjustcolor("orangered", 0.6), "lightgray"),
+       bg = "white")
+```
+
+
+
+# References

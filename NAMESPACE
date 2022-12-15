@@ -7,13 +7,16 @@
 S3method(as.data.frame, PrepGR)
 S3method(as.data.frame, CalGR)
 S3method(as.data.frame, SimGR)
-S3method(dyplot, default)
 S3method(dyplot, PrepGR)
 S3method(dyplot, CalGR)
 S3method(dyplot, SimGR)
 S3method(plot, PrepGR)
 S3method(plot, CalGR)
 S3method(plot, SimGR)
+S3method(GetCrit, CalGR)
+S3method(GetCrit, SimGR)
+S3method(GetParam, CalGR)
+S3method(GetParam, SimGR)
 
 
 
@@ -30,6 +33,8 @@ export(.DiagramGR)
 export(.DyShadingMulti)
 export(.StartStop)
 export(.TypeModelGR)
+export(GetCrit)
+export(GetParam)
 
 
 

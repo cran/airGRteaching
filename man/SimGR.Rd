@@ -25,7 +25,7 @@ SimGR(PrepGR, CalGR = NULL, Param, EffCrit = c("NSE", "KGE", "KGE2", "RMSE"),
 
   \item{EffCrit}{[character] name of the efficiency criterion (must be one of \code{"NSE"}, \code{"KGE"}, \code{"KGE2"} or \code{"RMSE"})}
 
-  \item{WupPer}{(optional) [character] vector of 2 values to define the beginning and end of the warm-up period [\code{"YYYY-mm-dd"} or \code{"YYYY-mm-dd HH:MM:SS"}]}
+  \item{WupPer}{(optional) [character] vector of 2 values to define the beginning and end of the warm-up period [\code{"YYYY-mm-dd"} or \code{"YYYY-mm-dd HH:MM:SS"}]; [0L] to disable the warm-up period. See details}
 
   \item{SimPer}{[character] vector of 2 values to define the beginning and end of the simulation period  [\code{"YYYY-mm-dd"} or \code{"YYYY-mm-dd HH:MM:SS"}]}
 
@@ -63,9 +63,12 @@ functions
 \details{
 The user can customize the parameters with the \code{Param} argument.
 The user can also use the parameters resulting from a calibration. In this case, it is necessary to use the \code{\link{CalGR}} function.
+\cr\cr
+\code{WupPer = NULL} indicates that, if available, a period of one year immediately present before the CalPer period is used. \code{WupPer = 0L} allows to disable the warm up of the model.
 }
 
-\author{Olivier Delaigue}
+
+\author{Olivier Delaigue, Guillaume Thirel}
 
 
 \examples{

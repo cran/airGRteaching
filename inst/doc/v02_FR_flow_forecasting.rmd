@@ -1,0 +1,605 @@
+---
+title: "Prévision de bas débits"
+author: "Pierre Brigode & Olivier Delaigue"
+bibliography:
+  - V00_airGRteaching_ref.bib
+  - airGR_galaxy.bib
+output: 
+  rmarkdown::html_vignette
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Prévision de bas débits}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+```{r, warning=FALSE, include=FALSE}
+R_bib <- toBibtex(citation())
+R_bib <- gsub("@Manual\\{", "@Manual{Rsoftware_man", R_bib)
+airGR_bib <- toBibtex(citation("airGR"))
+airGR_bib <- gsub("@Article\\{", "@Article{airGR_art", airGR_bib)
+airGR_bib <- gsub("@Manual\\{", "@Manual{airGR_man", airGR_bib)
+airGRteaching_bib <- toBibtex(citation("airGRteaching"))
+airGRteaching_bib <- gsub("@Manual\\{", "@Manual{airGRteaching_man", airGRteaching_bib)
+airGRteaching_bib <- gsub("@InProceedings\\{", "@InProceedings{airGRteaching_pcd", airGRteaching_bib)
+airGRdatasets_bib <- toBibtex(citation("airGRdatasets"))
+airGRdatasets_bib <- gsub("@Manual\\{", "@Manual{airGRdatasets_man", airGRdatasets_bib)
+options(encoding = "UTF-8")
+writeLines(text = c(R_bib, airGR_bib, airGRteaching_bib, airGRdatasets_bib), con = "airGR_galaxy.bib")
+options(encoding = "native.enc")
+```
+
+```{r, include=FALSE}
+formatGR      <- '<strong><font color="#0BA6AA">%s</font></strong>'
+GR            <- sprintf(formatGR, "GR")
+airGR         <- sprintf(formatGR, "airGR")
+airGRteaching <- sprintf(formatGR, "airGRteaching")
+```
+
+```{r, setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.path = "figure/")
+library(airGRteaching)
+Sys.setlocale("LC_TIME", "fr_FR.UTF-8")
+colorize <- function(x, color) {
+  if (knitr::is_latex_output()) {
+    sprintf("\\textcolor{%s}{%s}", color, x)
+  } else if (knitr::is_html_output()) {
+    sprintf("<span style='color: %s;'>%s</span>", color, x)
+  } else {
+    x
+  }
+}
+```
+
+```{r, v02_format_ts_1_ini, include=FALSE}
+# Catchment data loading
+library(airGRdatasets)
+data("B222001001", package = "airGRdatasets")
+
+# Catchment area
+area <- B222001001$Meta$Area
+
+# Observed daily time series
+ts_init <- B222001001$TS
+
+# Add date information to the time series
+ts_init$Year     <- format(ts_init$Date, format = "%Y")
+ts_init$MonthDay <- format(ts_init$Date, format = "%m-%d")
+
+# Display of the 1st time steps of the time series
+head(ts_init)
+```
+
+```{r, include=FALSE}
+name_sta <- gsub("the ", "", B222001001$Meta$Name)
+name_riv <- gsub("(the )(.*)( at.*)", "\\2", name_sta)
+```
+
+```{r, v02_set_per, echo=FALSE, eval=TRUE, include=FALSE}
+# Calibration period
+per_cal_hist <- c("2000-09-01", "2018-08-31")
+
+# Forecasting period
+per_fcst <- c("2018-09-01", "2018-10-20")
+
+# Warm-up period to simulate on the historical period 
+per_wup_hist <- c("1999-01-01", "2000-08-31")
+
+# Warm-up period to simulate on the forcasting period
+per_wup_fcst <- c(per_wup_hist[1], per_cal_hist[2])
+
+# Forecasting dates
+dates_fcst <- seq(from = as.POSIXct(per_fcst[1], tz = "UTC", format = "%Y-%m-%d"), 
+                  to   = as.POSIXct(per_fcst[2], tz = "UTC", format = "%Y-%m-%d"), 
+                  by   = "1 day")
+head(dates_fcst)
+
+# Formatting of forecast dates (Month-Day)
+month_day_fcst <- format(dates_fcst, "%m-%d")
+head(month_day_fcst)
+```
+
+```{r, v02_format_ts_2_gph, include=FALSE}
+# Set values of the last winter to missing data
+ts_plot <- ts_init
+isd_wint <- ts_plot$Date >= as.POSIXct(per_fcst[1], tz = "UTC", format = "%Y-%m-%d")
+ts_plot[isd_wint, c("Ptot", "Temp", "Evap", "Qls", "Qmmd")] <- NA
+
+# Display of the last time steps of the time series
+tail(ts_plot)
+```
+
+```{r, echo=FALSE, eval=TRUE}
+per_wup_pct <- as.POSIXct(per_wup_hist, tz = "UTC", format = "%Y-%m-%d")
+per_wup_for <- format(per_wup_pct, "%e %B %Y")
+per_cal_pct <- as.POSIXct(per_cal_hist, tz = "UTC", format = "%Y-%m-%d")
+per_cal_for <- format(per_cal_pct, "%e %B %Y")
+per_fcst_pct <- as.POSIXct(per_fcst, tz = "UTC", format = "%Y-%m-%d")
+per_fcst_for <- format(per_fcst_pct, "%e %B %Y")
+per_fcst_for_no_y <- format(per_fcst_pct, "%e %B")
+```
+
+```{r, v02_format_ts_3_hist, include=FALSE}
+# Select the time series over the observed period (no "future" dates)
+ts_hist <- ts_plot[ts_plot$Date < dates_fcst[1], ]
+
+# Display of the last time steps of the time series
+tail(ts_hist)
+```
+
+```{r, v02_format_ts_4_fcst, include=FALSE}
+# Select the time series after the observed period (only "future" dates)
+ts_fcst <- ts_plot[ts_plot$Date >= dates_fcst[1] & ts_plot$Date <= dates_fcst[length(dates_fcst)], ]
+
+# Display of the 1st time steps of the time series
+head(ts_fcst)
+```
+
+```{r, include=FALSE}
+# Information for the vignette
+year_per <- as.integer(format(range(ts_hist$Date), format = "%Y"))
+year_min <- year_per[1L]
+year_max <- year_per[2L]
+n_year   <- year_max - year_min + 1
+```
+
+
+
+# Énoncé
+
+
+## Contexte
+
+Fin de l’été `r year_max`, la `r name_riv` a atteint son niveau le plus bas depuis plusieurs années et les précipitations se font toujours attendre sur ce bassin versant caractérisé par de nombreux usages de l’eau en cette période estivale. En charge de la surveillance des débits en période d’étiage, vous venez d’être appelé.e par les élus du Syndicat intercommunal qui s’affolent de la situation de sécheresse et vous demandent de produire une estimation des débits de la rivière pour les prochaines semaines.
+
+Malheureusement, vous ne recevez plus les prévisions météorologiques du service de prévision de la région depuis plusieurs semaines... Vous ne disposez donc d’aucune prévision des précipitations à venir, mais devez tout de même quantifier les débits possibles sur les prochaines semaines sur le bassin versant.
+
+L’exercice consiste donc à utiliser les données hydro-climatiques disponibles (au pas de temps journalier) sur le bassin versant `r name_sta` (`r round(area)` km²), et un modèle pluie-débit pour prévoir les débits des semaines à venir en utilisant (1) le dernier débit observé sur le bassin versant considéré, (2) l’historique des précipitations observées et (3) l’historique des débits observés. Ces informations permettront d’obtenir des fourchettes de débits potentiels pour les semaines à venir (cf. figure suivante).
+
+Ce travail sera réalisé en quatre étapes :
+
+1. Analyse statistique de la *climatologie des débits* pour avoir un ordre de grandeur des débits historiquement observés durant la période d’étude, i.e. le régime des débits journaliers.
+2. Calage du modèle hydrologique sur la période historique en considérant un critère centré sur les bas débits.
+3. Scénario pessimiste de *précipitations nulles* : simulation pluie-débit sur l’été étudié à partir du dernier débit observé en ne considérant aucune précipitation à venir et une série d’évapotranspiration potentielle (ETP) constituée à partir des ETP moyennes interannuelles.
+4. Scénarios de *précipitations futures non nulles* : simulations pluie-débit sur l’été étudié à partir du dernier débit observé en "rejouant" la *climatologie des précipitations*, i.e. les précipitations observées durant les autres étés. Il y aura donc autant de simulations à faire que d’années historiques passées.
+
+```{r, v02_fig_pattern, echo=FALSE, eval=TRUE, fig.show='hide'}
+# Indices of the plotting period
+ind_xlim <- c(nrow(ts_plot)-300, nrow(ts_plot))
+
+# Plotting hyrdograph
+plot(x = ts_plot$Date, y = ts_plot$Qmmd,
+     xlab = "time [days]", ylab = "flow [mm/day]",
+     main = paste("Year", year_max),
+     type = "l", lwd = 1,
+     log = "y",
+     xlim = ts_plot$Date[ind_xlim])
+```
+
+```{r, V02_fig_presentation, echo=FALSE, eval=TRUE, fig.width=3*3, fig.height=3*1.7, out.width='98%'}
+<<v02_fig_pattern>>
+
+# Add a future shading period
+rect(xleft  = per_fcst_pct[1], ybottom = 1e-6, 
+     xright = per_fcst_pct[2], ytop    = 1e+6, 
+     col = "lightgrey", border = NA)
+box()
+
+# Add quetion mark in the future period
+text(x = mean(per_fcst_pct), 
+     y = quantile(ts_plot$Qmmd, probs = 0.5, na.rm = TRUE), 
+     labels = "?", cex = 8, font = 2, col = "orangered")
+```
+
+
+## Consignes
+
+Cette section vise à expliciter certaines tâches attendues et à décrire les conditions de calage et de simulation du modèle hydrologique (période de calage des paramètres, périodes d'initialisation des réservoirs, critère de calage, etc.).
+
+### Analyse de la climatologie des débits
+
+Dans un contexte de prévision hydrologique, la "climatologie des débits" désigne le régime des débits, i.e. la série de débits moyens interannuels. Si l'on veut prévoir le débit du jour à venir (par exemple le `r per_fcst_for_no_y[1]`), la prévision la plus "simple" d'un point de vue technique consiste en effet à calculer la moyenne des débits observés en ce même jour lors des années passées (donc l'ensemble des débits observés les 1^er^ septembre des années passées). Cette moyenne peut également être encadrée grâce aux calculs de quantiles de ces mêmes débits historiques (par exemple les quantiles 10 et 90 %), ce qui permet d'avoir une première estimation "probabiliste" des débits futurs, sans réaliser de modélisation pluie-débit et sans utiliser de prévision de précipitations.
+
+Dans cet exercice, il s'agit d'analyser l'ensemble des débits observés sur la période de prévision (`r per_fcst_for[1]` au `r per_fcst_for[2]`) lors des années précédentes. `r n_year` années sont disponibles pour cette analyse, ce qui permet de constituer `r n_year` séries de débits journaliers historiques pour la période de prévision. Une fois regroupés dans un même tableau, ces débits peuvent être résumés grâce au calcul, pour chaque journée considérée, de quantiles tels que les quantiles 10, 25, 50, 75 et 90 %. Ces quantiles seront ensuite utilisés comme première estimation des débits futurs.
+
+### Modèle pluie-débit
+
+Vous utiliserez le modèle GR6J [@pushpalatha_downward_2011]. Il s'agit d'un modèle pluie-débit global, fonctionnant au pas de temps journalier et possédant six paramètres. Il nécessite en entrée des séries temporelles continues de précipitations et d'évapotranspirations potentielles (ETP) journalières.
+
+Ce modèle est utilisable facilement grâce au package `r airGRteaching` [@airGRteaching_man; @airGRteaching_pcd], développé pour le [logiciel R](https://cran.r-project.org/) par l'[équipe Hydrologie des bassins versants de l'unité de recherche HYCAR](https://webgr.inrae.fr/) ([INRAE](https://www.inrae.fr/), France).
+
+Les séries temporelles de précipitations, d'ETP et de débits peuvent être facilement mises en forme grâce à la fonction `PrepGR()`. On peut réaliser une simulation pluie-débit grâce à la fonction `SimGR()` et un calage des paramètres grâce à la fonction `CalGR()`. 
+
+### Période de calage (et d’initialisation)
+
+L'initialisation est particulièrement importante dans un contexte de prévision hydrologique par modélisation : cette initialisation consiste ainsi à estimer l’état de saturation du bassin (i.e. les états internes du modèle) qui va ensuite être utilisé comme conditions initiales pour tous les scénarios testés. Ces scénarios partent donc tous d’un même état à la date de lancement des prévisions.
+
+La période à considérer pour caler les paramètres du modèle sur le bassin versant de la `r name_sta` débute le `r per_cal_for[1]` et s'achève le `r per_cal_for[2]`. Une période d'initialisation de 20 mois doit également être considérée du `r per_wup_for[1]` au `r per_wup_for[2]`.
+
+### Critère de calage
+
+Le critère de calage considéré dans cet exercice est le critère de Nash et Sutcliffe [@nash_river_1970] calculé sur les logarithmes népériens des débits, noté $NSE$ par la suite (cf. équation suivante). Ce critère est largement utilisé en modélisation hydrologique.
+
+Le critère NSE, borné entre $-\infty$ et $1$, permet de quantifier la performance d’un modèle de manière relative, en comparant une série de débits simulés avec un modèle dit "naïf", ici la moyenne des débits observés (i.e. une série de débits constituée en chaque pas de temps par la moyenne des débits observés). Ainsi, une valeur de NSE égale à 1 signifie une concordance parfaite entre les séries de débits observés et simulés (ce qui n'est jamais le cas), alors qu’une valeur de NSE inférieure à 0 signifie que la simulation considérée est moins performante que la simulation du modèle "naïf". Le calcul de $NSE_{ln}$ est détaillé dans l’équation suivante, dans laquelle $Q_{obs,t}$ est le débit observé au pas de temps $t$, $Q_{sim,t}$ est le débit simulé au pas de temps $t$, $\overline{Q_{obs}}$ est la moyenne des débits observés, $\epsilon$ est une constante définie ci-après, et $n$ est le nombre d’observations :
+
+\begin{equation}
+NSE_{ln} = 1-\frac{\sum_{t=1}^{n}(ln(Q_{obs,t}+\epsilon)-ln(Q_{sim,t}+\epsilon))^{2}}{\sum_{t=1}^{n}(ln(Q_{obs,t}+\epsilon)-\overline{ln(Q_{obs}+\epsilon)})^{2}}
+\end{equation}
+
+Le calcul de la valeur d'$\epsilon$ est détaillé dans l'équation suivante. L'ajout de cet $\epsilon$ est nécessaire lorsque des débits nuls sont présents dans la série de débits observés.
+
+\begin{equation}
+\epsilon=\frac{\overline{Q_{obs}}}{100}
+\end{equation}
+
+La transformation logarithmique permet de mettre plus de poids sur les débits les plus faibles et donc de limiter les erreurs commises sur la simulation des étiages [@oudin_dynamic_2006]. Considérer une série constituée par l’inverse des débits lors du calage est également recommandé pour obtenir de bonnes performances lors de la simulation des très bas débits [@pushpalatha_review_2012].
+
+Les différents éléments nécessaires pour le calcul du critère de calage doivent être renseignés en argument de la fonction `CalGR()`, ce qui permet notamment de spécifier si le critère doit être calculé sur des débits "transformés" avec l'argument `transfo` (ici égal à `log`).
+
+### Calage automatique des paramètres du modèle
+
+L'estimation automatique de paramètres vise à utiliser un algorithme automatique qui va générer automatiquement des jeux de paramètres, les tester, et en générer d'autres en fonction des performances de ceux d'ores et déjà testés. L'algorithme développé par @michel_hydrologie_1991 sera utilisé dans cet exercice.
+
+### Période de simulation
+
+La période de simulation, qui peut également être appelée période de prévision dans cet exercice, s'étale du  `r per_fcst_for[1]` au `r per_fcst_for[2]`. L'ensemble des pas de temps précédant cette période de calage peut être utilisé comme période d'initialisation.
+
+### Scénario pessimiste de *précipitations nulles*
+
+Avoir un modèle pluie-débit calé sur le bassin versant étudié permet d'utiliser des scénarios de précipitations futures et de les transformer en scénarios de débits. Le scénario le plus simple à tester (et le plus pessimiste) est le scénario dit de "précipitations nulles" : aucune précipitation ne sera observée sur les pas de temps de la période de prévision. Il s'agira ainsi de la borne basse de la prévision par modélisation pluie-débit.
+
+Pour mettre en place ce scénario dans l'environnement d'`r airGRteaching`, il faut créer un tableau de données fictives contenant une série temporelle de précipitations égales à 0 sur l'étendue de la période de prévision. Pour l'ETP, une hypothèse réaliste est d'utiliser le régime interannuel de cette variable. Ainsi, pour chaque journée de prévision, la valeur moyenne interannuelle des ETP observées sera utilisée : l'ETP du `r per_fcst_for_no_y[1]` de ce scénario sera égal à la moyenne des valeurs d'ETP observées pour l'ensemble des `r per_fcst_for_no_y[1]`.
+
+### Scénario de *précipitations futures non nulles*
+
+Cette dernière étape vise à réaliser plusieurs simulations pluie-débit en considérant des scénarios de précipitations futures non nulles. Ces scénarios de précipitations seront construits à partir de l'historique des précipitations. `r n_year` années passées sont disponibles pour cette analyse, ce qui permet de constituer `r n_year` séries de précipitations et d'ETP journalières historiques pour la période de prévision. Une simulation pluie-débit sera réalisée pour chacune de ces années passées, en débutant la simulation par la même période d'initialisation. Une fois regroupés dans un même tableau, les débits simulés pourront être résumés grâce au calcul, pour chaque journée considérée, de quantiles tels que les quantiles 10, 25, 50, 75 et 90 %. Ces quantiles seront ensuite utilisés comme indication des possibles débits futurs.
+
+
+## Données disponibles
+
+Les données disponibles pour la modélisation pluie-débit sont les suivantes :
+
+* une chronique journalière de précipitations totales (liquides + solides) [mm/jour] (`Ptot`);
+* une chronique journalière d’ETP calculée grâce à la formule d’@oudin_which_2005 [mm/jour] (`Evap`);
+* une chronique journalière de débits exprimés en lame d'eau [mm/jour] (`Qmmd`).
+
+
+
+# Éléments de correction
+
+
+## Chargement et mise en forme des données
+
+Les lignes de codes présentées ci-après permettent de lire les données nécessaires au calage du modèle pluie-débit et de définir les périodes temporelles de travail (période d’initialisation, période de calage et période de prévision) :
+
+```{r, v02_set_per, echo=TRUE}
+```
+
+### Initial time series
+
+```{r, v02_format_ts_1_ini, echo=TRUE}
+```
+
+### Ploted time series
+
+```{r, v02_format_ts_2_gph, echo=TRUE}
+```
+
+### Observed time series
+
+```{r, v02_format_ts_3_hist, echo=TRUE}
+```
+
+### Forecast time series
+
+```{r, v02_format_ts_4_fcst, echo=TRUE}
+```
+
+
+## Analyse de la climatologie des débits
+
+Les lignes de codes présentées ci-après permettent d'analyser la climatologie des débits en calculant les quantiles de débits interannuels sur la période de prévision :
+
+```{r, echo=TRUE, eval=TRUE}
+# Calculation of the historical streamflow quantiles
+ts_qclim_quant <- aggregate(Qmmd ~ MonthDay, 
+                            data = ts_hist[ts_hist$MonthDay %in% month_day_fcst, ], 
+                            FUN = function(x) {
+                              quantile(x, probs = c(0.10, 0.25, 0.50, 0.75, 0.90))
+                            })
+ts_qclim_quant <- as.data.frame(ts_qclim_quant$Qmmd)
+colnames(ts_qclim_quant) <- paste0("Q", gsub("\\D", "", colnames(ts_qclim_quant)))
+rownames(ts_qclim_quant) <- month_day_fcst
+
+# Display of the 1st calculated quantiles
+head(ts_qclim_quant)
+```
+
+La climatologie des débits permet d’obtenir un premier ordre de grandeur des débits possibles des prochains jours (cf. figure suivante), mais ne permet pas de rendre compte des derniers débits observés.
+
+```{r, v02_fig_qclim, echo=FALSE, fig.width=3*3, fig.height=3*1.7, out.width='98%'}
+<<v02_fig_pattern>>
+
+polygon(x = c(dates_fcst, rev(dates_fcst)), 
+        y = c(ts_qclim_quant$Q10, rev(ts_qclim_quant$Q90)), 
+        col = "lightgrey", border = NA)
+polygon(x = c(dates_fcst, rev(dates_fcst)), 
+        y = c(ts_qclim_quant$Q25, rev(ts_qclim_quant$Q75)), 
+        col = "darkgrey", border = NA)
+lines(x = dates_fcst, y = ts_qclim_quant$Q50, lwd = 2, col = "grey50")
+
+legend("topright", 
+       legend = c("Qobs", "Qclim (10,25,50,75,90 %)"), 
+       col = c("black", "grey50"), 
+       pch = c(NA, 15), lwd = c(1, 2), pt.cex = 2, 
+       lty = c(1, 1), pt.bg = c(NA, "lightgrey"),
+       bg = "white")
+```
+
+
+## Préparation des données pour GR6J
+
+Les lignes de codes présentées ci-après visent à préparer les données disponibles pour leur utilisation par GR6J, grâce à la fonction `PrepGR()` du package `r airGRteaching`.
+
+```{r, v02_step_prep_hist, echo=TRUE, eval=TRUE, warning=FALSE}
+# Adding an epsilon to observed streamflows for criterion calculation
+epsilon_qobs <- mean(ts_hist$Qmmd, na.rm = TRUE) / 100
+
+# Data processing for GR6J
+prep_hist <- PrepGR(DatesR     = ts_hist$Date,
+                    Precip     = ts_hist$Ptot,
+                    PotEvap    = ts_hist$Evap, 
+                    Qobs       = ts_hist$Qmmd + epsilon_qobs,
+                    HydroModel = "GR6J", 
+                    CemaNeige  = FALSE)
+```
+
+
+## Calage de GR6J sur la période historique
+
+Les lignes de codes présentées ci-après permettent de caler le modèle GR6J sur la période historique.
+
+```{r, v02_fig_step_cal_hist, echo=TRUE, eval=TRUE, fig.width=3*3, fig.height=3*2, out.width='98%'}
+# Calibration step
+cal_hist <- CalGR(PrepGR  = prep_hist, 
+                  CalCrit = "NSE",
+                  WupPer  = per_wup_hist, 
+                  CalPer  = per_cal_hist,
+                  transfo = "log",
+                  verbose = TRUE)
+
+# Get parameter and criterion values
+param_cal_hist <- GetParam(cal_hist)
+crit_cal_hist <- GetCrit(cal_hist)
+
+# Graphical assessment of the calibration performance
+plot(cal_hist)
+```
+
+Les six paramètres et la valeur du critère de calage ($NSE_{ln}$) obtenus après la procédure de calage automatique sont :
+
+* X1 = `r round(param_cal_hist[1], digits = 0)` [mm]
+* X2 = `r round(param_cal_hist[2], digits = 3)` [mm/j]
+* X3 = `r round(param_cal_hist[3], digits = 0)` [mm]
+* X4 = `r round(param_cal_hist[4], digits = 3)` [j]
+* X5 = `r round(param_cal_hist[5], digits = 3)` [-]
+* X6 = `r round(param_cal_hist[6], digits = 2)` [mm]
+* $NSE_{ln}$ = `r round(crit_cal_hist, digits = 3)` [-]
+
+Les performances obtenues en calage sont très bonnes, puisque le critère $NSE_{ln}$ est égal à `r round(crit_cal_hist, digits = 3)`.
+
+Les lignes de codes présentées ci-après permettent de stocker dans un même tableau les débits observés et les débits simulés avec le jeu de paramètres obtenu par calage automatique, afin de les comparer.
+
+```{r, v02_format_cal_hist, echo=TRUE, eval=TRUE}
+# Combination of observed and simulated streamflow time series on the calibration period
+ts_cal_hist <- as.data.frame(cal_hist)
+head(ts_cal_hist)
+```
+
+La figure suivante représente les séries de débits observés et simulés sur la fin de la période de calage.
+
+```{r, v02_fig_cal_hist, echo=FALSE, fig.width=3*3, fig.height=3*1.7, out.width='98%'}
+# Plot framework
+<<v02_fig_pattern>>
+
+# sim
+lines(x = ts_cal_hist$Date, y = ts_cal_hist$Qsim, col = "orangered")
+
+legend("topright", 
+       legend = c("Qobs", "Qsim"), 
+       lty = 1, col = c("black", "orangered"), 
+       bg = "white")
+```
+
+
+## Scénario pessimiste de *précipitations nulles*
+
+Les lignes de codes présentées ci-après permettent de créer une chronique de données "fictives" regroupant des données observées (pour l'initialisation du modèle) et des données créées pour le scénario de "précipitations nulles". Cette chonique sera ensuite utilisé en entrée du modèle GR6J pour "transformer" ce scénario météorologique en scénario hydrologique.
+
+```{r, v02_format_p0, echo=TRUE, eval=TRUE}
+# Duplicate the table with future dates to fill the forecast period
+ts_fcst_p0 <- ts_fcst
+
+# Setting zero precipitation for the forecast period
+ts_fcst_p0$Ptot <- 0
+
+# Addition of interannual average PE
+ts_eclim <- aggregate(Evap ~ MonthDay, 
+                      data = ts_hist[ts_hist$MonthDay %in% month_day_fcst, ], 
+                      FUN = mean)
+ts_fcst_p0$Evap <- ts_eclim$Evap
+
+# Combine historical and forecasting time series
+ts_scen_p0 <- rbind(ts_hist, ts_fcst_p0)
+
+# Display of the last lines
+tail(ts_scen_p0)
+```
+
+Les lignes de codes présentées ci-après permettent de formater la chronique précédemment créée comme entrées du modèle GR6J et de réaliser une simulation pluie-débit.
+
+```{r, v02_step_sim_p0, echo=TRUE, eval=TRUE}
+# Data processing for GR6J
+prep_scen_p0 <- PrepGR(DatesR     = ts_scen_p0$Date,
+                       Precip     = ts_scen_p0$Ptot,
+                       PotEvap    = ts_scen_p0$Evap, 
+                       Qobs       = NULL,
+                       HydroModel = "GR6J", 
+                       CemaNeige  = FALSE)
+
+# Hydrological forecast
+sim_scen_p0 <- SimGR(PrepGR  = prep_scen_p0, 
+                     WupPer  = per_wup_fcst, 
+                     SimPer  = per_fcst,
+                     Param   = param_cal_hist,
+                     verbose = FALSE)
+
+# Simulated streamflow time series
+ts_sim_scen_p0 <- as.data.frame(sim_scen_p0)
+```
+
+La figure suivante représente les séries de débits observés et simulés sur la fin de la période de calage, et le résultat de la simulation du scénario de "précipitations nulles". On observe la lente décroissance des débits simulés, générée par la vidange lente des réservoirs de GR6J.
+
+```{r, v02_fig_qscen_p0, echo=FALSE, fig.width=3*3, fig.height=3*1.7, out.width='98%'}
+# Plot framework
+<<v02_fig_step_cal_hist>>
+
+# Zero rainfall
+lines(x = ts_sim_scen_p0$Dates, y = ts_sim_scen_p0$Qsim, lwd = 2, col = "blue")
+
+# Legend
+legend("topright", 
+       legend = c("Qobs", "Qsim", "QscenP0"), 
+       lwd = 2, lty = 1, col = c("black", "orangered", "blue"), 
+       bg = "white")
+```
+
+Il est important de noter que les simulations réalisées jusqu'à présent ne prennent pas en compte le dernier débit observé. Cela peut générer une discontinuité dans la séquence des débits, entre les observations disponibles jusqu’à l’instant de prévision, et les simulations produites à partir de cet instant. Cette erreur peut être corrigée de plusieurs manières, en "assimilant" le dernier débit observé. La correction la plus simple consiste à calculer un simple ratio entre le dernier débit observé et le débit simulé correspondant et à utiliser ce ratio pour corriger l'ensemble des débits simulés suivants. Les lignes de codes présentées ci-après permettent de calculer un tel ratio, qui sera utilisé par la suite pour corriger les débits simulés par GR6J, en les divisant par ce ratio (e.g. figure suivante).
+
+```{r, v02_corr_q, echo=TRUE, eval=TRUE}
+# Correction (~ assimilation)
+corr_qsim <- ts_sim_scen_p0$Qsim[1] / ts_hist$Qmmd[nrow(ts_hist)]
+
+# Ratio display
+corr_qsim
+```
+
+```{r, v02_fig_qscen_p0corr, echo=FALSE, fig.width=3*3, fig.height=3*1.7, out.width='98%'}
+# Plot framework
+<<v02_fig_pattern>>
+
+# Zero rainfall
+lines(x = ts_sim_scen_p0$Date, y = ts_sim_scen_p0$Qsim / corr_qsim, lwd = 2, col = "cornflowerblue")
+
+# Legend
+legend("topright", 
+       legend = c("Qobs", "QscenP0corr"), 
+       lwd = 2, lty = 1, col = c("black", "cornflowerblue"), 
+       bg = "white")
+```
+
+
+## Scénarios de précipitations futures non nulles
+
+Les lignes de codes ci-dessous permettent de faire des simulations pluie-débit sur l’été étudié à partir du dernier débit observé en "rejouant" la climatologie des précipitations, i.e. les précipitations observées durant les autres étés.
+
+```{r, v02_scen_py, echo=TRUE, eval=TRUE, warning=FALSE}
+# Historical years
+year_hist <- unique(ts_hist$Year)
+year_hist <- setdiff(year_hist, unique(ts_fcst$Year))
+year_hist
+
+# Loop on the historical years
+ts_qscen_year <- sapply(year_hist, FUN = function(i_year) {
+  
+  i_ts_hist <- ts_hist[ts_hist$Year == i_year & ts_hist$MonthDay %in% month_day_fcst, ]
+  i_ts_hist$Date <- dates_fcst
+  
+  # Combine historical and forecasting (based on precipitation climatology) time series
+  i_ts_scen_py <- rbind(ts_hist, i_ts_hist)
+  
+  # Data processing for GR6J
+  prep_scen_py <- PrepGR(DatesR     = i_ts_scen_py$Date,
+                         Precip     = i_ts_scen_py$Ptot, 
+                         PotEvap    = i_ts_scen_py$Evap, 
+                         HydroModel = "GR6J", 
+                         CemaNeige  = FALSE)
+  
+  # Hydrological forecast
+  sim_scen_py <- SimGR(PrepGR  = prep_scen_py, 
+                       WupPer  = per_wup_fcst, 
+                       SimPer  = per_fcst, 
+                       Param   = param_cal_hist, 
+                       verbose = FALSE)
+  
+  # Correction of the simulated streamflow
+  sim_scen_py$OutputsModel$Qsim / corr_qsim
+  
+})
+
+# Compute future streamflow quantiles (based on precipitation climatology)
+ts_qscen_quant <- t(apply(ts_qscen_year, MARGIN = 1, FUN = function(x) {
+  quantile(x, probs = c(0.10, 0.25, 0.50, 0.75, 0.90))
+}))
+ts_qscen_quant <- as.data.frame(ts_qscen_quant)
+colnames(ts_qscen_quant) <- paste0("Q", gsub("\\D", "", colnames(ts_qscen_quant)))
+rownames(ts_qscen_quant) <- month_day_fcst
+
+# Display of the first calculated quantiles
+head(ts_qscen_quant)
+```
+
+La prévision de débits à partir de l'historique des précipitations semble indiquer que les prochains jours seront secs, et qu'une augmentation du débit de la `r name_riv` n'est a priori prévue que dans quelques jours.
+
+```{r, v02_fig_qscen_py, echo=FALSE, fig.width=3*3, fig.height=3*1.7, out.width='98%'}
+# Plot framework
+<<v02_fig_pattern>>
+
+polygon(x = c(dates_fcst, rev(dates_fcst)), 
+        y = c(ts_qscen_quant$Q10, rev(ts_qscen_quant$Q90)), 
+        col = adjustcolor("green2", alpha.f = 0.3), border = NA)
+polygon(x = c(dates_fcst, rev(dates_fcst)), 
+        y = c(ts_qscen_quant$Q25, rev(ts_qscen_quant$Q75)), 
+        col = adjustcolor("green2", alpha.f = 0.5), border = NA)
+lines(x = dates_fcst, y = ts_qscen_quant$Q50, lwd = 2, col = "green4")
+
+legend("topright", 
+       legend = c("Qobs", "QscenPy (10,25,50,75,90 %)"), 
+       col = c("black", "green2"), 
+       pch = c(NA, 15), lwd = c(1, 2), pt.cex = 2, 
+       lty = c(1, 1), pt.bg = c(NA, "green2"),
+       bg = "white")
+```
+
+La figure suivante permet de comparer tous les résultats sur un même graphique. Elle présente les débits observés et simulés sur la fin de la période de calage, la climatologie des débits sur la période de prévision, le résultat de la simulation du scénario de "précipitations nulles", et les débits basés sur la climatologie des précipitations.
+
+```{r, v02_fig_summary, echo=FALSE, fig.width=3*3, fig.height=3*1.7, out.width='98%'}
+# Plot framework
+<<v02_fig_pattern>>
+par(new = TRUE)
+<<v02_fig_qclim>>
+par(new = TRUE)
+<<v02_fig_cal_hist>>
+par(new = TRUE)
+<<v02_fig_qscen_py>>
+par(new = TRUE)
+<<v02_fig_qscen_p0corr>>
+
+legend("topright", 
+       legend = c("Qobs", 
+                  "Qsim", 
+                  "QscenP0corr", 
+                  "Qclim (10,25,50,75,90 %)", 
+                  "QscenPy (10,25,50,75,90 %)"), 
+       col = c("black", "orangered", "cornflowerblue", "grey50", "green2"), 
+       pch = c(NA, NA, NA, 15, 15), 
+       lwd = c(1, 1, 2, 2, 2), 
+       pt.cex = 2, 
+       lty = c(1, 1, 1, 1, 1), 
+       pt.bg = c(NA, NA, NA, "grey50", "green2"), 
+       bg = "white")
+```
+
+
+
+# Références

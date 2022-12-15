@@ -58,7 +58,7 @@ The package also provides the `ShinyGR()` function, which allows to launch a Shi
 - display of internal variables evolution;
 - time period selection.
 
-A demonstrator of the graphical interface is available for free online on the [Sunshine](https://sunshine.irstea.fr/) platform.
+A demonstrator of the graphical interface is available for free online on the [Sunshine](https://sunshine.inrae.fr/) platform.
 
 
 ## Models

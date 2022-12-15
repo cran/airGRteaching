@@ -21,15 +21,15 @@ Also plot of the evolution  of parameters and objective function during the cali
      plot.na = TRUE, ...)
 
 \method{plot}{CalGR}(x, xlab = NULL, ylab = NULL, main = NULL,
-     which = c("perf", "iter", "ts"), ...)
+     which = "synth", ...)
 
-\method{plot}{SimGR}(x, ...)
-
+\method{plot}{SimGR}(x,
+     which = "synth", ...)
 }
 
 
 \arguments{
-  \item{x}{[PrepGR], [CalGR] or [SimGR] containing the vector of dates (\emph{POSIXt}) and the time series of numeric values list perturbed inputs and DA model outputs (see \code{\link{PrepGR}}, \code{\link{CalGR}} and \code{\link{SimGR}})}
+  \item{x}{[PrepGR], [CalGR] or [SimGR] objects (see \code{\link{PrepGR}}, \code{\link{CalGR}} and \code{\link{SimGR}})}
 
   \item{type}{[character] the type of plot that should be drawn (see \code{\link[graphics]{plot}} for details)}
 
@@ -47,7 +47,7 @@ Also plot of the evolution  of parameters and objective function during the cali
 
   \item{plot.na}{[boolean] boolean indicating if the missing values are plotted on the x-axis}
 
-  \item{which}{[character] choice of the plot type (\code{"perf"} (default): plot diagnostics; \code{"iter"}: parameter and calibration criterion values during the iterations of the steepest descent step of the airGR calibration algorithm; \code{"ts"}: time series of observed precipitation and observed and simulated flows)}
+  \item{which}{[character] choice of the plot type (\code{"synth"} (default): plot diagnostics; \code{"iter"}: parameter and calibration criterion values during the iterations of the steepest descent step of the airGR calibration algorithm; \code{"ts"}: time series of observed precipitation and observed and simulated flows; \code{"perf"}: error time series and other graphic to compare simulated to observed flows; for other graphical outputs, see \code{\link[airGR]{plot.OutputsModel}})}
 
   \item{...}{other parameters to be passed through to plotting functions}
 }

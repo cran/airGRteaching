@@ -39,18 +39,22 @@ SimGR <- function(PrepGR, CalGR = NULL, Param, EffCrit = c("NSE", "KGE", "KGE2",
 
   WupInd <- NULL
   if (!is.null(WupPer)) {
-    WupPer <- as.POSIXct(WupPer, tz = "UTC")
-    if (length(WupPer) != 2) {
-      stop("Warm-up period \"WupPer\" must be of length 2")
-    }
-    if (any(is.na(WupPer))) {
-      stop("Non convenient date format for the warm-up period \"WupPer\"")
-    } else {
-      if (!any(PrepGR$InputsModel$DatesR == WupPer[1]) | !any(PrepGR$InputsModel$DatesR == WupPer[2])) {
-        stop("Non convenient date for the warm-up period \"WupPer\"")
-      } else {
-        WupInd <- which(PrepGR$InputsModel$DatesR == WupPer[1]):which(PrepGR$InputsModel$DatesR == WupPer[2])
+    if (!identical(WupPer, 0L)) {
+      WupPer <- as.POSIXct(WupPer, tz = "UTC")
+      if (length(WupPer) != 2) {
+        stop("Warm-up period \"WupPer\" must be of length 2")
       }
+      if (any(is.na(WupPer))) {
+        stop("Non convenient date format for the warm-up period \"WupPer\"")
+      } else {
+        if (!any(PrepGR$InputsModel$DatesR == WupPer[1]) | !any(PrepGR$InputsModel$DatesR == WupPer[2])) {
+          stop("Non convenient date for the warm-up period \"WupPer\"")
+        } else {
+          WupInd <- which(PrepGR$InputsModel$DatesR == WupPer[1]):which(PrepGR$InputsModel$DatesR == WupPer[2])
+        }
+      }
+    } else {
+      WupInd <- 0L
     }
   }
 

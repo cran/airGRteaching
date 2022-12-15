@@ -1,8 +1,9 @@
 \encoding{UTF-8}
 \name{dyplot}
-\alias{dyplot.default}
 \alias{dyplot}
-
+\alias{dyplot.PrepGR}
+\alias{dyplot.CalGR}
+\alias{dyplot.SimGR}
 
 \title{Interactive plots for time series of PrepGR, CalGR and SimGR objects}
 
@@ -11,7 +12,21 @@
 
 
 \usage{
-\method{dyplot}{default}(x, Qsup = NULL, Qsup.name = "Qsup",
+\method{dyplot}{PrepGR}(x, Qsup = NULL, Qsup.name = "Qsup",
+       col.Precip = c("royalblue", "lightblue"),
+       col.Q = c("black", "orangered", "grey"), col.na = "lightgrey",
+       ylab = NULL, main = NULL,
+       plot.na = TRUE, RangeSelector = TRUE, Roller = FALSE,
+       LegendShow = c("follow", "auto", "always", "onmouseover", "never"), ...)
+
+\method{dyplot}{CalGR}(x, Qsup = NULL, Qsup.name = "Qsup",
+       col.Precip = c("royalblue", "lightblue"),
+       col.Q = c("black", "orangered", "grey"), col.na = "lightgrey",
+       ylab = NULL, main = NULL,
+       plot.na = TRUE, RangeSelector = TRUE, Roller = FALSE,
+       LegendShow = c("follow", "auto", "always", "onmouseover", "never"), ...)
+
+\method{dyplot}{SimGR}(x, Qsup = NULL, Qsup.name = "Qsup",
        col.Precip = c("royalblue", "lightblue"),
        col.Q = c("black", "orangered", "grey"), col.na = "lightgrey",
        ylab = NULL, main = NULL,
@@ -21,17 +36,17 @@
 
 
 \arguments{
-  \item{x}{[PrepGR], [CalGR] or [SimGR] containing the vector of dates (\emph{POSIXt}) and the time series of numeric values list perturbed inputs and DA model outputs (see \code{\link{PrepGR}}, \code{\link{CalGR}} and \code{\link{SimGR}})}
+  \item{x}{[\code{\link{PrepGR}}], [\code{\link{CalGR}}] or [\code{\link{SimGR}}] objects}
 
   \item{Qsup}{(optional) [numeric] additional time series of flows (at the same time step than argument \code{x}) [mm/time step]}
 
   \item{Qsup.name}{(optional) [character] a label for the legend of Qsup}
 
-  \item{col.Precip}{(optional) [character] vector of 1 (total precip.) or 2 (liquid and solid precip. with CemaNeige) color codes or names for precipitation (these can be of the form \code{"#AABBCC"} or \code{"rgb(255, 100, 200)"} or \code{"yellow"}), see \code{\link[graphics]{par}} and \code{\link[grDevices]{rgb}}}
+  \item{col.Precip}{(optional) [character] vector of 1 (total precip.) or 2 (liquid and solid precip. with CemaNeige) color codes or names for precipitation (these can be of the form \code{"#RRGGBB"} or \code{"rgb(255, 100, 200)"} or \code{"yellow"}), see \code{\link[graphics]{par}} and \code{\link[grDevices]{rgb}}}
 
-  \item{col.Q}{(optional) [character] vector of up to 3 color codes or names for observed (first value), simulated (second value, if provided) and additional (last value, if provided) flows, respectively (these can be of the form \code{"#AABBCC"} or \code{"rgb(255, 100, 200)"} or \code{"yellow"}), see \code{\link[graphics]{par}} and \code{\link[grDevices]{rgb}}}
+  \item{col.Q}{(optional) [character] vector of up to 3 color codes or names for observed (first value), simulated (second value, if provided) and additional (last value, if provided) flows, respectively (these can be of the form \code{"#RRGGBB"} or \code{"rgb(255, 100, 200)"} or \code{"yellow"}), see \code{\link[graphics]{par}} and \code{\link[grDevices]{rgb}}}
 
-  \item{col.na}{(optional) [character] color code or name for missing values(these can be of the form \code{"#AABBCC"} or \code{"rgb(255, 100, 200)"} or \code{"yellow"}), see \code{\link[graphics]{par}} and \code{\link[grDevices]{rgb}}}
+  \item{col.na}{(optional) [character] color code or name for missing values(these can be of the form \code{"#RRGGBB"} or \code{"rgb(255, 100, 200)"} or \code{"yellow"}), see \code{\link[graphics]{par}} and \code{\link[grDevices]{rgb}}}
 
   \item{ylab}{(optional) [character] a label for the y-axis (flow and precipitation)}
 

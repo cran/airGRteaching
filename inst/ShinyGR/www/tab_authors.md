@@ -14,7 +14,7 @@ output:
   <tr>
   <td width="110"><img src="fig/logo_inrae_saclay_CMJN.svg" width="87%" height="87%"></td>
   <td width="130"><img src="fig/logo_inrae_hydro_CMJN.svg" width="80%" height="80%"></td>
-  <td>The <strong><font color="#0BA6AA"><a href = 'https://webgr.inrae.fr/en/models/' onclick='window.open(this.href); return false;'>GR</a></font></strong> models and the <strong><font color="#0BA6AA"><a href = 'https://hydrogr.github.io/airGR/' onclick='window.open(this.href); return false;'>airGR</a></font></strong> &amp; <strong><font color="#0BA6AA"><a href = 'https://hydrogr.github.io/airGRteaching/' onclick='window.open(this.href); return false;'>airGRteaching</a></font></strong> packages are developed by the <strong><i><a href = 'https://webgr.inrae.fr/en/' onclick='window.open(this.href); return false;'>Catchment Hydrology Team</a></i></strong> of <strong><a href = 'http://www.inrae.fr/en/' onclick='window.open(this.href); return false;'><strong>INRAE</strong></a></strong> at Antony, France.
+  <td>The <strong><font color="#0BA6AA"><a href = 'https://webgr.inrae.fr/en/models/' title='GR models' rel='noopener noreferrer nofollow' onclick='window.open(this.href); return false;'>GR</a></font></strong> models and the <strong><font color="#0BA6AA"><a href = 'https://hydrogr.github.io/airGR/' title='airGR' rel='noopener noreferrer nofollow' onclick='window.open(this.href); return false;'>airGR</a></font></strong> &amp; <strong><font color="#0BA6AA"><a href = 'https://hydrogr.github.io/airGRteaching/' title='airGRteaching' rel='noopener noreferrer nofollow' onclick='window.open(this.href); return false;'>airGRteaching</a></font></strong> packages are developed by the <strong><i><a href = 'https://webgr.inrae.fr/en/' onclick='window.open(this.href); return false;'>Catchment Hydrology Team</a></i></strong> of <strong><a href = 'http://www.inrae.fr/en/' onclick='window.open(this.href); return false;'><strong>INRAE</strong></a></strong> at Antony, France.
   </tr>
 </tbody>
 </table>
@@ -56,7 +56,7 @@ output:
   <td><strong><font color="#62003C">Guillaume THIREL</font></strong>
   <br><strong><i>Hydrologist</i></strong>
   <br>INRAE
-  <br>Contributor
+  <br>Co-developer
   </tr>
 
 </tbody>
@@ -95,6 +95,14 @@ output:
   <br>INRAE
   <br>Current developer
   <br>Maintainer of the package
+  </tr>
+  
+  <tr>
+  <td width="115"><img style="border-width: 2px; border-color:rgba(0,0,0,0.0); border-style: solid; float: left; width: 100px;" src="fig/logo_inrae_hydro_CMJN.svg" alt="" /></td>
+  <td><strong><font color="#62003C">David DORCHIES</font></strong>
+  <br><strong><i>Hydroinformatician</i></strong>
+  <br>INRAE (UMR G-eau, Montpellier)
+  <br>Current developer
   </tr>
   
   <tr>

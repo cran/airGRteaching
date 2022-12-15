@@ -57,7 +57,7 @@ CemaNeige can only be used with the daily models at the moment.
 }
 
 \note{
-A demo version of the GUI is available on the \href{https://sunshine.irstea.fr/}{Sunshine} platform.
+A demo version of the GUI is available on the \href{https://sunshine.inrae.fr/}{Sunshine} platform.
 }
 
 

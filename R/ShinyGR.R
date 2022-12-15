@@ -2,6 +2,8 @@ ShinyGR <- function(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL, 
                     ZInputs = NULL, HypsoData = NULL, NLayers = 5, SimPer, NamesObsBV = NULL,
                     theme = "RStudio") {
 
+  .onAttach()
+
   theme <- match.arg(arg = theme,
                      choices = c("RStudio", "Cerulean", "Cyborg", "Flatly", "Inrae", "Saclay", "United", "Yeti"))
 
@@ -85,10 +87,10 @@ ShinyGR <- function(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL, 
     ZInputs <- as.list(ZInputs)
     if (length(ZInputs) == lenObsDF) {
       ZInputs <- as.list(ZInputs)
-    } else if(length(ZInputs) > lenObsDF) {
+    } else if (length(ZInputs) > lenObsDF) {
       ZInputs <- as.list(ZInputs)[seq_along(ObsDF)]
       warning("Too long 'ZInputs'. Only the first element(s) of 'ZInputs' argument used.")
-    } else if(length(ZInputs) < lenObsDF) {
+    } else if (length(ZInputs) < lenObsDF) {
       ZInputs <- as.list(rep(ZInputs, lenObsDF))[seq_along(ObsDF)]
       if (lenObsDF > 1) {
         warning("Not enough 'ZInputs' elements. Elements of the list recycled.")
@@ -105,10 +107,10 @@ ShinyGR <- function(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL, 
     }
     if (length(HypsoData) == lenObsDF) {
       HypsoData <- as.list(HypsoData)
-    } else if(length(HypsoData) > lenObsDF) {
+    } else if (length(HypsoData) > lenObsDF) {
       HypsoData <- as.list(HypsoData)[seq_along(ObsDF)]
       warning("Too long 'HypsoData'. Only the first element(s) of 'HypsoData' argument used.")
-    } else if(length(HypsoData) < lenObsDF) {
+    } else if (length(HypsoData) < lenObsDF) {
       HypsoData <- as.list(rep(HypsoData, lenObsDF))[seq_along(ObsDF)]
       if (lenObsDF > 1) {
         warning("Not enough 'HypsoData' elements. Elements of the list recycled.")
@@ -122,10 +124,10 @@ ShinyGR <- function(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL, 
   } else {
     if (length(NLayers) == lenObsDF) {
       NLayers <- as.list(NLayers)
-    } else if(length(NLayers) > lenObsDF) {
+    } else if (length(NLayers) > lenObsDF) {
       NLayers <- as.list(NLayers)[seq_along(ObsDF)]
       warning("Too long 'NLayers'. Only the first element(s) of 'NLayers' argument used.")
-    } else if(length(NLayers) < lenObsDF) {
+    } else if (length(NLayers) < lenObsDF) {
       NLayers <- as.list(rep(NLayers, lenObsDF))[seq_along(ObsDF)]
       if (lenObsDF > 1) {
         warning("Not enough 'NLayers' elements. Elements of the list recycled.")
@@ -137,7 +139,7 @@ ShinyGR <- function(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL, 
   if (length(SimPer) > lenObsDF) {
     SimPer <- as.list(SimPer)[seq_along(ObsDF)]
     warning("Too long 'SimPer'. Only the first element(s) of 'SimPer' argument used.")
-  } else if(length(SimPer) < lenObsDF) {
+  } else if (length(SimPer) < lenObsDF) {
     SimPer <- as.list(rep(SimPer, lenObsDF))[seq_along(ObsDF)]
     if (lenObsDF > 1) {
       warning("Not enough 'SimPer' elements. Elements of the list recycled.")

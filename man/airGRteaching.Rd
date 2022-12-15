@@ -1,5 +1,6 @@
 \name{airGRteaching}
 \alias{airGRteaching}
+\alias{airGRteaching-package}
 \docType{package}
 \encoding{UTF-8}
 
@@ -52,7 +53,7 @@ The package also provides the \code{\link{ShinyGR}()} function, which allows to 
   \item time period selection.
 }
 
-A demonstrator of the graphical interface is available for free online on the \href{https://sunshine.irstea.fr/}{Sunshine} platform.
+A demonstrator of the graphical interface is available for free online on the \href{https://sunshine.inrae.fr/}{Sunshine} platform.
 \cr
 
 

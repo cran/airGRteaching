@@ -1,0 +1,499 @@
+---
+title: "Impact of climate change on streamflow regime"
+author: "Pierre Brigode & Olivier Delaigue"
+bibliography: 
+  - V00_airGRteaching_ref.bib
+  - airGR_galaxy.bib
+output: 
+  rmarkdown::html_vignette:
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Impact of climate change on streamflow regime}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+```{r, warning=FALSE, include=FALSE}
+R_bib <- toBibtex(citation())
+R_bib <- gsub("@Manual\\{", "@Manual{Rsoftware_man", R_bib)
+airGR_bib <- toBibtex(citation("airGR"))
+airGR_bib <- gsub("@Article\\{", "@Article{airGR_art", airGR_bib)
+airGR_bib <- gsub("@Manual\\{", "@Manual{airGR_man", airGR_bib)
+airGRteaching_bib <- toBibtex(citation("airGRteaching"))
+airGRteaching_bib <- gsub("@Manual\\{", "@Manual{airGRteaching_man", airGRteaching_bib)
+airGRteaching_bib <- gsub("@InProceedings\\{", "@InProceedings{airGRteaching_pcd", airGRteaching_bib)
+airGRdatasets_bib <- toBibtex(citation("airGRdatasets"))
+airGRdatasets_bib <- gsub("@Manual\\{", "@Manual{airGRdatasets_man", airGRdatasets_bib)
+options(encoding = "UTF-8")
+writeLines(text = c(R_bib, airGR_bib, airGRteaching_bib, airGRdatasets_bib), con = "airGR_galaxy.bib")
+options(encoding = "native.enc")
+```
+
+```{r, include=FALSE}
+formatGR      <- '<strong><font color="#0BA6AA">%s</font></strong>'
+GR            <- sprintf(formatGR, "GR")
+airGR         <- sprintf(formatGR, "airGR")
+airGRteaching <- sprintf(formatGR, "airGRteaching")
+```
+
+```{r, setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.path = "figure/")
+library(airGRteaching)
+colorize <- function(x, color) {
+  if (knitr::is_latex_output()) {
+    sprintf("\\textcolor{%s}{%s}", color, x)
+  } else if (knitr::is_html_output()) {
+    sprintf("<span style='color: %s;'>%s</span>", color, x)
+  } else {
+    x
+  }
+}
+```
+
+```{r, v03_format_delta_temp, echo=FALSE, results="asis", warning=FALSE}
+# Delta of temperature
+delta_temp <- data.frame(Month = sprintf("%02i-15", 1:12),
+                         Tscen1 = rep(1.5, 12),
+                         Tscen2 = c(2.5, 2.5, 3.0, 3.0, 3.5, 4.0, 4.0, 3.5, 3.0, 3.0, 2.5, 2.5),
+                         Tscen3 = c(3.5, 3.5, 4.0, 4.5, 5.0, 6.0, 6.0, 5.0, 4.5, 4.0, 3.5, 3.5))
+```
+
+```{r, v03_format_delta_precip, echo=FALSE, results="asis", warning=FALSE}
+# Delta of precipitation
+delta_ptot <- data.frame(Month = sprintf("%02i-15", 1:12),
+                         Pscen1 = c(+10, +10, +05, 0, -05, -10, -10, -05, 0, +05, +10, +10),
+                         Pscen2 = c(+15, +15, +07, 0, -07, -15, -15, -07, 0, +07, +25, +20),
+                         Pscen3 = c(+20, +15, +10, 0, -15, -30, -30, -15, 0, +20, +40, +30))
+```
+
+```{r, v03_format_ts_1_ini, echo=FALSE, results="asis", warning=FALSE}
+# Catchment data loading
+library(airGRdatasets)
+data("X031001001", package = "airGRdatasets")
+
+# Observed daily time series
+ts_obs <- X031001001$TS
+
+# Latitude of the catchment outlet
+lat <- X031001001$Meta$Coor$Y
+
+# Catchment elevation distribution
+hypso <- X031001001$Hypso
+```
+
+```{r, include=FALSE}
+name_sta <- gsub("the ", "", X031001001$Meta$Name)
+name_riv <- gsub("(the )(.*)( at.*)", "\\2", name_sta)
+```
+
+```{r, v03_set_per, echo=FALSE, eval=TRUE, include=FALSE}
+# Warm-up period
+per_ini <- c("1999-01-01", "2000-08-31")
+
+# Calibration period
+per_cal <- c("2000-09-01", "2009-06-29")
+```
+
+```{r, echo=FALSE, eval=TRUE}
+per_ini_pct <- as.POSIXct(per_ini, tz = "UTC", format = "%Y-%m-%d")
+per_ini_for <- format(per_ini_pct, "%e %B %Y")
+per_cal_pct <- as.POSIXct(per_cal, tz = "UTC", format = "%Y-%m-%d")
+per_cal_for <- format(per_cal_pct, "%e %B %Y")
+```
+
+
+
+# Objective
+
+
+## Context
+
+The new report of the Intergovernmental Panel on Climate Change ([IPCC](https://www.ipcc.ch/)) has just been released, announcing the latest global climate trends simulated by the latest versions of several climate models.
+
+Your climate colleagues have applied several downscaling methods with the objective of transforming the large-scale global climate projections proposed by the IPCC, to a spatial scale compatible with a hydrological analysis on your studied catchment, `r name_sta`. You will follow the methodology applied by @sauquet_projet_2015 in the framework of the [R²D² project](https://hal.inrae.fr/view/index/identifiant/hal-02601503), quantifying in particular the future of the water resources of the river `r name_riv` in 2050. The final product proposed by your climatological colleagues is a table of average changes in (i) average monthly air temperatures and (ii) monthly total precipitation, according to three scenarios. These changes were calculated by comparing a "present climate" period (noted CP) centered around the year 2000 (1990-2010) to a "future climate" period (noted CF) centered around the year 2050 (2040-2060). They are presented in the following table, and reveal an increase in air temperatures (more marked in summer for scenarios 2 and 3), a decrease in precipitation during the summer and an increase in precipitation during the autumn. 
+
+You are in charge of quantifying the impact of these climatic changes on the streamflow regime of the river `r name_sta` from the results of your climatological colleagues and thanks to a rainfall-runoff model (see following figure). 
+
+This work will be completed in four steps:
+
+1. Generation of future climate series
+2. Calibration of the hydrological model with a snow module on the historical period.
+3. Simulation of the streamflows generated by the future climate series
+4. Comparison of "present time" and "future time" streamflow regimes.
+
+```{r, v03_tab_delta_temp, echo=FALSE, results="asis", warning=FALSE}
+# Table formatting
+delta_temp2 <- delta_temp
+delta_temp2 <- delta_temp2[, setdiff(colnames(delta_temp2), "Month")]
+colnames(delta_temp2) <- c("Temp. scenario 1", "Temp. scenario 2", "Temp. scenario 3")
+rownames(delta_temp2) <- month.abb
+delta_temp2 <- t(delta_temp2)
+
+# Table display
+knitr::kable(delta_temp2, 
+             caption = "Monthly mean air temperature scenarios (°C), calculated by comparing the present climate period with the future climate period.")
+```
+
+```{r, v03_tab_delta_precip, echo=FALSE, results="asis", warning=FALSE}
+# Table formatting
+delta_ptot2 <- delta_ptot
+delta_ptot2 <- delta_ptot2[, setdiff(colnames(delta_ptot2), "Month")]
+colnames(delta_ptot2) <- c("Precip. scenario 1", "Precip. scenario 2", "Precip. scenario 3")
+rownames(delta_ptot2) <- month.abb
+delta_ptot2 <- t(delta_ptot2)
+
+# Table display
+knitr::kable(delta_ptot2 , 
+             caption = "Monthly total precipitation scenarios (%), calculated by comparing the present climate period with the future climate period.")
+```
+
+```{r, v03_fig_presentation, echo=FALSE, eval=TRUE, fig.width=3*3, fig.height=3*1.7, out.width='98%'}
+# Daily streamflow regimes
+is_per_cal <- ts_obs$Date >= as.POSIXct(per_cal[1L], tz = "UTC") & ts_obs$Date <= as.POSIXct(per_cal[2L], tz = "UTC")
+reg_d <- SeriesAggreg(x = ts_obs[is_per_cal, c("Date", "Qmmd")],
+                      Format = "%d",
+                      ConvertFun = c("mean"))
+is_feb29 <- format(x = reg_d$Date, format = "%m-%d") == "02-29"
+reg_d <- reg_d[!is_feb29, ]
+
+# Plot layout
+par(mfrow = c(1, 2))
+
+# Present time regime
+plot(x = reg_d$Date, y = reg_d$Qmmd, 
+     xlab = "time (days)", ylab = "flow [mm/day]", 
+     main = "Present time climate",
+     type = "l")
+
+# Future time regime
+plot(x = reg_d$Date, y = reg_d$Qmmd, 
+     xlab = "time (days)", ylab = "", 
+     main = "Future climate",
+     type = "n", yaxt = "n")
+axis(side = 2, labels = FALSE)
+text(x = median(reg_d$Date), y = mean(range(reg_d$Qmmd)), 
+     labels = "?", cex = 10, font = 2, col = "orangered")
+```
+
+
+## Instructions
+
+The purpose of this section is to explain certain expected tasks and to describe the calibration and simulation conditions (parameter calibration period, warm-up periods, calibration criterion, etc.).
+
+### Calculation of the streamflow regime
+
+The streamflow regime corresponds to the average variation of streamflows over the course of a year. Here, it is described by the series of 12 mean monthly streamflows, estimated over all available years. The mean monthly streamflow for January is thus calculated by averaging the January streamflows of the different years available. The average year thus constituted summarizes the hydrological functioning of the catchment studied over a given period and makes it possible to distinguish seasons of low-flow and high-flow. In a climate change context, the analysis of the evolution of the regime makes it possible to quantify possible seasonal changes of the streamflows, either in terms of amplitude or temporal dynamics (for example related to snow melt evolution).
+
+### Generation of future climate series
+
+```{r, eval=TRUE, include=FALSE}
+k_pscen <- 1
+k_month <- 1
+name_k_month <- format(as.POSIXct(delta_ptot[k_month, "Month"], format = "%m-%d"), format = "%B")
+```
+
+Here, we do not have monthly climate series for the future period, so it is necessary to make strong assumptions to simulate the future regime of the studied catchment. A pragmatic approach suggested in this exercise is to apply the monthly changes in precipitation and air temperature given by climatologists to the time series observed over the present climate period. Thus, the average increase in `r name_k_month` precipitation of `r delta_ptot[k_month, k_pscen+1]` % predicted by scenario `r k_pscen` is considered systematic for all future `r name_k_month` months. 
+
+In order to apply the monthly evolution to the daily series, one approach consists in interpolating the monthly deltas at the daily time step, by assigning their value to the 15^th^ of each month. This approach allows to estimate, for each scenario and each variable, a delta value for each Julian day.
+
+A series of daily "future" precipitation can then be constructed by multiplying the observed daily precipitation by the estimated delta for each Julian day. 
+
+The potential evapotranspiration series, necessary for the operation of the hydrological model used, will be estimated from the formula developed by @oudin_which_2005, thanks to the dedicated `PE_Oudin()` function of the `r airGR` package.
+
+### Rainfall-runoff model and snow module
+
+You will use here the GR4J model [@perrin_improvement_2003] associated with the CemaNeige snow module [@valery_as_2014].
+
+GR4J is a conceptual and lumped rainfall-runoff model, operating on a daily time step and having 4 parameters. It requires continuous time series of daily precipitation and potential evapotranspiration (PE) as input.
+
+The snow accumulation and melt model CemaNeige also operates on a daily time step, and requires as input a distribution of the altitude of the studied catchment, as well as time series describing the air temperature among the catchment. 
+
+These models are easily usable thanks to the `r airGRteaching` package [@airGRteaching_man; @airGRteaching_pcd], developped for the [R software](https://cran.r-project.org/) by the [Catchment Hydrology research group of the HYCAR reaserch unit](https://webgr.inrae.fr/en/home/) ([INRAE](https://www.inrae.fr/en), France).
+
+The time series of observed precipitation, air temperature, PE and streamflow can be easily formatted using the `PrepGR()` function. A rainfall-runoff simulation can be performed with the `SimGR()` function, and a parameter calibration using the `CalGR()`. 
+
+### Calibration (and warm-up) period
+
+In this exercise, the warm-up period will start on `r per_ini_for[1]` and end on `r per_ini_for[2]`, and the calibration period will start on `r per_cal_for[1]` and end on `r per_cal_for[2]`.
+
+### Calibration criterion
+
+The calibration criterion to be considered in this exercise is the Nash and Sutcliffe criterion [@nash_river_1970], noted $NSE$ hereafter (see following equation). This criterion is widely used in hydrological modelling.
+
+The NSE criterion, bounded between $-\infty$ and $1$, allows to quantify the performance of a model in a relative way, by comparing a series of simulated streamflows with a so-called "naive" model, here the average of the observed streamflows (i.e. a series of streamflows constituted in each time step by the average of the observed streamflows). Thus, a NSE value equal to 1 indicates a perfect agreement between the series of observed and simulated streamflows (which is never the case), whereas a NSE value lower than 0 means that the simulation considered is less efficient than the simulation of the "naive" model. The calculation of $NSE$ is detailed in the following equation, where $Q_{obs,t}$ is the observed streamflow at time step $t$, $Q_{sim,t}$ is the simulated streamflow at time step $t$, $\overline{Q_{obs}}$ is the average of the observed streamflows, and $n$ is the number of observations:
+
+\begin{equation}
+NSE = 1-\frac{\sum_{t=1}^{n}(Q_{obs,t}-Q_{sim,t})^{2}}{\sum_{t=1}^{n}(Q_{obs,t}-\overline{Q_{obs}})^{2}}
+\end{equation}
+
+The elements necessary for the calculation of the calibration criterion have to be set as arguments of the `CalGR()` function.
+
+### Automatic parameter calibration of the model
+
+The automatic parameter calibration aims at using an automatic algorithm to search in the parameter space for an optimum of the chosen objective function. It will automatically generate sets of parameters, test them, and generate others based on the performance of those already tested. The algorithm developed by @michel_hydrologie_1991 will be used in this exercise.
+
+The parameters obtained after calibration will then be used to perform rainfall-runoff simulations for present and future climate periods.
+
+
+## Data available
+
+The data set available to the rainfall-runoff modelling consists of:
+
+* a time series of daily total precipitation (liquid + solid) [mm/day] (`Ptot`);
+* a time series of daily air temperatures [°C] (`Temp`);
+* a time series of daily potential evapotranspiration calculated with the @oudin_which_2005 formula [mm/day] (`Evap`);
+* a time series of daily streamflows expressed as a specific discharge [mm/day] (`Qmmd`);
+* a distribution of the altitude on the catchment area (hypsometric curve) [m] (`Hypso`).
+
+You also have the tables of average monthly changes estimated by your fellow climatologists presented in the introduction.
+
+
+
+# Command lines for the production of simulations
+
+
+## Loading and formatting of data
+
+The following command lines are used to read the data required to calibrate the GR4J rainfall-runoff model and to define the working periods (warm-up period, calibration period and simulation period):
+
+```{r, echo=TRUE, eval=TRUE}
+<<v03_format_ts_1_ini>>
+
+<<v03_set_per>>
+```
+
+```{r, v03_fig_hypso, echo=TRUE, eval=TRUE, fig.width=3*1.7, fig.height=3*1.7, out.width='66%', dev.args=list(pointsize=10)}
+# Elevation distribution
+plot(x = hypso,
+     xlab = "Frequency (%)", ylab = "Catchment elevation [m]")
+```
+
+## Automatic calibration of GR4J and CemaNeige
+
+```{r, v03_fig_cal, echo=TRUE, eval=TRUE, warning=FALSE, fig.width=3*3, fig.height=3*3, out.width='98%', dev.args=list(pointsize=14)}
+# Data processing for GR4J
+prep_hist <- PrepGR(DatesR     = ts_obs$Date,
+                    Precip     = ts_obs$Ptot,
+                    PotEvap    = ts_obs$Evap,
+                    TempMean   = ts_obs$Temp,
+                    ZInputs    = hypso[51],
+                    HypsoData  = hypso,
+                    Qobs       = ts_obs$Qmmd,
+                    HydroModel = "GR4J", 
+                    CemaNeige  = TRUE)
+
+# Calibration step
+cal_hist <- CalGR(PrepGR  = prep_hist, 
+                  CalCrit = "NSE",
+                  WupPer  = per_ini, 
+                  CalPer  = per_cal,
+                  verbose = TRUE)
+
+# Get parameter and criterion values
+param_cal_hist <- GetParam(cal_hist)
+GetCrit(cal_hist)
+
+# Graphical assessment
+plot(cal_hist)
+
+# Combination of observed and simulated streamflow time series 
+ts_qhist <- as.data.frame(cal_hist)
+ts_qhist <- ts_qhist[, c("Dates", "Qobs", "Qsim")]
+```
+
+
+## Calculation of the observed and simulated regimes over the present time
+
+The following command lines allow the calculation of observed and simulated streamflow regimes at daily and monthly time steps.
+
+```{r, v03_regime, echo=TRUE, eval=TRUE, warning=FALSE}
+# Daily regimes
+reg_hist_d <- SeriesAggreg(ts_qhist,
+                           Format = "%d",
+                           ConvertFun = c("mean", "mean"))
+is_feb29 <- format(x = reg_d$Date, format = "%m-%d") == "02-29"
+reg_hist_d <- reg_d[!is_feb29, ]
+
+# Monthly regimes
+reg_hist_m <- SeriesAggreg(ts_qhist,
+                           Format = "%m",
+                           ConvertFun = c("sum", "sum"))
+
+# Calculated regimes
+reg_hist_m
+```
+
+The regimes calculated in this way can be represented graphically (see following figure). The comparison of the two regimes allows to evaluate the capacity of the rainfall-runoff model (here GR4J and CemaNeige) to reproduce the regime of the studied catchment.
+
+```{r, v03_fig_regime, echo=FALSE, eval=TRUE, fig.width=3*3, fig.height=3*1.7, out.width='98%'}
+# Graphical parameters
+plot(x = reg_hist_m$Dates, y = reg_hist_m$Qobs,
+     xlab = "time (months)", ylab = "flow [mm/month]",
+     type = "l")
+lines(x = reg_hist_m$Dates, y = reg_hist_m$Qsim,
+      type = "l", col = "orangered")
+
+# Legend
+legend("topright",
+       legend = c("Qobs", "Qsim"),
+       lty = 1, 
+       col = c("black", "orangered"), 
+       bg = "white")
+```
+
+
+## Generation of climate series for the future period
+
+The following command lines allow the generation of climate series (PE, T and P) over the "future climate" period by using the series observed over the "present climate" period and transforming them from the climate changes estimated by climatologists.
+
+```{r, v03_generation_clim_cc, echo=TRUE, eval=TRUE, warning=FALSE}
+<<v03_format_delta_temp>>
+
+<<v03_format_delta_precip>>
+
+# Time series with additional date information
+ts_cc <- data.frame(Dates = ts_obs$Date)
+ts_cc$Month <- format(x = ts_cc$Date, format = "%m-%d")
+
+# Delta of temperature and precipitation in the same table
+delta_cc <- merge(delta_temp, delta_ptot, by = "Month", all = TRUE)
+
+# Merging the complete time series and the delta table
+ts_cc <- merge(ts_cc, delta_cc, by = "Month", all = TRUE)
+ts_cc <- ts_cc[order(ts_cc$Dates), ]
+
+# Sub-setting of the time series with the dates available in the delta table
+ts_cc_15 <- na.omit(ts_cc)
+
+# Constitution of "future climate" time series
+ts_clim_cc <- sapply(grep("scen", colnames(ts_cc_15), value = TRUE), FUN = function(i) {
+  # Daily delta interpolation (between the 15th of each month)
+  i_interpol <- approx(x = ts_cc_15$Dates, y = ts_cc_15[, i], 
+                       xout = ts_cc$Dates, rule = 2)$y
+  if (grepl("T", i)) {
+    ts_obs$Temp + i_interpol
+  } else {
+    ts_obs$Ptot * (1 + i_interpol / 100)
+  }
+})
+ts_clim_cc <- as.data.frame(ts_clim_cc)
+
+# Summary of the "future climate" time series
+summary(ts_clim_cc)
+
+# PE calculation
+ts_clim_cc$Julian <- as.numeric(x = format(x = ts_cc$Date, format = "%j"))
+ts_clim_cc$Escen1 <- PE_Oudin(JD = ts_clim_cc$Julian, 
+                              Temp = ts_clim_cc$Tscen1, 
+                              Lat = lat, LatUnit = "deg")
+ts_clim_cc$Escen2 <- PE_Oudin(JD = ts_clim_cc$Julian, 
+                              Temp = ts_clim_cc$Tscen2, 
+                              Lat = lat, LatUnit = "deg")
+ts_clim_cc$Escen3 <- PE_Oudin(JD = ts_clim_cc$Julian, 
+                              Temp = ts_clim_cc$Tscen3, 
+                              Lat = lat, LatUnit = "deg")
+```
+
+
+## Rainfall-runoff simulation for the future period
+
+The following command lines allow us to perform a rainfall-runoff simulation of the "future climate" period from the climate series generated in the previous section.
+
+```{r, v03_sim_cc, echo=TRUE, eval=TRUE, warning=FALSE}
+# Loop on the three scenarios
+ts_qcc <- list()
+for (i in 1:3) {
+  i_col_P <- paste0("Pscen", i)
+  i_col_E <- paste0("Escen", i)
+  i_col_T <- paste0("Tscen", i)
+  i_col_Q <- paste0("Qscen", i)
+  
+  # Data processing for GR4J
+  i_prep_cc <- PrepGR(DatesR     = ts_cc$Date,
+                      Precip     = ts_clim_cc[, i_col_P],
+                      PotEvap    = ts_clim_cc[, i_col_E],
+                      TempMean   = ts_clim_cc[, i_col_T],
+                      ZInputs    = hypso[51],
+                      HypsoData  = hypso,
+                      HydroModel = "GR4J", 
+                      CemaNeige  = TRUE)
+  
+  # Simulation step
+  i_sim_cc <- SimGR(PrepGR  = i_prep_cc, 
+                    WupPer  = per_ini, 
+                    SimPer  = per_cal,
+                    Param   = param_cal_hist,
+                    verbose = FALSE)
+  
+  # Storage of observed and simulated streamflow series
+  i_ts_cc_15 <- as.data.frame(i_sim_cc)
+  ts_qcc[[i_col_Q]] <- i_ts_cc_15$Qsim
+}
+
+# Combine historical and future time series
+ts_q <- cbind(ts_qhist, as.data.frame(ts_qcc))
+```
+
+
+## Simulated streamflow regime calculations over the future period
+
+The following command lines are used to calculate the simulated streamflow regime over the future climate period.
+
+```{r, v03_regime_cc, echo=TRUE, eval=TRUE, warning=FALSE}
+# Daily regimes
+reg_cc_d <- SeriesAggreg(ts_q,
+                         Format = "%d",
+                         ConvertFun = rep("mean", 5))
+is_feb29 <- format(x = reg_cc_d$Dates, format = "%m-%d") == "02-29"
+reg_cc_d <- reg_cc_d[!is_feb29, ]
+
+# Monthly regimes
+reg_cc_m <- SeriesAggreg(ts_q,
+                         Format = "%m",
+                         ConvertFun = rep("sum", 5))
+
+# Calculated regimes
+reg_cc_m
+```
+
+This "future" regime can be compared graphically with the streamflow regimes simulated over the present climate period (see next figure). This comparison reveals a decrease in streamflows, particularly marked for the spring and summer months (May to August).
+
+```{r, v03_fig_regime_month_cc, echo=FALSE, eval=TRUE, fig.width=3*3, fig.height=3*1.7, out.width='98%'}
+# Plot framework
+<<v03_fig_regime>>
+
+# Simulations (future)
+col_qscen <- colorRampPalette(c("steelblue1", "steelblue4"))(3)
+matlines(x = reg_cc_m$Dates, y = reg_cc_m[, c("Qscen1", "Qscen2", "Qscen3")],
+         lty = 1, col = col_qscen)
+
+# Legend
+legend("topright",
+       legend = c("Qobs", "Qsim", "Qscen1", "Qscen2", "Qscen3"),
+       lty = 1, 
+       col = c("black", "orangered", col_qscen),
+       bg = "white")
+```
+
+The evolutions are more marked at the daily time step (see following figure).
+
+```{r, v03_fig_regime_day_cc, echo=FALSE, eval=TRUE, fig.width=3*3, fig.height=3*1.7, out.width='98%'}
+# Plot framework
+matplot(x = reg_cc_d$Dates, y = reg_cc_d[, -1], 
+        xlab = "time (days)", ylab = "flow [mm/day]", 
+        type = "l", lty = 1, 
+        col = c("black", "orangered", col_qscen))
+
+# Legend
+legend("topright",
+       legend = c("Qobs", "Qsim", "Qscen1", "Qscen2", "Qscen3"),
+       lty = 1, 
+       col = c("black", "orangered", col_qscen),
+       bg = "white")
+```
+
+It is important to analyze the results obtained in light of the many uncertainties associated with the production of simulations of hydrological impacts of climate change. The uncertainties associated with the use of different climate models and different downscaling methods can be very large. In addition, the use of hydrological model parameters obtained after calibration on a catchment under climate A to simulate the hydrological response to climate B of this same catchment can also generate high uncertainties [e.g. @coron_crash_2012; @brigode_hydrological_2013].
+
+
+
+# References

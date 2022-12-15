@@ -1,10 +1,10 @@
-## ----include=FALSE------------------------------------------------------------
+## ---- include=FALSE-----------------------------------------------------------
 formatGR      <- '<strong><font color="#0BA6AA">%s</font></strong>'
 GR            <- sprintf(formatGR, "GR")
 airGR         <- sprintf(formatGR, "airGR")
 airGRteaching <- sprintf(formatGR, "airGRteaching")
 
-## ----setup, include=FALSE-----------------------------------------------------
+## ---- setup, include=FALSE----------------------------------------------------
 knitr::opts_chunk$set(echo = TRUE)
 library(airGRteaching)
 

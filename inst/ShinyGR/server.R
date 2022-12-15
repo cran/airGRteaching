@@ -176,7 +176,7 @@ shinyServer(function(input, output, session) {
       CAL_click$valueButton <- CAL_click$valueButton - 1
       CAL_click$valueButton <- ifelse(CAL_click$valueButton < -1, -1, CAL_click$valueButton)
       if (CAL_click$valueButton < 0) {
-        updateActionButton(session, inputId = "CalButton", label = "Run", icon = icon("sync"))
+        updateActionButton(session, inputId = "CalButton", label = "Run", icon = icon("arrows-rotate"))
         if (!getPrep()$isUngauged) {
           shinyjs::enable("CalButton")
         }

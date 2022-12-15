@@ -21,7 +21,7 @@ CalGR(PrepGR, CalCrit = c("NSE", "KGE", "KGE2", "RMSE"),
 
   \item{CalCrit}{[character] name of the objective function (must be one of \code{"NSE"}, \code{"KGE"}, \code{"KGE2"} or \code{"RMSE"})}
 
-  \item{WupPer}{(optional) [character] vector of 2 values to define the beginning and end of the warm-up period [\code{"YYYY-mm-dd"} or \code{"YYYY-mm-dd HH:MM:SS"}]. See details}
+  \item{WupPer}{(optional) [character] vector of 2 values to define the beginning and end of the warm-up period [\code{"YYYY-mm-dd"} or \code{"YYYY-mm-dd HH:MM:SS"}]; [0L] to disable the warm-up period. See details}
 
   \item{CalPer}{[character] vector of 2 values to define the beginning and end of the calibration period [\code{"YYYY-mm-dd"} or \code{"YYYY-mm-dd HH:MM:SS"}]}
 
@@ -53,11 +53,13 @@ airGR
 functions
 }
 
+
 \details{
-\code{WupPer = NULL} indicates that, if available, a period of one year immediately present before the \code{CalPer} period is used. In order to disable the warm up of the model, users have to make sure not to provide data before \code{CalPer} when preparing the data with \code{\link{PrepGR}}.
+\code{WupPer = NULL} indicates that, if available, a period of one year immediately present before the CalPer period is used. \code{WupPer = 0L} allows to disable the warm up of the model.
 }
 
-\author{Olivier Delaigue}
+
+\author{Olivier Delaigue, Guillaume Thirel}
 
 
 \examples{

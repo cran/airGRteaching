@@ -1,4 +1,4 @@
-plot.CalGR <- function(x, xlab = NULL, ylab =  NULL, main = NULL, which = "synth", ...) {
+plot.CalGR <- function(x, xlab = NULL, ylab =  NULL, main = NULL, which = "synth", log_scale = FALSE, ...) {
 
   if (!inherits(x, "CalGR")) {
     stop("Non convenient data for x argument. Must be of class \"CalGR\"")
@@ -73,7 +73,7 @@ plot.CalGR <- function(x, xlab = NULL, ylab =  NULL, main = NULL, which = "synth
     which <- setdiff(which, "iter")
 
     # graphic display
-    plot(x$OutputsModel, Qobs = x$Qobs, which = which)
+    plot(x$OutputsModel, Qobs = x$Qobs, which = which, log_scale = log_scale, ...)
 
   }
 

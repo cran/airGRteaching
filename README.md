@@ -3,10 +3,10 @@
 
 ## Overview
 
-airGRteaching is an add-on package to the [airGR](https://CRAN.R-project.org/package=airGR) package that simplifies its use and is teaching-oriented.
+'airGRteaching' is an add-on package to the [airGR](https://CRAN.R-project.org/package=airGR) package that simplifies its use and is teaching-oriented.
 It allows to use with very low programming skills the rainfall-runoff models (**GR4H**, **GR5H**, **GR4J**, **GR5J**, **GR6J**, **GR2M**, **GR1A**) and a snow melt and accumulation model (CemaNeige). This package also provides graphical devices to help students to explore data and modelling results.
 
-The airGRteaching package has been designed to fulfil a major requirement: facilitating the use of the [airGR](https://CRAN.R-project.org/package=airGR) functionalities by students. The names of the functions and their arguments were chosen to this end. 
+The 'airGRteaching' package has been designed to fulfil a major requirement: facilitating the use of the [airGR](https://CRAN.R-project.org/package=airGR) functionalities by students. The names of the functions and their arguments were chosen to this end. 
 
 The package is mostly based on three families of functions:
 
@@ -19,17 +19,25 @@ This package brings into R the hydrological modelling tools developed at INRAE-A
 
 ## Installation
 
+### Release version
+
+To install the version of the package that is on the CRAN, you just have to use the following command line:
+
 ``` r
 install.packages("airGRteaching")
 ```
 
-This version of airGRteaching is designed to work with the package htmlwidgets >= 1.5.2.9000 (troubles with the package dygraphs using `dyplot()` and `ShinyGR()`)
-Install the latest version of 'htmlwidgets' from GitHub with the following command lines:
+### Unrelease version
+
+To use the development version of the package that is on GitLab, you have first install the 'remotes' package. Then you can install the 'airGRteaching' package in the R environment:
 
 ``` r
 install.packages("remotes")
-remotes::install_github("ramnathv/htmlwidgets")
-``` 
+remotes::install_gitlab(repo = "HYCAR-Hydro/airgrteaching", 
+                        host = "https://gitlab.irstea.fr", 
+                        dependencies = TRUE, 
+                        build_vignettes = TRUE)
+```
 
 
 ## Modelling Functions
@@ -44,7 +52,7 @@ Three functions allow to complete very simply a hydrological modelling exercise:
 
 ## Plotting Functions
 
-airGRteaching provides two types of plotting functions that allow to produce static (`plot()`) or dynamic (`dyplot()`) graphics (incl. mouse events and interactive graphics).
+'airGRteaching' provides two types of plotting functions that allow to produce static (`plot()`) or dynamic (`dyplot()`) graphics (incl. mouse events and interactive graphics).
 The devices allow to explore observed data and to interpret the results of calibration and simulation of the GR models.
 
 
@@ -58,13 +66,13 @@ The package also provides the `ShinyGR()` function, which allows to launch a Shi
 - display of internal variables evolution;
 - time period selection.
 
-A demonstrator of the graphical interface is available for free online on the [Sunshine](https://sunshine.inrae.fr/) platform.
+A demonstrator of the graphical user interface is available for free online on the [Sunshine](https://sunshine.inrae.fr/) platform.
 
 
 ## Models
 
-The six hydrological models and the snow melt and accumulation model already available in airGR are available in airGRteaching.
-These models can be called within airGRteaching using the following model names (&#42;: available in the Shiny interface): 
+The six hydrological models and the snow melt and accumulation model already available in airGR are available in 'airGRteaching'.
+These models can be called in 'airGRteaching' using the following model names (&#42;: available in the Shiny interface): 
 
 - `GR4H`: four-parameter hourly lumped hydrological model (Mathevet, 2005)
 - `GR5H`: five-parameter hourly lumped hydrological model (Ficchi, 2017; Ficchi *et al.*, 2019)
@@ -76,7 +84,7 @@ These models can be called within airGRteaching using the following model names 
 - `CemaNeige`: two-parameter degree-day snow melt and accumulation daily model (combined with GR4H, GR5H, GR4J, GR5J or GR6J) (Valéry et al., 2014)
 
 
-For more information and to get started with the package, you can refer to the vignette (`vignette("get_started", package = "airGRteaching")`) and go on the [airGRteaching website](https://hydrogr.github.io/airGRteaching/).
+For more information and to get started with the package, you can refer to the vignette (`vignette("get_started", package = "airGRteaching")`) and go on the ['airGRteaching' website](https://hydrogr.github.io/airGRteaching/).
 
 
 ## References

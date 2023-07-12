@@ -1,4 +1,4 @@
-plot.SimGR <- function(x,  which = "synth", ...) {
+plot.SimGR <- function(x,  which = "synth", log_scale = FALSE, ...) {
 
   if (!inherits(x, "SimGR")) {
     stop("Non convenient data for x argument. Must be of class \"SimGR\"")
@@ -19,6 +19,6 @@ plot.SimGR <- function(x,  which = "synth", ...) {
   opar <- par(no.readonly = TRUE)
   on.exit(par(opar))
 
-  plot(x$OutputsModel, Qobs = x$Qobs, which = which)
+  plot(x$OutputsModel, Qobs = x$Qobs, which = which, log_scale = log_scale, ...)
 
 }

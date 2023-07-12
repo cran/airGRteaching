@@ -21,10 +21,10 @@ Also plot of the evolution  of parameters and objective function during the cali
      plot.na = TRUE, ...)
 
 \method{plot}{CalGR}(x, xlab = NULL, ylab = NULL, main = NULL,
-     which = "synth", ...)
+     which = "synth", log_scale = FALSE, ...)
 
 \method{plot}{SimGR}(x,
-     which = "synth", ...)
+     which = "synth", log_scale = FALSE, ...)
 }
 
 
@@ -48,6 +48,8 @@ Also plot of the evolution  of parameters and objective function during the cali
   \item{plot.na}{[boolean] boolean indicating if the missing values are plotted on the x-axis}
 
   \item{which}{[character] choice of the plot type (\code{"synth"} (default): plot diagnostics; \code{"iter"}: parameter and calibration criterion values during the iterations of the steepest descent step of the airGR calibration algorithm; \code{"ts"}: time series of observed precipitation and observed and simulated flows; \code{"perf"}: error time series and other graphic to compare simulated to observed flows; for other graphical outputs, see \code{\link[airGR]{plot.OutputsModel}})}
+
+\item{log_scale}{(optional) [boolean] indicating if the flow and the error time series axis and the flow error time series axis are to be logarithmic, default = \code{FALSE}}
 
   \item{...}{other parameters to be passed through to plotting functions}
 }

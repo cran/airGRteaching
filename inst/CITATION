@@ -6,7 +6,7 @@ note    <- sprintf("R package version %s", version)
 citHeader("To cite airGRteaching in publications use these two references:")
 
 bibentry(bibtype     = "InProceedings",
-         author      = personList(as.person("O. Delaigue"), as.person("G. Thirel"), as.person("L. Coron"), as.person("P. Brigode")),
+         author      = c(as.person("O. Delaigue"), as.person("G. Thirel"), as.person("L. Coron"), as.person("P. Brigode")),
          title       = "{airGR} and {airGRteaching}: Two Open-Source Tools for Rainfall-Runoff Modeling and Teaching Hydrology",
          booktitle   = "HIC 2018. 13th International Conference on Hydroinformatics",
          editor      = "Goffredo La Loggia and Gabriele Freni and Valeria Puleo and Mauro De Marchis",
@@ -32,14 +32,14 @@ bibentry(bibtype     = "InProceedings",
 
 bibentry(bibtype     = "Manual",
          title       = "{airGRteaching}: Teaching Hydrological Modelling with {GR} ({Shiny} Interface Included)",
-         author      = personList(as.person("O. Delaigue"), as.person("L. Coron"), as.person("P. Brigode")),
+         author      = c(as.person("O. Delaigue"), as.person("L. Coron"), as.person("P. Brigode"), as.person("G. Thirel")),
          journal     = "R News",
          year        = year,
          note        = note,
          url         = "https://CRAN.R-project.org/package=airGRteaching",
          doi         = "10.15454/W0SSKT",
          textVersion =
-           paste0("Delaigue, O., Coron, L. and Brigode, P. (",
+           paste0("Delaigue, O., Coron, L., Brigode, P. and Thirel, G.(",
                   year,
                   "). airGRteaching: Teaching Hydrological Modelling with GR (Shiny Interface Included). ",
                   note, ", ",

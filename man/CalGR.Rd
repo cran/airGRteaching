@@ -85,10 +85,11 @@ str(CAL)
 plot(CAL, which = "iter")
 
 ## Plot diagnostics
-plot(CAL, which = "perf")
+plot(CAL)
 
 ## Static plot of observed and simulated time series
-plot(CAL)
+plot(CAL, which = "ts")
+plot(CAL, which = c("Precip", "Flows"))
 
 ## Dynamic plot of observed and simulated time series
 dyplot(CAL)

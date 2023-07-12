@@ -27,18 +27,20 @@ library(airGRteaching)
 
 
 
-### How to run the `r airGR` hydrological models in  only three simple steps with `r airGRteaching`
+### Hydrological modelling in three steps
+
+This part explains how to run the `r airGR` hydrological models in only three simple steps with `r airGRteaching`.
 
 
 #### Preparation of input data
 
 A `data.frame` of daily hydrometeorological observations time series at the catchment scale is needed. The required fields are:
 
-  * *DatesR* : dates in the `POSIXt` format 
-  * *P* : average precipitation [mm/time step]
-  * *T* : catchment average air temperature [&#8451;] [OPTIONAL]
-  * *E* : catchment average potential evapotranspiration [mm/time step]
-  * *Qmm* : outlet discharge [mm/time step]
+  * *DatesR*: dates in the `POSIXt` format 
+  * *P*: average precipitation [mm/time step]
+  * *T*: catchment average air temperature [&#8451;] [OPTIONAL]
+  * *E*: catchment average potential evapotranspiration [mm/time step]
+  * *Qmm*: outlet discharge [mm/time step]
   
 ```{r, echo=3, eval=TRUE}
 data(L0123001, package = "airGR")
@@ -122,13 +124,13 @@ par(cex.lab = 0.6, cex.axis = 0.6)
 plot(PREP, main = "Observation")
 ```
 
-By default (with the argument `which = "perf"`), the call of the `plot()` function with a `CalGR` object draws the classical `r airGR` plot diagnostics (observed and simulated time series together with diagnostic plot)
+By default (with the argument `which = "synth"`), the call of the `plot()` function with a `CalGR` object draws the classical `r airGR` plot diagnostics (observed and simulated time series together with diagnostic plot)
 
 ```{r, echo=TRUE, eval=FALSE}
-plot(CAL, which = "perf")
+plot(CAL, which = "synth")
 ```
 ```{r, fig.width=7*1.5, fig.height=4.25*1.5, dev.args=list(pointsize=14), echo=FALSE, warning=FALSE}
-plot(CAL, which = "perf", cex.lab = 0.7, cex.axis = 0.7)
+plot(CAL, which = "synth", cex.lab = 0.7, cex.axis = 0.7)
 ```
 
 With the `CalGR` object, if the argument `which` is set to `"iter"`, the `plot()` function draws the evolution of the parameters and the values of the objective function during the second step of the calibration (steepest descent local search algorithm):
@@ -144,7 +146,7 @@ par(cex.lab = 0.7, cex.axis = 0.7)
 plot(CAL, which = "ts", main = "Calibration")
 ```
 
-The call of the `plot()` function with a `SimGR` object draws the classical `r airGR` plot diagnostics.
+The call of the `plot()` function with a `SimGR` object displays the classical `r airGR` plot diagnostics.
 ```{r, eval=FALSE}
 plot(SIM)
 ```
@@ -158,7 +160,6 @@ The `dyplot()` function can be applied on `PrepGR`, `CalGR` and `SimGR` objects 
 The user can zoom on the plot device and can read the exact values.
 
 With this function, users can easily explore the data time series and also explore and interpret the possible problems of the calibration or simulation steps.
-
 
 ```{r, eval=FALSE}
 dyplot(SIM, main = "Simulation")
@@ -174,17 +175,35 @@ The `ShinyGR()` function needs at least:
   * `ObsDF`: a (list of) `data.frame` (or independant vector instead, see `?ShinyGR`)
   * `SimPer`: a (list of) vector(s) of 2 dates to define the simulation period(s)
 
-  
 ```{r, eval=FALSE}
 ShinyGR(ObsDF = BasinObs, SimPer = c("1994-01-01", "1998-12-31"))
 ```
 
-Only the monthly model (GR2M) and the daily models (GR4J, GR5J, GR6J + CemaNeige) are currently available.
-
+Only the monthly model (GR2M) and the daily models (GR4J, GR5J, GR6J + CemaNeige) are currently available.  
 If you want to use CemaNeige, you also have to define the same arguments desribed above for the `PrepGR()` function.
 
+<div><center><image src="https://hydrogr.github.io/airGRteaching/fig/airGRteaching_GUI_Description.png" width="100%" height="100%"></center></div>
+
 It is also possible to change the interface look; different themes are proposed (`theme` argument).
-<div><center><image src="https://hydrogr.github.io/airGRteaching/fig/airGRteaching_ShinyUi_theme_rstudio.jpg" width="30%" height="30%"> <image src="https://hydrogr.github.io/airGRteaching/fig/airGRteaching_ShinyUi_theme_cerulean.jpg" width="30%" height="30%"> <image src="https://hydrogr.github.io/airGRteaching/fig/airGRteaching_ShinyUi_theme_cyborg.jpg" width="30%" height="30%"></img></center></div>
-<div><center><image src="https://hydrogr.github.io/airGRteaching/fig/airGRteaching_ShinyUi_theme_flatly.jpg" width="30%" height="30%"> <image src="https://hydrogr.github.io/airGRteaching/fig/airGRteaching_ShinyUi_theme_united.jpg" width="30%" height="30%"> <image src="https://hydrogr.github.io/airGRteaching/fig/airGRteaching_ShinyUi_theme_yeti.jpg" width="30%" height="30%"></center></div>
+
+<div><center>
+<image src="https://hydrogr.github.io/airGRteaching/fig/airGRteaching_GUI_MD_theme-RStudio_550x300.png" width="45%" height="45%">
+<image src="https://hydrogr.github.io/airGRteaching/fig/airGRteaching_GUI_MD_theme-Cerulean_550x300.png" width="45%" height="45%">
+</center></div>
+
+<div><center>
+<image src="https://hydrogr.github.io/airGRteaching/fig/airGRteaching_GUI_MD_theme-Cyborg_544x300.png" width="45%" height="45%">
+<image src="https://hydrogr.github.io/airGRteaching/fig/airGRteaching_GUI_MD_theme-Flatly_550x300.png" width="45%" height="45%">
+</center></div>
+
+<div><center>
+<image src="https://hydrogr.github.io/airGRteaching/fig/airGRteaching_GUI_MD_theme-Inrae_550x300.png" width="45%" height="45%">
+<image src="https://hydrogr.github.io/airGRteaching/fig/airGRteaching_GUI_MD_theme-Saclay_550x300.png" width="45%" height="45%">
+</center></div>
+
+<div><center>
+<image src="https://hydrogr.github.io/airGRteaching/fig/airGRteaching_GUI_MD_theme-United_550x300.png" width="45%" height="45%">
+<image src="https://hydrogr.github.io/airGRteaching/fig/airGRteaching_GUI_MD_theme-Yeti_550x300.png" width="45%" height="45%">
+</center></div>
 
 

@@ -34,10 +34,10 @@ par(cex.lab = 0.6, cex.axis = 0.6)
 plot(PREP, main = "Observation")
 
 ## ---- echo=TRUE, eval=FALSE---------------------------------------------------
-#  plot(CAL, which = "perf")
+#  plot(CAL, which = "synth")
 
 ## ---- fig.width=7*1.5, fig.height=4.25*1.5, dev.args=list(pointsize=14), echo=FALSE, warning=FALSE----
-plot(CAL, which = "perf", cex.lab = 0.7, cex.axis = 0.7)
+plot(CAL, which = "synth", cex.lab = 0.7, cex.axis = 0.7)
 
 ## ---- fig.width=7*1.5, fig.height=3.25*1.5, dev.args=list(pointsize=14)-------
 plot(CAL, which = "iter")

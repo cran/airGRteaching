@@ -4,12 +4,25 @@
 
 
 
+### 0.3.2 Release Notes (2023-07-11)
+
+#### New features
+
+- `plot.CalGR()` and `plot.SimGR()` gain a `log_scale` argument to display flow time series with a logarithmic scale. ([#71](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/71))
+
+#### Bug fixes
+
+- bug fixed in `plot.CalGR()` and `plot.SimGR()`. The functions work well when `log_scale = TRUE` to display flow time series with a logarithmic scale. ([#71](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/71))
+
+
+____________________________________________________________________________________
+
 ### 0.3.1 Release Notes (2022-12-15)
 
 #### New features
 
 - added the `GetCrit` and and `GetParam` S3 methods in order to get respectively the error criterion value and the model parameter set from the outputs of `CalGR()` and `SimGR()` functions. ([#62](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/62))
-- added 4 vignettes to explain more deeply the package options (1 vignette: "Teaching hydrology"), and to offer example tutorials as hydrological teaching projects (3 vignettes: "Flow reconstruction"", "Forecasting", and "Climate change"; available both in English and French). ([#47](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/47))
+- added 4 vignettes to explain more deeply the package options (1 vignette: "Teaching hydrology"), and to offer example tutorials as hydrological teaching projects (3 vignettes: "Flow reconstruction", "Forecasting", and "Climate change"; available both in English and French). ([#47](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/47))
 
 
 #### Bug fixes
@@ -27,7 +40,7 @@
 ____________________________________________________________________________________
 
 
-### 0.2.13 Release Notes (2022-02-03)
+### 0.2.13 Release Notes (2022-03-03)
 
 
 #### Bug fixes

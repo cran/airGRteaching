@@ -102,6 +102,7 @@ plot(SIM)
 
 ## Static plot of observed and simulated time series
 plot(SIM, which = "ts")
+plot(SIM, which = c("Precip", "Flows"))
 
 ## Dynamic plot of observed and simulated time series
 dyplot(SIM)

@@ -3,7 +3,7 @@
 \alias{ShinyGR}
 
 
-\title{Interactive Web application to run manually the GR2M, GR4J, GR5 and GR6J hydrological models with or without CemaNeige}
+\title{Interactive Web application to run manually the GR2M, GR4J, GR5J and GR6J hydrological models with or without CemaNeige}
 
 
 \description{Shiny application to understand and to display in a interactive way the impact of each parameter of the GR models on the simulated flows}
@@ -38,7 +38,7 @@ ShinyGR(ObsDF = NULL,
 
   \item{SimPer}{[character or list of characters] vector of 2 values to define the beginning and the end of the simulation period [\code{"YYYY-mm-dd"} or \code{"YYYY-mm-dd HH:MM:SS"}], see below for details}
 
-    \item{NamesObsBV}{(optional) [character] vector of values to define the data inputs name(s) (if the ObsDF list is not already named)}
+  \item{NamesObsBV}{(optional) [character] vector of values to define the data inputs name(s) (if the ObsDF list is not already named)}
 
   \item{theme}{(optional) [character] alternative stylesheet [\code{"RStudio"} (default), \code{"Cerulean"}, \code{"Cyborg"}, \code{"Flatly"}, \code{"Inrae"}, \code{"Saclay"}, \code{"United"} or \code{"Yeti"}]}
 }

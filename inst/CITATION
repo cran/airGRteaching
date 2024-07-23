@@ -5,28 +5,23 @@ note    <- sprintf("R package version %s", version)
 
 citHeader("To cite airGRteaching in publications use these two references:")
 
-bibentry(bibtype     = "InProceedings",
-         author      = c(as.person("O. Delaigue"), as.person("G. Thirel"), as.person("L. Coron"), as.person("P. Brigode")),
-         title       = "{airGR} and {airGRteaching}: Two Open-Source Tools for Rainfall-Runoff Modeling and Teaching Hydrology",
+bibentry(bibtype     = "Article",
+         author      = c(as.person("O. Delaigue"), as.person("P. Brigode"), as.person("G. Thirel"), as.person("L. Coron")),
+         title       = "{airGRteaching}: an open-source tool for teaching hydrological modeling with {R}",
          booktitle   = "HIC 2018. 13th International Conference on Hydroinformatics",
-         editor      = "Goffredo La Loggia and Gabriele Freni and Valeria Puleo and Mauro De Marchis",
-         series      = "EPiC Series in Engineering",
-         volume      = "3",
-         pages       = "541-548",
-         year        = "2018",
-         publisher   = "EasyChair",
-         bibsource   = "EasyChair, https://easychair.org",
-         issn        = "2516-2330",
-         url         = "https://easychair.org/publications/paper/VQ52",
-         doi         = "10.29007/qsqj",
+         journal     = "Hydrology and Earth System Sciences",
+         volume      = "27",
+         number      = "17",
+         pages       = "3293-3327",
+         year        = "2023",
+         url         = "https://hess.copernicus.org/articles/27/3293/2023/",
+         doi         = "10.5194/hess-27-3293-2023",
          textVersion =
-           paste("Delaigue, O., Thirel, G., Coron, L. and Brigode, P.",
-                 "(2018).",
-                 "airGR and airGRteaching: Two open-source tools for rainfall-runoff modeling and teaching hydrology.",
-                 "HIC 2018. 13th International Conference on Hydroinformatics.",
-                 "EPiC Series in Engineering (eds. G.L. Loggia, G. Freni, V. Puleo & M.D. Marchis),",
-                 "3, 541-548, EasyChair,",
-                 "doi: 10.29007/qsqj.",
+           paste("Delaigue, O., Brigode, P., Thirel, G. and Coron, L.",
+                 "(2023).",
+                 "airGRteaching: an open-source tool for teaching hydrological modeling with R.",
+                 "Hydrology and Earth System Sciences 27, 3293–3327, ",
+                 "doi: 10.5194/hess-27-3293-2023.",
                  sep = " ")
 )
 
@@ -37,13 +32,12 @@ bibentry(bibtype     = "Manual",
          year        = year,
          note        = note,
          url         = "https://CRAN.R-project.org/package=airGRteaching",
-         doi         = "10.15454/W0SSKT",
+         doi         = "10.32614/CRAN.package.airGRteaching",
          textVersion =
-           paste0("Delaigue, O., Coron, L., Brigode, P. and Thirel, G.(",
+           paste0("Delaigue, O., Coron, L., Brigode, P. and Thirel, G. (",
                   year,
                   "). airGRteaching: Teaching Hydrological Modelling with GR (Shiny Interface Included). ",
                   note, ", ",
-                  "doi: 10.15454/W0SSKT", ", ",
-                  "URL: https://CRAN.R-project.org/package=airGRteaching."
+                  "doi: 10.32614/CRAN.package.airGRteaching."
                   )
 )

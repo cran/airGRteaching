@@ -71,7 +71,7 @@ shinyServer(function(input, output, session) {
     } else {
       HydroModel <- input$HydroModel
     }
-    TMGR  <- .TypeModelGR(HydroModel)
+    TMGR  <- airGRteaching:::.TypeModelGR(HydroModel)
     X2 <- ifelse(input$HydroModel == "GR2M", input$X2GR2M, input$X2)
     PARAM <- c(input$X1, X2, input$X3, input$X4, input$X5, input$X6)[seq_len(TMGR$NbParam)]
     if (input$SnowModel == "CemaNeige") {
@@ -88,11 +88,11 @@ shinyServer(function(input, output, session) {
                    CemaNeige = input$SnowModel == "CemaNeige")
 
     ## old value: bad time zone management
-    #WUPPER <- c(PREP$InputsModel$DatesR[1L], input$Period[1L]-.TypeModelGR(PREP)$TimeLag)
+    #WUPPER <- c(PREP$InputsModel$DatesR[1L], input$Period[1L]-airGRteaching:::.TypeModelGR(PREP)$TimeLag)
     ## patch from Juan Camilo Peña <juancamilopec@gmail.com>
-    #WUPPER <- c(format(PREP$InputsModel$DatesR[1L], format = "%Y-%m-%d", tz = "UTC"), format(input$Period[1L]-.TypeModelGR(PREP)$TimeLag, format = "%Y-%m-%d", tz = "UTC"))
+    #WUPPER <- c(format(PREP$InputsModel$DatesR[1L], format = "%Y-%m-%d", tz = "UTC"), format(input$Period[1L]-airGRteaching:::.TypeModelGR(PREP)$TimeLag, format = "%Y-%m-%d", tz = "UTC"))
     ## new value
-    WUPPER <- as.POSIXlt(c(as.character(PREP$InputsModel$DatesR[1L]), as.character(input$Period[1L]-.TypeModelGR(PREP)$TimeLag)), tz = "UTC")
+    WUPPER <- as.POSIXlt(c(as.character(PREP$InputsModel$DatesR[1L]), as.character(input$Period[1L]-airGRteaching:::.TypeModelGR(PREP)$TimeLag)), tz = "UTC")
     if (HydroModel == "GR2M") {
       WUPPER <- trunc(WUPPER, units = "months")
     } else {
@@ -277,7 +277,7 @@ shinyServer(function(input, output, session) {
           (isEqualSumQsim & isEqualTypeModel) | isEqualPeriod) {
         OBSold <- getPrep()$PREP
         OBSold$TypeModel <- .GlobalEnv$.ShinyGR.hist[[1L]]$TypeModel
-        if (.TypeModelGR(OBSold)$CemaNeige & !.TypeModelGR(getPrep()$PREP)$CemaNeige | # present: No CemaNeige ; old: CemaNeige
+        if (airGRteaching:::.TypeModelGR(OBSold)$CemaNeige & !airGRteaching:::.TypeModelGR(getPrep()$PREP)$CemaNeige | # present: No CemaNeige ; old: CemaNeige
             isEqualSumQsim & isEqualTypeModel) {
           if (input$Dataset == "Unnamed watershed") {
             ObsDF <- NULL
@@ -431,16 +431,16 @@ shinyServer(function(input, output, session) {
       # if (dateWindow[1L] == dateWindow[2L]) {
       #   if (dateWindow[1L] == as.POSIXct(.ShinyGR.args$SimPer[2L], tz = "UTC")) {
       #     updateSliderInput(session, inputId = "Period",
-      #                       value = dateWindow - c(1, 0) * .TypeModelGR(input$HydroModel)$TimeLag)
+      #                       value = dateWindow - c(1, 0) * airGRteaching:::.TypeModelGR(input$HydroModel)$TimeLag)
       #   } else {
       #     updateSliderInput(session, inputId = "Period",
-      #                       value = dateWindow + c(0, 1) * .TypeModelGR(input$HydroModel)$TimeLag)
+      #                       value = dateWindow + c(0, 1) * airGRteaching:::.TypeModelGR(input$HydroModel)$TimeLag)
       #   }
       # } else {
       if (dateWindow[1L] != dateWindow[2L]) {
         timeFormat <- ifelse(input$HydroModel == "GR2M", "%Y-%m", "%F")
         updateSliderInput(session, inputId = "Period",
-                          value = dateWindow, ### + .TypeModelGR(input$HydroModel)$TimeLag,
+                          value = dateWindow, ### + airGRteaching:::.TypeModelGR(input$HydroModel)$TimeLag,
                           timeFormat = timeFormat, timezone = "+0000")
       }
       # }
@@ -453,10 +453,10 @@ shinyServer(function(input, output, session) {
   #     if (input$Period[1L] == input$Period[2L]) {
   #       if (input$Period[1L] == as.POSIXct(.ShinyGR.args$SimPer[2L], tz = "UTC")) {
   #         updateSliderInput(session, inputId = "Period",
-  #                           value = input$Period - c(1, 0) * .TypeModelGR(input$HydroModel)$TimeLag)
+  #                           value = input$Period - c(1, 0) * airGRteaching:::.TypeModelGR(input$HydroModel)$TimeLag)
   #       } else {
   #         updateSliderInput(session, inputId = "Period",
-  #                           value = input$Period + c(0, 1) * .TypeModelGR(input$HydroModel)$TimeLag)
+  #                           value = input$Period + c(0, 1) * airGRteaching:::.TypeModelGR(input$HydroModel)$TimeLag)
   #       }
   #     }
   #   }
@@ -543,16 +543,16 @@ shinyServer(function(input, output, session) {
     EventId <- ifelse(input$HydroModel == "GR2M", "EventGR2M", "Event")
     timeFormat <- ifelse(input$HydroModel == "GR2M", "%Y-%m", "%F")
     updateSliderInput(session, inputId = EventId, label = "Select the target date:",
-                      min = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]][1L], tz = "UTC"),## + .TypeModelGR(input$HydroModel)$TimeLag,
+                      min = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]][1L], tz = "UTC"),## + airGRteaching:::.TypeModelGR(input$HydroModel)$TimeLag,
                       max = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]][2L], tz = "UTC"),
-                      value = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]][1L], tz = "UTC"), + .TypeModelGR(input$HydroModel)$TimeLag,
+                      value = as.POSIXct(.ShinyGR.args$SimPer[[input$Dataset]][1L], tz = "UTC"), + airGRteaching:::.TypeModelGR(input$HydroModel)$TimeLag,
                       timeFormat = timeFormat, timezone = "+0000")
   })
   observe({
     EventId <- ifelse(input$HydroModel == "GR2M", "EventGR2M", "Event")
     timeFormat <- ifelse(input$HydroModel == "GR2M", "%Y-%m", "%F")
     updateSliderInput(session, inputId = EventId, label = "Select the target date:",
-                      min = input$Period[1L],## + .TypeModelGR(input$HydroModel)$TimeLag,
+                      min = input$Period[1L],## + airGRteaching:::.TypeModelGR(input$HydroModel)$TimeLag,
                       max = input$Period[2L],
                       timeFormat = timeFormat, timezone = "+0000")
   }, priority = -100)
@@ -633,7 +633,7 @@ shinyServer(function(input, output, session) {
                        naCol = NA)
     data.xts <- xts::xts(data[, -1L, drop = FALSE], order.by = data$DatesR, tz = "UTC")
     op <- getPlotPar()$par
-    ylabDgTSe <- sprintf("flow error [mm/%s]", .TypeModelGR(input$HydroModel)$TimeUnit)
+    ylabDgTSe <- sprintf("flow error [mm/%s]", airGRteaching:::.TypeModelGR(input$HydroModel)$TimeUnit)
     dgTSe <- dygraphs::dygraph(data.xts, group = "ts", ylab = ylabDgTSe, main = "   ")
     dgTSe <- dygraphs::dySeries(dgTSe, "Error"   , axis = "y" , color = "orangered")
     dgTSe <- dygraphs::dySeries(dgTSe, "ErrorOld", axis = "y" , color = "grey", strokePattern = "dashed")
@@ -648,8 +648,8 @@ shinyServer(function(input, output, session) {
     dgTSe <- dygraphs::dyLegend(dgTSe, show = "onmouseover", width = 225)
     dgTSe <- dygraphs::dyCrosshair(dgTSe, direction = "vertical")
     dgTSe <- dygraphs::dyLimit(dgTSe, limit = 0, color = "blue")
-    idNA <- .StartStop(data$Error, FUN = is.na)
-    dgTSe <- .DyShadingMulti(dygraph = dgTSe, color = rgb(0.5, 0.5, 0.5, alpha = 0.4),
+    idNA <- airGRteaching:::.StartStop(data$Error, FUN = is.na)
+    dgTSe <- airGRteaching:::.DyShadingMulti(dygraph = dgTSe, color = rgb(0.5, 0.5, 0.5, alpha = 0.4),
                              ts = data$DatesR, idStart = idNA$start, IdStop = idNA$stop)
   })
 
@@ -737,8 +737,8 @@ shinyServer(function(input, output, session) {
     }
     dgSVq <- dygraphs::dyCrosshair(dgSVq, direction = "vertical")
     dgSVq <- dygraphs::dyLegend(dgSVq, show = "always", width = 325)
-    idNA <- .StartStop(getData()$Tab$Qobs, FUN = is.na)
-    dgSVq <- .DyShadingMulti(dygraph = dgSVq, color = rgb(0.5, 0.5, 0.5, alpha = 0.4),
+    idNA <- airGRteaching:::.StartStop(getData()$Tab$Qobs, FUN = is.na)
+    dgSVq <- airGRteaching:::.DyShadingMulti(dygraph = dgSVq, color = rgb(0.5, 0.5, 0.5, alpha = 0.4),
                              ts = data$DatesR, idStart = idNA$start, IdStop = idNA$stop)
   })
 
@@ -853,8 +853,8 @@ shinyServer(function(input, output, session) {
     dgMDq <- dygraphs::dySeries(dgMDq, name = "QsimOld", label = "Qold", drawPoints = FALSE, strokePattern = "dashed")
     dgMDq <- dygraphs::dyLegend(dgMDq, show = "onmouseover", width = 225)
     dgMDq <- dygraphs::dyCrosshair(dgMDq, direction = "vertical")
-    idNA <- .StartStop(data$Qobs, FUN = is.na)
-    dgMDq <- .DyShadingMulti(dygraph = dgMDq, color = rgb(0.5, 0.5, 0.5, alpha = 0.4),
+    idNA <- airGRteaching:::.StartStop(data$Qobs, FUN = is.na)
+    dgMDq <- airGRteaching:::.DyShadingMulti(dygraph = dgMDq, color = rgb(0.5, 0.5, 0.5, alpha = 0.4),
                              ts = data$DatesR, idStart = idNA$start, IdStop = idNA$stop)
   })
 
@@ -880,7 +880,7 @@ shinyServer(function(input, output, session) {
     }
 
     par(getPlotPar()$par)
-    try(.DiagramGR(OutputsModel = getData()$OutputsModel, Param = getSim()$PARAM,
+    try(airGRteaching:::.DiagramGR(OutputsModel = getData()$OutputsModel, Param = getSim()$PARAM,
                SimPer = SimPer, EventDate = dateEvent,
                HydroModel = input$HydroModel, CemaNeige = input$SnowModel == "CemaNeige",
                Theme = .GlobalEnv$.ShinyGR.args$theme),
@@ -950,7 +950,7 @@ shinyServer(function(input, output, session) {
       }
       colnames(TabSim) <- sprintf("%s [%s]", colnames(TabSim), c("-", rep("mm", 2), "-", "°C", rep("mm", 2)))
       colnames(TabSim) <- ifelse(grepl("mm", colnames(TabSim)),
-                                 gsub("mm", paste0("mm/", .TypeModelGR(getSim()$SIM)$TimeUnit), colnames(TabSim)),
+                                 gsub("mm", paste0("mm/", airGRteaching:::.TypeModelGR(getSim()$SIM)$TimeUnit), colnames(TabSim)),
                                  colnames(TabSim))
       write.table(TabSim, file = file, row.names = FALSE, sep = ";")
     }
@@ -1111,7 +1111,7 @@ shinyServer(function(input, output, session) {
         }
 
         par(oma = c(0, 1, marginTop, 1))
-        .DiagramGR(OutputsModel = getData()$OutputsModel, Param = getSim()$PARAM,
+        airGRteaching:::.DiagramGR(OutputsModel = getData()$OutputsModel, Param = getSim()$PARAM,
                    SimPer = input$Period, EventDate = dateEvent,
                    HydroModel = input$HydroModel, CemaNeige = input$SnowModel == "CemaNeige")
         mtext(text = PngTitleMD, side = 3, outer = TRUE, cex = 1.2, line = ifelse(isBigTitle, -0.15, 0.6))
@@ -1129,7 +1129,7 @@ shinyServer(function(input, output, session) {
     codeBH <- gsub(sprintf("(.*)(%s)(.*)", codeRegex), "\\2", input$DatasetSheet)
     urlRegex <- "https://webgr.inrae.fr/wp-content/uploads/fiches/%s_fiche.png"
     urlSheet <- sprintf(urlRegex, codeBH)
-    if (.CheckUrl(urlSheet)) {
+    if (airGRteaching:::.CheckUrl(urlSheet)) {
       tags$p(tags$h6("Click on the image to open it in a new window and to enlarge it."),
              tags$a(href = urlSheet, target = "_blank", rel = "noopener noreferrer",
                     tags$img(src = urlSheet, height = "770px",

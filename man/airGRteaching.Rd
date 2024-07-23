@@ -22,7 +22,7 @@ The package is mostly based on three families of functions:
   \item a function which runs a 'Shiny' graphical user interface that allows for displaying in real-time the impacts of model parameters on hydrographs.
 }
 
-This package brings into R the hydrological modelling tools developed at INRAE-Antony (\href{https://webgr.inrae.fr/en/home/}{Catchment Hydrology research group} of the HYCAR Research Unit, France).
+This package brings into R the hydrological modelling tools developed at INRAE-Antony (\href{https://webgr.inrae.fr/eng}{Catchment Hydrology research group} of the HYCAR Research Unit, France).
 \cr\cr
 
 

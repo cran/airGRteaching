@@ -8,7 +8,7 @@ output:
   rmarkdown::html_vignette
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteIndexEntry{Reconstitution de débits}
+  %\VignetteIndexEntry{Ex. 1. Reconstitution de débits}
   %\VignetteEncoding{UTF-8}
 ---
 
@@ -21,7 +21,7 @@ airGR_bib <- gsub("@Article\\{", "@Article{airGR_art", airGR_bib)
 airGR_bib <- gsub("@Manual\\{", "@Manual{airGR_man", airGR_bib)
 airGRteaching_bib <- toBibtex(citation("airGRteaching"))
 airGRteaching_bib <- gsub("@Manual\\{", "@Manual{airGRteaching_man", airGRteaching_bib)
-airGRteaching_bib <- gsub("@InProceedings\\{", "@InProceedings{airGRteaching_pcd", airGRteaching_bib)
+airGRteaching_bib <- gsub("@Article\\{", "@Article{airGRteaching_art", airGRteaching_bib)
 airGRdatasets_bib <- toBibtex(citation("airGRdatasets"))
 airGRdatasets_bib <- gsub("@Manual\\{", "@Manual{airGRdatasets_man", airGRdatasets_bib)
 options(encoding = "UTF-8")
@@ -154,7 +154,7 @@ Cette section vise à définir les conditions de calage et de simulation du mod�
 
 Vous utiliserez le modèle GR2M [@mouelhi_stepwise_2006]. Il s'agit d'un modèle pluie-débit conceptuel et global, fonctionnant au pas de temps mensuel et possédant deux paramètres. Il nécessite en entrée des séries temporelles continues de précipitations et d'évapotranspirations potentielles (ETP) mensuelles.
 
-Ce modèle est utilisable facilement grâce au package `r airGRteaching` [@airGRteaching_man; @airGRteaching_pcd], développé pour le [logiciel R](https://cran.r-project.org/) par l'[équipe Hydrologie des bassins versants de l'unité de recherche HYCAR](https://webgr.inrae.fr/) ([INRAE](https://www.inrae.fr/), France).
+Ce modèle est utilisable facilement grâce au package `r airGRteaching` [@airGRteaching_man; @airGRteaching_art], développé pour le [logiciel R](https://cran.r-project.org/) par l'[équipe Hydrologie des bassins versants de l'unité de recherche HYCAR](https://webgr.inrae.fr/) ([INRAE](https://www.inrae.fr/), France).
 
 Les séries temporelles de précipitations, d'ETP et de débits peuvent être facilement mises en forme grâce à la fonction `PrepGR()`. On peut réaliser une simulation pluie-débit grâce à la fonction `SimGR()` et un calage des paramètres grâce à la fonction `CalGR()`. 
 

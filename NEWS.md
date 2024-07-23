@@ -4,6 +4,22 @@
 
 
 
+### 0.3.3 Release Notes (2024-07-23)
+
+#### User-visible changes
+
+- the figure of the "Pessimistic zero precipitation scenario" section is now corrected in the 'Low-flow forecasting' vignette. ([#78](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/78))
+- the DOI used in the CITATION file is now the one provided by the CRAN. ([#77](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/77))
+- the `ShinyGR()` now returns a message to explain how to diconnect the GUI from R. ([#76](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/76))
+- small modifications made in vignettes. ([#75](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/75), [#74](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/74))
+
+#### CRAN-compatibility updates
+
+- private utility functions are no longer exported by the namespace (`.CheckUrl()`, `.DiagramGR()`, `.DyShadingMulti()`, `.StartStop()`, `.TypeModelGR()`). ([#73](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/73))
+
+____________________________________________________________________________________
+
+
 ### 0.3.2 Release Notes (2023-07-11)
 
 #### New features
@@ -14,14 +30,13 @@
 
 - bug fixed in `plot.CalGR()` and `plot.SimGR()`. The functions work well when `log_scale = TRUE` to display flow time series with a logarithmic scale. ([#71](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/71))
 
-
 ____________________________________________________________________________________
 
 ### 0.3.1 Release Notes (2022-12-15)
 
 #### New features
 
-- added the `GetCrit` and and `GetParam` S3 methods in order to get respectively the error criterion value and the model parameter set from the outputs of `CalGR()` and `SimGR()` functions. ([#62](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/62))
+- added the `GetCrit` and `GetParam` S3 methods in order to get respectively the error criterion value and the model parameter set from the outputs of `CalGR()` and `SimGR()` functions. ([#62](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/62))
 - added 4 vignettes to explain more deeply the package options (1 vignette: "Teaching hydrology"), and to offer example tutorials as hydrological teaching projects (3 vignettes: "Flow reconstruction", "Forecasting", and "Climate change"; available both in English and French). ([#47](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/47))
 
 

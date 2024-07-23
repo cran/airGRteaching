@@ -8,7 +8,7 @@ output:
   rmarkdown::html_vignette
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteIndexEntry{Streamflow reconstruction}
+  %\VignetteIndexEntry{Ex. 1. Streamflow reconstruction}
   %\VignetteEncoding{UTF-8}
 ---
 
@@ -21,7 +21,7 @@ airGR_bib <- gsub("@Article\\{", "@Article{airGR_art", airGR_bib)
 airGR_bib <- gsub("@Manual\\{", "@Manual{airGR_man", airGR_bib)
 airGRteaching_bib <- toBibtex(citation("airGRteaching"))
 airGRteaching_bib <- gsub("@Manual\\{", "@Manual{airGRteaching_man", airGRteaching_bib)
-airGRteaching_bib <- gsub("@InProceedings\\{", "@InProceedings{airGRteaching_pcd", airGRteaching_bib)
+airGRteaching_bib <- gsub("@Article\\{", "@Article{airGRteaching_art", airGRteaching_bib)
 airGRdatasets_bib <- toBibtex(citation("airGRdatasets"))
 airGRdatasets_bib <- gsub("@Manual\\{", "@Manual{airGRdatasets_man", airGRdatasets_bib)
 options(encoding = "UTF-8")
@@ -154,7 +154,7 @@ This section aims to define the calibration and simulation conditions of the hyd
 
 You will used the GR2M model [@mouelhi_stepwise_2006]. It is a conceptual and lumped rainfall-runoff model, operating on a monthly time step and having two parameters. It requires as input continuous time series of monthly precipitation and potential evapotranspiration.
 
-This model is easily usable thanks to the `r airGRteaching` package [@airGRteaching_man; @airGRteaching_pcd], developped for the [R software](https://cran.r-project.org/) by the [Catchment Hydrology research group of the HYCAR reaserch unit](https://webgr.inrae.fr/en/home/) ([INRAE](https://www.inrae.fr/en), France).
+This model is easily usable thanks to the `r airGRteaching` package [@airGRteaching_man; @airGRteaching_art], developped for the [R software](https://cran.r-project.org/) by the [Catchment Hydrology research group of the HYCAR research unit](https://webgr.inrae.fr/eng) ([INRAE](https://www.inrae.fr/en), France).
 
 The time series of observed precipitation, PE and streamflow can be easily formatted using the `PrepGR()` function. A rainfall-runoff simulation can be performed with the `SimGR()` function, an a parameter calibration using the `CalGR()`.
 
@@ -206,9 +206,9 @@ The final aims of this exercise is to reconstruct the streamflows of the catchme
 
 The data set available to the rainfall-runoff modelling consists of:
 
-* a time series of daily total precipitation (liquid + solid) [mm/day] (`Ptot`);
-* a time series of daily potential evapotranspiration calculated with the @oudin_which_2005 formula [mm/day] (`Evap`);
-* a time series of daily streamflows expressed as a specific discharge [mm/day] (`Qmmd`).
+* a time series of daily total precipitation (liquid + solid) [mm/d] (`Ptot`);
+* a time series of daily potential evapotranspiration calculated with the @oudin_which_2005 formula [mm/d] (`Evap`);
+* a time series of daily streamflows expressed as a specific discharge [mm/d] (`Qmmd`).
 
 The daily time series can be aggregated to a monthly time step using the `SeriesAggreg()` function.
 
@@ -275,7 +275,7 @@ plot(i_sim_manu)
 
 The first set of parameters tested (default GR2M values) gives an NSE criterion of `r round(GetCrit(i_sim_manu), digits = 3)`, which is a good overall performance. The precedent figure allows us to compare the simulation obtained with the observed streamflows.
 
-Now it's your turn to play! The game consists in testing different values of the GR2M parameters, to perform a simulation and to calculate the NSE criterion for each tested set in order to identify the set that seems to be optimal. For each parameter, plot the evolution of the "objective" function versus the parameter value. The analysis of the simulated hydrographs, coupled with the comparison of NSE values, will allow to "guide" the modification of the parameters values. To do so, you can embed the previous code in a loop. At each iteration you test a new parameter set and compute the corresponding criterion. This way you can find the "best" parameter set.
+Now it's your turn to play! The game consists in testing different values of the GR2M parameters, to perform a simulation and to calculate the NSE criterion for each tested set in order to identify the set that seems to be optimal. For each parameter, plot the evolution of the "objective" function versus the parameter value. The analysis of the simulated hydrographs, coupled with the comparison of NSE values, will allow to "guide" the modification of the parameter values. To do so, you can embed the previous code in a loop. At each iteration you test a new parameter set and compute the corresponding criterion. This way you can find the "best" parameter set.
 
 
 ## Automatic calibration

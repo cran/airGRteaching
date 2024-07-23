@@ -14,7 +14,7 @@ The package is mostly based on three families of functions:
 - plotting functions to help students to explore observed data and to interpret the results of calibration and simulation of the GR models;
 - a function which runs a 'Shiny' graphical user interface that allows for displaying in real-time model parameters impacts on hydrographs.
 
-This package brings into R the hydrological modelling tools developed at INRAE-Antony ([Catchment Hydrology research group](https://webgr.inrae.fr/en/home/) of the HYCAR Research Unit, France).
+This package brings into R the hydrological modelling tools developed at INRAE-Antony ([Catchment Hydrology research group](https://webgr.inrae.fr/eng) of the HYCAR Research Unit, France).
 
 
 ## Installation

@@ -4,6 +4,10 @@ ShinyGR <- function(ObsDF = NULL, DatesR = NULL, Precip = NULL, PotEvap = NULL, 
 
   .onAttach()
 
+  message("\n-----------------------------------------------------------------------")
+  message("\n   Press the 'escape' key to disconnect the graphical user interface \n")
+  message("-----------------------------------------------------------------------\n")
+
   theme <- match.arg(arg = theme,
                      choices = c("RStudio", "Cerulean", "Cyborg", "Flatly", "Inrae", "Saclay", "United", "Yeti"))
 

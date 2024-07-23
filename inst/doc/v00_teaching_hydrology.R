@@ -1,4 +1,4 @@
-## ---- warning=FALSE, include=FALSE--------------------------------------------
+## ----warning=FALSE, include=FALSE---------------------------------------------
 R_bib <- toBibtex(citation())
 R_bib <- gsub("@Manual\\{", "@Manual{Rsoftware_man", R_bib)
 airGR_bib <- toBibtex(citation("airGR"))
@@ -6,21 +6,21 @@ airGR_bib <- gsub("@Article\\{", "@Article{airGR_art", airGR_bib)
 airGR_bib <- gsub("@Manual\\{", "@Manual{airGR_man", airGR_bib)
 airGRteaching_bib <- toBibtex(citation("airGRteaching"))
 airGRteaching_bib <- gsub("@Manual\\{", "@Manual{airGRteaching_man", airGRteaching_bib)
-airGRteaching_bib <- gsub("@InProceedings\\{", "@InProceedings{airGRteaching_pcd", airGRteaching_bib)
+airGRteaching_bib <- gsub("@Article\\{", "@Article{airGRteaching_art", airGRteaching_bib)
 airGRdatasets_bib <- toBibtex(citation("airGRdatasets"))
 airGRdatasets_bib <- gsub("@Manual\\{", "@Manual{airGRdatasets_man", airGRdatasets_bib)
 options(encoding = "UTF-8")
 writeLines(text = c(R_bib, airGR_bib, airGRteaching_bib, airGRdatasets_bib), con = "airGR_galaxy.bib")
 options(encoding = "native.enc")
 
-## ---- include=FALSE-----------------------------------------------------------
+## ----include=FALSE------------------------------------------------------------
 formatGR      <- '<strong><font color="#0BA6AA">%s</font></strong>'
 GR            <- sprintf(formatGR, "GR")
 airGR         <- sprintf(formatGR, "airGR")
 airGRteaching <- sprintf(formatGR, "airGRteaching")
 airGRdatasets <- sprintf(formatGR, "airGRdatasets")
 
-## ---- setup, include=FALSE----------------------------------------------------
+## ----setup, include=FALSE-----------------------------------------------------
 knitr::opts_chunk$set(echo = TRUE, fig.path = "figure/")
 library(airGRteaching)
 Sys.setlocale("LC_TIME", "English")
@@ -34,7 +34,7 @@ colorize <- function(x, color) {
   }
 }
 
-## ---- echo=TRUE, eval=TRUE----------------------------------------------------
+## ----echo=TRUE, eval=TRUE-----------------------------------------------------
 # Package loading
 library(airGRdatasets)
 
@@ -44,7 +44,7 @@ data("B222001001", package = "airGRdatasets")
 # Structure of the catchment data object
 str(B222001001)
 
-## ---- echo=TRUE, eval=TRUE----------------------------------------------------
+## ----echo=TRUE, eval=TRUE-----------------------------------------------------
 # Package loading
 library(airGRdatasets)
 
@@ -64,8 +64,8 @@ prep_no_q <- PrepGR(DatesR     = ts_obs$Date,
 # Simulation period
 per_sim <- range(prep_no_q$InputsModel$DatesR)
 
-## ---- v00_fig_gr4j_x2, echo=TRUE, eval=TRUE, warning=FALSE, fig.width=3*3, fig.height=3*1.7, out.width='98%'----
-# Different X2 values around its median values (0 [mm/day])
+## ----v00_fig_gr4j_x2, echo=TRUE, eval=TRUE, warning=FALSE, fig.width=3*3, fig.height=3*1.7, out.width='98%'----
+# Different X2 values around its median values (0 [mm/d])
 param_x2 <- seq(from = -2, to = 2, by = 1)
 
 # Combination of parameter values (X1, X3 and X4 are fixed; X2 changes)
@@ -88,16 +88,16 @@ ind_zoom <- 400:430
 col_param_x2 <- colorRampPalette(c("green1", "green4"))(ncol(sim_x2))
 matplot(x = as.POSIXct(prep_no_q$InputsModel$DatesR[ind_zoom]),
         y = sim_x2[ind_zoom, ],
-        xlab = "time [days]", ylab = "flow [mm/day]",
+        xlab = "time [d]", ylab = "flow [mm/d]",
         type = "l", lty = 1, lwd = 2, col = col_param_x2)
 legend("topright",
        legend = sprintf("% .1f", param_x2),
        lwd = 2, col = col_param_x2,
-       title = "X2 values [mm/day]",
+       title = "X2 values [mm/d]",
        bg = "white")
 
-## ---- v00_fig_gr4j_x4, echo=TRUE, eval=TRUE, warning=FALSE, fig.width=3*3, fig.height=3*1.7, out.width='98%'----
-# Different X4 values around its median values (1.4 [days])
+## ----v00_fig_gr4j_x4, echo=TRUE, eval=TRUE, warning=FALSE, fig.width=3*3, fig.height=3*1.7, out.width='98%'----
+# Different X4 values around its median values (1.4 [d])
 param_x4 <- seq(from = 1.0, to = 3.0, by = 0.5)
 
 # Combination of parameter values (X1, X2 and X3 are fixed; X4 changes)
@@ -120,15 +120,15 @@ ind_zoom <- 400:430
 col_param_x4 <- colorRampPalette(c("steelblue1", "steelblue4"))(ncol(sim_x4))
 matplot(x = as.POSIXct(prep_no_q$InputsModel$DatesR[ind_zoom]),
         y = sim_x4[ind_zoom, ],
-        xlab = "time [days]", ylab = "flow [mm/day]",
+        xlab = "time [d]", ylab = "flow [mm/d]",
         type = "l", lty = 1, lwd = 2, col = col_param_x4)
 legend("topright",
        legend = sprintf("% .1f", param_x4),
        lwd = 2,col = col_param_x4, 
-       title = "X4 values [days]",
+       title = "X4 values [d]",
        bg = "white")
 
-## ---- v00_fig_sim_aggreg, echo=TRUE, eval=TRUE, fig.width=3*3, fig.height=3*1.7, out.width='98%'----
+## ----v00_fig_sim_aggreg, echo=TRUE, eval=TRUE, fig.width=3*3, fig.height=3*1.7, out.width='98%'----
 # Aggregation of the simulated streamflow at the yearly time step
 sim_x2_y <- cbind(DatesR = as.POSIXct(prep_no_q$InputsModel$DatesR), 
                   as.data.frame(sim_x2))
@@ -144,7 +144,7 @@ sim_x4_y <- SeriesAggreg(x = sim_x4_y,
 # Graphical comparison
 matplot(x = sim_x2_y$DatesR, y = sim_x2_y[, -1], 
         type = "l", lty = 1, lwd = 2, col = col_param_x2, 
-        xlab = "time [years]", ylab = "flow [mm/year]")
+        xlab = "time [yr]", ylab = "flow [mm/yr]")
 matlines(x = sim_x4_y$DatesR, y = sim_x4_y[, -1], 
          type = "l", lty = 1, lwd = 2, col = col_param_x4)
 legend("topright", 
@@ -152,10 +152,10 @@ legend("topright",
        lwd = 2, col = c(median(col_param_x2), median(col_param_x4)),
        bg = "white")
 
-## ---- v00_fig_wup, echo=TRUE, eval=TRUE, fig.width=3*3, fig.height=3*1.7, out.width='98%'----
+## ----v00_fig_wup, echo=TRUE, eval=TRUE, fig.width=3*3, fig.height=3*1.7, out.width='98%'----
 # Warm-up and simulation periods
 per_wup1m <- c("2002-12-01", "2002-12-31")
-per_wup4y <- c("1999-01-01", "2002-12-31")
+per_wup1y <- c("2002-01-01", "2002-12-31")
 per_sim   <- c("2003-01-01", "2006-12-31")
 
 # Parameter set
@@ -174,9 +174,9 @@ sim_wup1m <- SimGR(PrepGR  = prep_no_q,
                    SimPer  = per_sim)
 
 # Simulation with a 4-year warm-up period
-sim_wup4y <- SimGR(PrepGR  = prep_no_q, 
+sim_wup1y <- SimGR(PrepGR  = prep_no_q, 
                    Param   = param_gr4j,
-                   WupPer  = per_wup4y, 
+                   WupPer  = per_wup1y, 
                    SimPer  = per_sim)
 
 # Graphical comparison
@@ -184,16 +184,16 @@ col_wup <- c("orchid", "orange2", "green3")
 matplot(x = as.POSIXct(sim_wup0d$OutputsModel$DatesR),
         y = cbind(sim_wup0d$OutputsModel$Qsim,
                   sim_wup1m$OutputsModel$Qsim,
-                  sim_wup4y$OutputsModel$Qsim),
-        xlab = "time [days]", ylab = "flow [mm/day]", 
+                  sim_wup1y$OutputsModel$Qsim),
+        xlab = "time [d]", ylab = "flow [mm/d]", 
         type = "l", lty = 1, lwd = 2, col = col_wup,
         xlim = as.POSIXct(x = c("2003-01-01", "2003-09-01"), tz = "UTC"))
 legend("topright", 
-       legend = c("no warm-up", "1-month warm-up", "4-year warm-up"), 
+       legend = c("no warm-up", "1-month warm-up", "1-year warm-up"), 
        col = col_wup, lwd = 2,
        bg = "white")
 
-## ---- v00_fig_cal_manu, echo=TRUE, eval=TRUE, warning=FALSE, fig.width=7*1.5, fig.height=5*1.5, out.width='98%'----
+## ----v00_fig_cal_manu, echo=TRUE, eval=TRUE, warning=FALSE, fig.width=7*1.5, fig.height=5*1.5, out.width='98%'----
 # Data processing for GR4J (with Q for calibration)
 prep <- PrepGR(DatesR     = ts_obs$Date,
                Precip     = ts_obs$Ptot,
@@ -219,7 +219,7 @@ GetCrit(i_sim_manu)
 # Graphical assessment of the calibration performance
 plot(i_sim_manu)
 
-## ---- v00_fig_cal_auto, echo=TRUE, eval=TRUE, fig.width=7*1.5, fig.height=5*1.5, out.width='98%'----
+## ----v00_fig_cal_auto, echo=TRUE, eval=TRUE, fig.width=7*1.5, fig.height=5*1.5, out.width='98%'----
 # Calibration using NSE score 
 cal_auto <- CalGR(PrepGR  = prep, 
                   CalCrit = "NSE",
@@ -233,7 +233,7 @@ GetCrit(cal_auto)
 # Graphical assessment of the calibration performance
 plot(cal_auto)
 
-## ---- v00_fig_cal_eval, echo=TRUE, eval=TRUE, warning=FALSE, fig.width=3*3, fig.height=3*1.7, out.width='98%'----
+## ----v00_fig_cal_eval, echo=TRUE, eval=TRUE, warning=FALSE, fig.width=3*3, fig.height=3*1.7, out.width='98%'----
 # Catchment data loading
 data("X031001001", package = "airGRdatasets")
 
@@ -297,14 +297,14 @@ tab_cal_reg <- SeriesAggreg(tab_cal,
 col_snow <- c("black", rep("orangered", 2))
 lty_snow <- c(1, 1:2)
 matplot(y = tab_cal_reg[, grep("^Q", colnames(tab_cal))],
-        xlab = "time [months]", ylab = "flow [mm/day]", 
+        xlab = "time [months]", ylab = "flow [mm/d]", 
         type = "l", lty = lty_snow, lwd = 2, col = col_snow)
 legend("topright", 
        legend = c("Qobs", "Qsim without snow mod.", "Qsim with snow mod."),
        lty = lty_snow, lwd = 2, col = col_snow,
        bg = "white")
 
-## ---- v00_fig_flow_transfo, echo=TRUE, eval=TRUE, warning=FALSE, fig.width=3*3, fig.height=3*1.7, out.width='98%'----
+## ----v00_fig_flow_transfo, echo=TRUE, eval=TRUE, warning=FALSE, fig.width=3*3, fig.height=3*1.7, out.width='98%'----
 # Catchment data loading
 data("B222001001", package = "airGRdatasets")
 ts_obs <- B222001001$TS
@@ -357,14 +357,14 @@ tab_sim_reg <- SeriesAggreg(tab_sim_trsf,
 col_trsf <- c("black", rep("orangered", 3))
 lty_trsf <- c(1, 1:3)
 matplot(y = tab_sim_reg[, -1],
-        xlab = "time [months]", ylab = "flow [mm/day]", 
+        xlab = "time [months]", ylab = "flow [mm/d]", 
         type = "l", lty = lty_trsf, lwd = 2, col = col_trsf)
 legend("bottomleft", 
        legend = c("Qobs", "Qsim", "sqrt(Qsim)", "log(Qsim)"),
        lty = lty_trsf, lwd = 2, col = col_trsf,
        bg = "white")
 
-## ---- v00_fig_obj_fun, echo=TRUE, eval=TRUE, warning=FALSE, fig.width=3*3, fig.height=3*1.7, out.width='98%'----
+## ----v00_fig_obj_fun, echo=TRUE, eval=TRUE, warning=FALSE, fig.width=3*3, fig.height=3*1.7, out.width='98%'----
 # Calibration using NSE score on Q
 cal_nse <- CalGR(PrepGR  = prep, 
                  CalCrit = "NSE",
@@ -389,7 +389,7 @@ tab_crit <- data.frame(Date     = as.POSIXct(cal_nse$OutputsModel$DatesR),
 col_crit <- c("black", rep("orangered", 2))
 lty_crit <- c(1, 1:2)
 matplot(x = tab_crit$Date, y = tab_crit[, -1],
-        xlab = "time [days]", ylab = "flow [mm/day]", 
+        xlab = "time [d]", ylab = "flow [mm/d]", 
         type = "l", lty = lty_crit, lwd = 2, col = col_crit,
         xlim = as.POSIXct(x = c("2004-01-01", "2004-03-01"), tz = "UTC"))
 legend("topleft", 
@@ -397,7 +397,7 @@ legend("topleft",
        lty = lty_crit, lwd = 2, col = col_crit,
        bg = "white")
 
-## ---- v00_fig_sst, echo=TRUE, eval=TRUE, warning=FALSE, fig.width=3*3, fig.height=3*1.7, out.width='98%'----
+## ----v00_fig_sst, echo=TRUE, eval=TRUE, warning=FALSE, fig.width=3*3, fig.height=3*1.7, out.width='98%'----
 # Calibration and evaluation sub-periods
 per1_wup <- c("1999-01-01", "2001-12-31")
 per1_sim <- c("2002-01-01", "2008-12-31")
@@ -452,7 +452,7 @@ dotchart(c(crit_eva_per1, crit_cal_per1, crit_eva_per2, crit_cal_per2),
          col = rep(c("darkred", "darkblue"), each = 2), pch = 19, 
          xlab = "KGE [-]")
 
-## ---- v00_fig_dsst, echo=TRUE, eval=TRUE, warning=FALSE, fig.width=3*3, fig.height=3*1.7, out.width='98%'----
+## ----v00_fig_dsst, echo=TRUE, eval=TRUE, warning=FALSE, fig.width=3*3, fig.height=3*1.7, out.width='98%'----
 # Estimation of annual aridity index (PE/P)
 ts_obs_y <- SeriesAggreg(x = ts_obs[, c("Date", "Ptot", "Evap")], 
                          Format = "%Y", 
@@ -463,7 +463,7 @@ ts_obs_y$Arid <- ts_obs_y$Evap / ts_obs_y$Ptot
 # Identification of wetter and dryer hydrological years
 barplot(height = ts_obs_y$Arid, 
         names.arg = format(ts_obs_y$Date, format = "%Y"), 
-        xlab = "time [years]", ylab = "aridity index [-]",
+        xlab = "time [yr]", ylab = "aridity index [-]",
         col = "royalblue")
 
 # Wet and dry periods

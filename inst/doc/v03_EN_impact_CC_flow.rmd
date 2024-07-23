@@ -8,7 +8,7 @@ output:
   rmarkdown::html_vignette:
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteIndexEntry{Impact of climate change on streamflow regime}
+  %\VignetteIndexEntry{Ex. 3. Impact of climate change on streamflow regime}
   %\VignetteEncoding{UTF-8}
 ---
 
@@ -21,7 +21,7 @@ airGR_bib <- gsub("@Article\\{", "@Article{airGR_art", airGR_bib)
 airGR_bib <- gsub("@Manual\\{", "@Manual{airGR_man", airGR_bib)
 airGRteaching_bib <- toBibtex(citation("airGRteaching"))
 airGRteaching_bib <- gsub("@Manual\\{", "@Manual{airGRteaching_man", airGRteaching_bib)
-airGRteaching_bib <- gsub("@InProceedings\\{", "@InProceedings{airGRteaching_pcd", airGRteaching_bib)
+airGRteaching_bib <- gsub("@Article\\{", "@Article{airGRteaching_art", airGRteaching_bib)
 airGRdatasets_bib <- toBibtex(citation("airGRdatasets"))
 airGRdatasets_bib <- gsub("@Manual\\{", "@Manual{airGRdatasets_man", airGRdatasets_bib)
 options(encoding = "UTF-8")
@@ -161,13 +161,13 @@ par(mfrow = c(1, 2))
 
 # Present time regime
 plot(x = reg_d$Date, y = reg_d$Qmmd, 
-     xlab = "time (days)", ylab = "flow [mm/day]", 
+     xlab = "time [d]", ylab = "flow [mm/d]", 
      main = "Present time climate",
      type = "l")
 
 # Future time regime
 plot(x = reg_d$Date, y = reg_d$Qmmd, 
-     xlab = "time (days)", ylab = "", 
+     xlab = "time [d]", ylab = "", 
      main = "Future climate",
      type = "n", yaxt = "n")
 axis(side = 2, labels = FALSE)
@@ -208,7 +208,7 @@ GR4J is a conceptual and lumped rainfall-runoff model, operating on a daily time
 
 The snow accumulation and melt model CemaNeige also operates on a daily time step, and requires as input a distribution of the altitude of the studied catchment, as well as time series describing the air temperature among the catchment. 
 
-These models are easily usable thanks to the `r airGRteaching` package [@airGRteaching_man; @airGRteaching_pcd], developped for the [R software](https://cran.r-project.org/) by the [Catchment Hydrology research group of the HYCAR reaserch unit](https://webgr.inrae.fr/en/home/) ([INRAE](https://www.inrae.fr/en), France).
+These models are easily usable thanks to the `r airGRteaching` package [@airGRteaching_man; @airGRteaching_art], developped for the [R software](https://cran.r-project.org/) by the [Catchment Hydrology research group of the HYCAR research unit](https://webgr.inrae.fr/eng) ([INRAE](https://www.inrae.fr/en), France).
 
 The time series of observed precipitation, air temperature, PE and streamflow can be easily formatted using the `PrepGR()` function. A rainfall-runoff simulation can be performed with the `SimGR()` function, and a parameter calibration using the `CalGR()`. 
 
@@ -239,10 +239,10 @@ The parameters obtained after calibration will then be used to perform rainfall-
 
 The data set available to the rainfall-runoff modelling consists of:
 
-* a time series of daily total precipitation (liquid + solid) [mm/day] (`Ptot`);
+* a time series of daily total precipitation (liquid + solid) [mm/d] (`Ptot`);
 * a time series of daily air temperatures [°C] (`Temp`);
-* a time series of daily potential evapotranspiration calculated with the @oudin_which_2005 formula [mm/day] (`Evap`);
-* a time series of daily streamflows expressed as a specific discharge [mm/day] (`Qmmd`);
+* a time series of daily potential evapotranspiration calculated with the @oudin_which_2005 formula [mm/d] (`Evap`);
+* a time series of daily streamflows expressed as a specific discharge [mm/d] (`Qmmd`);
 * a distribution of the altitude on the catchment area (hypsometric curve) [m] (`Hypso`).
 
 You also have the tables of average monthly changes estimated by your fellow climatologists presented in the introduction.
@@ -328,7 +328,7 @@ The regimes calculated in this way can be represented graphically (see following
 ```{r, v03_fig_regime, echo=FALSE, eval=TRUE, fig.width=3*3, fig.height=3*1.7, out.width='98%'}
 # Graphical parameters
 plot(x = reg_hist_m$Dates, y = reg_hist_m$Qobs,
-     xlab = "time (months)", ylab = "flow [mm/month]",
+     xlab = "time [months]", ylab = "flow [mm/month]",
      type = "l")
 lines(x = reg_hist_m$Dates, y = reg_hist_m$Qsim,
       type = "l", col = "orangered")
@@ -480,7 +480,7 @@ The evolutions are more marked at the daily time step (see following figure).
 ```{r, v03_fig_regime_day_cc, echo=FALSE, eval=TRUE, fig.width=3*3, fig.height=3*1.7, out.width='98%'}
 # Plot framework
 matplot(x = reg_cc_d$Dates, y = reg_cc_d[, -1], 
-        xlab = "time (days)", ylab = "flow [mm/day]", 
+        xlab = "time [d]", ylab = "flow [mm/d]", 
         type = "l", lty = 1, 
         col = c("black", "orangered", col_qscen))
 

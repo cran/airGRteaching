@@ -8,7 +8,7 @@ output:
   rmarkdown::html_vignette
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteIndexEntry{Low-flow forecasting}
+  %\VignetteIndexEntry{Ex. 2. Low-flow forecasting}
   %\VignetteEncoding{UTF-8}
 ---
 
@@ -21,7 +21,7 @@ airGR_bib <- gsub("@Article\\{", "@Article{airGR_art", airGR_bib)
 airGR_bib <- gsub("@Manual\\{", "@Manual{airGR_man", airGR_bib)
 airGRteaching_bib <- toBibtex(citation("airGRteaching"))
 airGRteaching_bib <- gsub("@Manual\\{", "@Manual{airGRteaching_man", airGRteaching_bib)
-airGRteaching_bib <- gsub("@InProceedings\\{", "@InProceedings{airGRteaching_pcd", airGRteaching_bib)
+airGRteaching_bib <- gsub("@Article\\{", "@Article{airGRteaching_art", airGRteaching_bib)
 airGRdatasets_bib <- toBibtex(citation("airGRdatasets"))
 airGRdatasets_bib <- gsub("@Manual\\{", "@Manual{airGRdatasets_man", airGRdatasets_bib)
 options(encoding = "UTF-8")
@@ -169,7 +169,7 @@ ind_xlim <- c(nrow(ts_plot)-300, nrow(ts_plot))
 
 # Plotting hyrdograph
 plot(x = ts_plot$Date, y = ts_plot$Qmmd,
-     xlab = "time [days]", ylab = "flow [mm/day]",
+     xlab = "time [d]", ylab = "flow [mm/d]",
      main = paste("Year", year_max),
      type = "l", lwd = 1,
      log = "y",
@@ -206,7 +206,7 @@ In this exercise, you analyze all the streamflows observed during the forecast p
 
 You will use the GR6J model [@pushpalatha_downward_2011]. It is a lumped rainfall-runoff model, operating on a daily time step and having six parameters. It requires continuous time series of daily precipitation and potential evapotranspiration (PE) as input.
 
-This model is easily usable thanks to the `r airGRteaching` package [@airGRteaching_man; @airGRteaching_pcd], developped for the [R software](https://cran.r-project.org/) by the [Catchment Hydrology research group of the HYCAR reaserch unit](https://webgr.inrae.fr/en/home/) ([INRAE](https://www.inrae.fr/en), France).
+This model is easily usable thanks to the `r airGRteaching` package [@airGRteaching_man; @airGRteaching_art], developped for the [R software](https://cran.r-project.org/) by the [Catchment Hydrology research group of the HYCAR research unit](https://webgr.inrae.fr/eng) ([INRAE](https://www.inrae.fr/en), France).
 
 The time series of observed precipitation, PE and streamflow can be easily formatted using the `PrepGR()` function. A rainfall-runoff simulation can be performed with the `SimGR()` function, and a parameter calibration using the `CalGR()`.
 
@@ -259,9 +259,9 @@ This last step aims at performing several rainfall-runoff simulations considerin
 
 The data set available to the rainfall-runoff modelling consists of:
 
-* a time series of daily total precipitation (liquid + solid) [mm/day] (`Ptot`);
-* a time series of daily potential evapotranspiration calculated with the @oudin_which_2005 formula [mm/day] (`Evap`);
-* a time series of daily streamflows expressed as a specific discharge [mm/day] (`Qmmd`).
+* a time series of daily total precipitation (liquid + solid) [mm/d] (`Ptot`);
+* a time series of daily potential evapotranspiration calculated with the @oudin_which_2005 formula [mm/d] (`Evap`);
+* a time series of daily streamflows expressed as a specific discharge [mm/d] (`Qmmd`).
 
 
 
@@ -379,9 +379,9 @@ plot(cal_hist)
 The six parameters and the value of the calibration criterion ($NSE_{ln}$) obtained after the automatic calibration procedure are:
 
 * X1 = `r round(param_cal_hist[1], digits = 0)` [mm]
-* X2 = `r round(param_cal_hist[2], digits = 3)` [mm/day]
+* X2 = `r round(param_cal_hist[2], digits = 3)` [mm/d]
 * X3 = `r round(param_cal_hist[3], digits = 0)` [mm]
-* X4 = `r round(param_cal_hist[4], digits = 3)` [day]
+* X4 = `r round(param_cal_hist[4], digits = 3)` [d]
 * X5 = `r round(param_cal_hist[5], digits = 3)` [-]
 * X6 = `r round(param_cal_hist[6], digits = 2)` [mm]
 * $NSE_{ln}$ = `r round(crit_cal_hist, digits = 3)` [-]
@@ -462,7 +462,7 @@ The following figure represents the observed and simulated streamflow series ove
 
 ```{r, v02_fig_qscen_p0, echo=FALSE, fig.width=3*3, fig.height=3*1.7, out.width='98%'}
 # Plot framework
-<<v02_fig_step_cal_hist>>
+<<v02_fig_cal_hist>>
 
 # Zero precipitation
 lines(x = ts_sim_scen_p0$Dates, y = ts_sim_scen_p0$Qsim, lwd = 2, col = "blue")
@@ -575,8 +575,6 @@ The following figure allows to compare all the results on the same graph. It dis
 
 ```{r, v02_fig_summary, echo=FALSE, fig.width=3*3, fig.height=3*1.7, out.width='98%'}
 # Plot framework
-<<v02_fig_pattern>>
-par(new = TRUE)
 <<v02_fig_qclim>>
 par(new = TRUE)
 <<v02_fig_cal_hist>>

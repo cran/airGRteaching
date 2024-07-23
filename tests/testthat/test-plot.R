@@ -11,7 +11,7 @@ PREP <- PrepGR(DatesR = BasinObs2$DatesR, Precip = BasinObs2$P,
                PotEvap = BasinObs2$E, Qobs = NA,
                HydroModel = "GR4J", CemaNeige = FALSE)
 
-## Simulation step using model parameters set by the user
+## Simulation step using model parameter set by the user
 SIM <- SimGR(PrepGR = PREP, Param = c(270.426, 0.984, 108.853, 2.149), EffCrit = "KGE2",
              WupPer = NULL, SimPer = c("1994-01-01", "1998-12-31"))
 

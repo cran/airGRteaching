@@ -218,7 +218,7 @@ navbarPage(title       = div("airGRteaching",
                                   )
                     )
            ),
-           tabPanel(title = "Summary sheet",
+           tabPanel(title = "Fact sheet",
                     icon  = icon("table-cells"),
                     sidebarLayout(position = "left",
                                   sidebarPanel(width = 3,
@@ -249,8 +249,7 @@ navbarPage(title       = div("airGRteaching",
                       ),
                       tabPanel(title = "About",
                                icon  = icon("bars"),
-                               fluidRow(column(width = 6, includeMarkdown("www/tab_about.md")),
-                                        column(width = 5, includeMarkdown("www/tab_authors.md"))),
+                               fluidRow(column(width = 6, includeMarkdown("www/tab_about.md"))),
                       )
            )
 )

@@ -4,6 +4,15 @@
 
 
 
+### 0.3.4 Release Notes (2025-02-11)
+
+#### User-visible changes
+
+- the GUI, launched by the `ShinyGR()` function, now displays fact sheets of catchments again if the dataset name contains the station code (10 characters: 1 letter and 9 digits) from the Hydroportail website (so it is available only for datasets from this French database). ([#79](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/79))
+- the GUI, launched by the `ShinyGR()` function, has its authors' list removed and the screenshots optimized to reduce their file size. ([#80](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/80))
+
+____________________________________________________________________________________
+
 ### 0.3.3 Release Notes (2024-07-23)
 
 #### User-visible changes
@@ -127,7 +136,7 @@ ________________________________________________________________________________
 
 #### New features
 
-- GUI, launched by the `ShinyGR()` function, can now run on monthly time series, using the GR2M model ([#14](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/14))
+- the GUI, launched by the `ShinyGR()` function, can now run on monthly time series, using the GR2M model ([#14](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/14))
 
 
 #### Bug fixes
@@ -160,7 +169,7 @@ ________________________________________________________________________________
 
 #### New features
 
-- GUI, launched by the `ShinyGR()` function, now displays a new tab panel that shows a summary sheets of basin if the name of the dataset contains the code station (8 characters : 1 letter and 7 numbers) of the Banque Hydro French database (so it is available only for the dataset of this database) ([#10](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/10))
+- GUI, launched by the `ShinyGR()` function, now displays a new tab panel that shows a summary sheets of basin if the name of the dataset contains the code station (8 characters : 1 letter and 7 digits) of the Banque Hydro French database (so it is available only for the dataset of this database) ([#10](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/10))
 
 
 #### Version control and issue tracking

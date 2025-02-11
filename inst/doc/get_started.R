@@ -34,7 +34,7 @@ par(cex.lab = 0.6, cex.axis = 0.6)
 plot(PREP, main = "Observation")
 
 ## ----echo=TRUE, eval=FALSE----------------------------------------------------
-#  plot(CAL, which = "synth")
+# plot(CAL, which = "synth")
 
 ## ----fig.width=7*1.5, fig.height=4.25*1.5, dev.args=list(pointsize=14), echo=FALSE, warning=FALSE----
 plot(CAL, which = "synth", cex.lab = 0.7, cex.axis = 0.7)
@@ -47,11 +47,11 @@ par(cex.lab = 0.7, cex.axis = 0.7)
 plot(CAL, which = "ts", main = "Calibration")
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  plot(SIM)
+# plot(SIM)
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  dyplot(SIM, main = "Simulation")
+# dyplot(SIM, main = "Simulation")
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  ShinyGR(ObsDF = BasinObs, SimPer = c("1994-01-01", "1998-12-31"))
+# ShinyGR(ObsDF = BasinObs, SimPer = c("1994-01-01", "1998-12-31"))
 

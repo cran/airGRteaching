@@ -76,9 +76,9 @@ param_gr4j <- expand.grid(X1 = 350,
 
 # Streamflow simulations using parameter sets
 sim_x2 <- apply(param_gr4j, MARGIN = 1, FUN = function(i_param_gr4j) {
-  i_sim <- SimGR(PrepGR = prep_no_q, 
-                 Param = i_param_gr4j, 
-                 SimPer = per_sim, 
+  i_sim <- SimGR(PrepGR  = prep_no_q, 
+                 Param   = i_param_gr4j, 
+                 SimPer  = per_sim, 
                  verbose = FALSE)
   i_sim$OutputsModel$Qsim
 })
@@ -162,22 +162,22 @@ per_sim   <- c("2003-01-01", "2006-12-31")
 param_gr4j <- c(X1 = 350, X32 = 0, X3 = 90, X4 = 1.4)
 
 # Simulation without warm-up period
-sim_wup0d <- SimGR(PrepGR  = prep_no_q, 
-                   Param   = param_gr4j,
-                   WupPer  = 0L,
-                   SimPer  = per_sim)
+sim_wup0d <- SimGR(PrepGR = prep_no_q, 
+                   Param  = param_gr4j,
+                   WupPer = 0L,
+                   SimPer = per_sim)
 
 # Simulation with a 1-month warm-up period
-sim_wup1m <- SimGR(PrepGR  = prep_no_q,
-                   Param   = param_gr4j,
-                   WupPer  = per_wup1m, 
-                   SimPer  = per_sim)
+sim_wup1m <- SimGR(PrepGR = prep_no_q,
+                   Param  = param_gr4j,
+                   WupPer = per_wup1m, 
+                   SimPer = per_sim)
 
 # Simulation with a 4-year warm-up period
-sim_wup1y <- SimGR(PrepGR  = prep_no_q, 
-                   Param   = param_gr4j,
-                   WupPer  = per_wup1y, 
-                   SimPer  = per_sim)
+sim_wup1y <- SimGR(PrepGR = prep_no_q, 
+                   Param  = param_gr4j,
+                   WupPer = per_wup1y, 
+                   SimPer = per_sim)
 
 # Graphical comparison
 col_wup <- c("orchid", "orange2", "green3")
@@ -262,9 +262,9 @@ prep_snow_y <- PrepGR(DatesR     = ts_obs$Date,
                       PotEvap    = ts_obs$Evap, 
                       Qobs       = ts_obs$Qmmd,
                       TempMean   = ts_obs$Temp,
-                      ZInputs = median(hypso),
-                      HypsoData = hypso,
-                      NLayers = 5,
+                      ZInputs    = median(hypso),
+                      HypsoData  = hypso,
+                      NLayers    = 5,
                       HydroModel = "GR4J", 
                       CemaNeige  = TRUE)
 

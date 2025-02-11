@@ -516,7 +516,7 @@ shinyServer(function(input, output, session) {
   }, priority = +10)
 
 
-  ## Time window slider and dataset choosen on the Summary sheet panel
+  ## Time window slider and dataset choosen on the Fact sheet panel
   observeEvent({input$Dataset}, {
     timeFormat <- ifelse(input$HydroModel == "GR2M", "%Y-%m", "%F")
     updateSliderInput(session, inputId = "Period",
@@ -1122,12 +1122,12 @@ shinyServer(function(input, output, session) {
 
 
 
-  ## --------------- Summary sheet
+  ## --------------- Fact sheet
 
   output$Sheet <- renderUI({
-    codeRegex <- "\\D{1}\\d{7}"
+    codeRegex <- "\\D{1}\\d{9}"
     codeBH <- gsub(sprintf("(.*)(%s)(.*)", codeRegex), "\\2", input$DatasetSheet)
-    urlRegex <- "https://webgr.inrae.fr/wp-content/uploads/fiches/%s_fiche.png"
+    urlRegex <- "https://hydrogr.github.io/BDD-HydroClim/images/fr/%s_INRAE_BDD-HydroClim_fact_sheet_FR.png"
     urlSheet <- sprintf(urlRegex, codeBH)
     if (airGRteaching:::.CheckUrl(urlSheet)) {
       tags$p(tags$h6("Click on the image to open it in a new window and to enlarge it."),
@@ -1136,15 +1136,15 @@ shinyServer(function(input, output, session) {
                              alt = "If the image does not appear, click on this link.",
                              title = "Click to open in a new window")))
     } else {
-      urlSheet <- "fig/sheet_W1110010_thumbnail.png"
-      urlWebGR <- "https://webgr.inrae.fr"
+      urlSheet <- "fig/sheet_W111001001_thumbnail.png"
+      urlWebGR <- "https://webgr.inrae.fr/eng"
       txtWebGR <- "webgr.inrae.fr"
-      urlFraDb <- file.path(urlWebGR, "activites/base-de-donnees/")
-      txtFraDb <- "All the summary sheets are available on"
-      tags$p(tags$h1("Sorry, the summary sheet is not available for this dataset."),
+      urlFraDb <- file.path(urlWebGR, "tools/databases/bdd-hydroclim/")
+      txtFraDb <- "All the fact sheets are available on"
+      tags$p(tags$h1("Sorry, the fact sheet is not available for this dataset."),
              tags$br(),
-             tags$h5("Only sheets of stations of the Banque Hydro French database are available."),
-             tags$h5("To display a summary sheet, the name of the chosen dataset has to contain the  Banque Hydro station code (8 characters : 1 letter and 7 numbers)."),
+             tags$h5("Only sheets of stations of theHydroportail French database are available."),
+             tags$h5("To display a fact sheet, the name of the chosen dataset has to contain the Hydroportail station code (10 characters : 1 letter and 9 digits)."),
              txtFraDb, tags$a(href = urlFraDb, target = "_blank", rel = "noopener noreferrer", txtWebGR), ".",
              tags$br(),
              tags$br(),

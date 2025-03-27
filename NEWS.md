@@ -4,6 +4,15 @@
 
 
 
+### 0.3.5 Release Notes (2025-03-27)
+
+#### Bug fixes
+
+- the YAML metadata values of the markodown files used in the GUI has been updated to be consistent with YAML updates. ([#81](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/81))
+
+____________________________________________________________________________________
+
+
 ### 0.3.4 Release Notes (2025-02-11)
 
 #### User-visible changes

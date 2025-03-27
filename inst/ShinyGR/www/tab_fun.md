@@ -1,8 +1,8 @@
 ---
 output: 
   html_document: 
-    keep_md: yes
-    self_contained: yes
+    keep_md: true
+    self_contained: true
 ---
 
 

@@ -418,32 +418,33 @@ shinyServer(function(input, output, session) {
 
   ## Period slider responds to changes in the selected/zoomed dateWindow
   observeEvent({input$dyPlotTSq_date_window ; input$dyPlotSVq_date_window ; input$dyPlotMDp_date_window}, {
-    if (!is.null(input$dyPlotTSq_date_window)  && getPlotType() == 2) {
-      dateWindow <- as.POSIXct(strftime(input$dyPlotTSq_date_window, "%Y-%m-%d %H:%M:%S"), tz = "UTC")
-    }
-    if (!is.null(input$dyPlotSVq_date_window) && getPlotType() == 3) {
-      dateWindow <- as.POSIXct(strftime(input$dyPlotSVq_date_window, "%Y-%m-%d %H:%M:%S"), tz = "UTC")
-    }
-    if (!is.null(input$dyPlotMDp_date_window) && getPlotType() == 4) {
-      dateWindow <- as.POSIXct(strftime(input$dyPlotMDp_date_window, "%Y-%m-%d %H:%M:%S"), tz = "UTC")
-    }
-    if (exists("dateWindow")) {
-      # if (dateWindow[1L] == dateWindow[2L]) {
-      #   if (dateWindow[1L] == as.POSIXct(.ShinyGR.args$SimPer[2L], tz = "UTC")) {
-      #     updateSliderInput(session, inputId = "Period",
-      #                       value = dateWindow - c(1, 0) * airGRteaching:::.TypeModelGR(input$HydroModel)$TimeLag)
-      #   } else {
-      #     updateSliderInput(session, inputId = "Period",
-      #                       value = dateWindow + c(0, 1) * airGRteaching:::.TypeModelGR(input$HydroModel)$TimeLag)
-      #   }
-      # } else {
-      if (dateWindow[1L] != dateWindow[2L]) {
-        timeFormat <- ifelse(input$HydroModel == "GR2M", "%Y-%m", "%F")
+    # Identify the zoom event source
+    dw <- switch(as.character(getPlotType()),
+                 "2" = input$dyPlotTSq_date_window,
+                 "3" = input$dyPlotSVq_date_window,
+                 "4" = input$dyPlotMDp_date_window)
+
+    # Continues only if a valid window is available
+    req(dw)
+
+    # Define time unit and format based on the hydrological model
+    isGR2M <- input$HydroModel == "GR2M"
+    unit   <- ifelse(test = isGR2M, yes = "months", no = "days")
+    fmt    <- ifelse(test = isGR2M, yes = "%Y-%m" , no = "%F")
+
+    # Convert and rounds the date window to the model time step
+    dateWindow <- trunc(as.POSIXct(strftime(dw, "%Y-%m-%d %H:%M:%S"), tz = "UTC"), units = unit)
+
+    # Update the slider only if the difference is significant (> 1 hour)
+    # Prevent infinite update loops between the plot and the slider
+    if (dateWindow[1L] != dateWindow[2L]) {
+      timeDiffs <- abs(difftime(dateWindow, input$Period, units = "secs"))
+
+      if (any(timeDiffs > 3600)) {
         updateSliderInput(session, inputId = "Period",
-                          value = dateWindow, ### + airGRteaching:::.TypeModelGR(input$HydroModel)$TimeLag,
-                          timeFormat = timeFormat, timezone = "+0000")
+                          value = dateWindow,
+                          timeFormat = fmt, timezone = "+0000")
       }
-      # }
     }
   }, priority = +100)
 

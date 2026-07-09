@@ -4,11 +4,28 @@
 
 
 
+### 0.3.7 Release Notes (2026-07-09)
+
+#### Bug fixes
+
+- bug fixed in `ShinyGR()` causing the period slider to jump by one time step when adjusted manually. ([#18](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/18))
+
+#### User-visible changes
+
+- the irrelevant `booktitle` field has been removed from the BibTeX entry of the scientific article in the citation file. ([#82](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/82))
+
+#### Version control and issue tracking
+
+- Updated project URLs to reflect the migration from the old IRSTEA GitLab to the new INRAE Forge. ([#66](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/66))
+
+
+____________________________________________________________________________________
+
 ### 0.3.5 Release Notes (2025-03-27)
 
 #### Bug fixes
 
-- the YAML metadata values of the markodown files used in the GUI has been updated to be consistent with YAML updates. ([#81](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/81))
+- the YAML metadata values of the markodown files used in the GUI has been updated to be consistent with YAML updates. ([#81](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/81))
 
 ____________________________________________________________________________________
 
@@ -17,8 +34,8 @@ ________________________________________________________________________________
 
 #### User-visible changes
 
-- the GUI, launched by the `ShinyGR()` function, now displays fact sheets of catchments again if the dataset name contains the station code (10 characters: 1 letter and 9 digits) from the Hydroportail website (so it is available only for datasets from this French database). ([#79](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/79))
-- the GUI, launched by the `ShinyGR()` function, has its authors' list removed and the screenshots optimized to reduce their file size. ([#80](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/80))
+- the GUI, launched by the `ShinyGR()` function, now displays fact sheets of catchments again if the dataset name contains the station code (10 characters: 1 letter and 9 digits) from the Hydroportail website (so it is available only for datasets from this French database). ([#79](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/79))
+- the GUI, launched by the `ShinyGR()` function, has its authors' list removed and the screenshots optimized to reduce their file size. ([#80](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/80))
 
 ____________________________________________________________________________________
 
@@ -26,14 +43,14 @@ ________________________________________________________________________________
 
 #### User-visible changes
 
-- the figure of the "Pessimistic zero precipitation scenario" section is now corrected in the 'Low-flow forecasting' vignette. ([#78](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/78))
-- the DOI used in the CITATION file is now the one provided by the CRAN. ([#77](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/77))
-- the `ShinyGR()` now returns a message to explain how to diconnect the GUI from R. ([#76](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/76))
-- small modifications made in vignettes. ([#75](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/75), [#74](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/74))
+- the figure of the "Pessimistic zero precipitation scenario" section is now corrected in the 'Low-flow forecasting' vignette. ([#78](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/78))
+- the DOI used in the CITATION file is now the one provided by the CRAN. ([#77](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/77))
+- the `ShinyGR()` now returns a message to explain how to diconnect the GUI from R. ([#76](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/76))
+- small modifications made in vignettes. ([#75](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/75), [#74](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/74))
 
 #### CRAN-compatibility updates
 
-- private utility functions are no longer exported by the namespace (`.CheckUrl()`, `.DiagramGR()`, `.DyShadingMulti()`, `.StartStop()`, `.TypeModelGR()`). ([#73](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/73))
+- private utility functions are no longer exported by the namespace (`.CheckUrl()`, `.DiagramGR()`, `.DyShadingMulti()`, `.StartStop()`, `.TypeModelGR()`). ([#73](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/73))
 
 ____________________________________________________________________________________
 
@@ -42,11 +59,11 @@ ________________________________________________________________________________
 
 #### New features
 
-- `plot.CalGR()` and `plot.SimGR()` gain a `log_scale` argument to display flow time series with a logarithmic scale. ([#71](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/71))
+- `plot.CalGR()` and `plot.SimGR()` gain a `log_scale` argument to display flow time series with a logarithmic scale. ([#71](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/71))
 
 #### Bug fixes
 
-- bug fixed in `plot.CalGR()` and `plot.SimGR()`. The functions work well when `log_scale = TRUE` to display flow time series with a logarithmic scale. ([#71](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/71))
+- bug fixed in `plot.CalGR()` and `plot.SimGR()`. The functions work well when `log_scale = TRUE` to display flow time series with a logarithmic scale. ([#71](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/71))
 
 ____________________________________________________________________________________
 
@@ -54,21 +71,21 @@ ________________________________________________________________________________
 
 #### New features
 
-- added the `GetCrit` and `GetParam` S3 methods in order to get respectively the error criterion value and the model parameter set from the outputs of `CalGR()` and `SimGR()` functions. ([#62](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/62))
-- added 4 vignettes to explain more deeply the package options (1 vignette: "Teaching hydrology"), and to offer example tutorials as hydrological teaching projects (3 vignettes: "Flow reconstruction", "Forecasting", and "Climate change"; available both in English and French). ([#47](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/47))
+- added the `GetCrit` and `GetParam` S3 methods in order to get respectively the error criterion value and the model parameter set from the outputs of `CalGR()` and `SimGR()` functions. ([#62](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/62))
+- added 4 vignettes to explain more deeply the package options (1 vignette: "Teaching hydrology"), and to offer example tutorials as hydrological teaching projects (3 vignettes: "Flow reconstruction", "Forecasting", and "Climate change"; available both in English and French). ([#47](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/47))
 
 
 #### Bug fixes
 
-- bug fixed in `plot.CalGR()`, now returns no more the `"synth"` graph when `which = "perf"`. ([#63](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/63))
+- bug fixed in `plot.CalGR()`, now returns no more the `"synth"` graph when `which = "perf"`. ([#63](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/63))
 
 
 #### User-visible changes
 
-- add the possibility to disable the warm-up period of the model using the `CalGR()` and `SimGR()` functions (if `WupPer = 0L`). ([#52](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/52))
-- add the possibility to choose other graphical outputs in the functions `plot.CalGR()` and `plot.SimGR()` using the `which` argument . ([#6](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/6))
-- the `dyplot` S3 method  has been cleaned. The internal `.dyplot()` replace `dyplot.default()` function. The `dyplot.PrepGR()`, `dyplot.CalGR()` and `dyplot.SimGR()` aliases and usages have been added the `dyplot()` help page ([#61](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/61))
-- the Font Awesome icon names used in the GUI have been updated to avoid warning messages during the launch by the `ShinyGR()` function. ([#61](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/61))
+- add the possibility to disable the warm-up period of the model using the `CalGR()` and `SimGR()` functions (if `WupPer = 0L`). ([#52](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/52))
+- add the possibility to choose other graphical outputs in the functions `plot.CalGR()` and `plot.SimGR()` using the `which` argument . ([#6](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/6))
+- the `dyplot` S3 method  has been cleaned. The internal `.dyplot()` replace `dyplot.default()` function. The `dyplot.PrepGR()`, `dyplot.CalGR()` and `dyplot.SimGR()` aliases and usages have been added the `dyplot()` help page ([#61](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/61))
+- the Font Awesome icon names used in the GUI have been updated to avoid warning messages during the launch by the `ShinyGR()` function. ([#61](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/61))
 
 ____________________________________________________________________________________
 
@@ -78,24 +95,24 @@ ________________________________________________________________________________
 
 #### Bug fixes
 
-- bug fixed in `PrepGR()` and by consequence in `ShinyGR()` when the dataset given to the `ObsDF` argument is a `tibble` object. ([#49](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/49))
+- bug fixed in `PrepGR()` and by consequence in `ShinyGR()` when the dataset given to the `ObsDF` argument is a `tibble` object. ([#49](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/49))
 
 
 #### User-visible changes
 
-- in order to avoid duplicated warning messages, the use of the `.onAttach()` command has been removed from the `ShinyGR()` function, because it is already call from the `dyplot()` function which is use in `ShinyGR()`. ([#50](https://gitlab.irstea.fr/HYCAR-Hydro/airgr/-/issues/50))
-- the 'Model diagram' plot exported from the GUI launched by `ShinyGR()` has been resized to avoid to wide title when the the parameter values are large. ([#54](https://gitlab.irstea.fr/HYCAR-Hydro/airgr/-/issues/54))
-- the deprecated icon names from 'Font Awesome' have been updated to avoid warning messages when the `ShinyGR()` function is used. ([#51](https://gitlab.irstea.fr/HYCAR-Hydro/airgr/-/issues/51))
+- in order to avoid duplicated warning messages, the use of the `.onAttach()` command has been removed from the `ShinyGR()` function, because it is already call from the `dyplot()` function which is use in `ShinyGR()`. ([#50](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgr/-/work_items/50))
+- the 'Model diagram' plot exported from the GUI launched by `ShinyGR()` has been resized to avoid to wide title when the the parameter values are large. ([#54](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgr/-/work_items/54))
+- the deprecated icon names from 'Font Awesome' have been updated to avoid warning messages when the `ShinyGR()` function is used. ([#51](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgr/-/work_items/51))
 
 
 #### Version control and issue tracking
 
-- the CI/CD runner now uses a R docker image. ([#55](https://gitlab.irstea.fr/HYCAR-Hydro/airgr/-/issues/55))
+- the CI/CD runner now uses a R docker image. ([#55](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgr/-/work_items/55))
 
 
 #### CRAN-compatibility updates
 
-- The `FUN_CRIT` deprecated argument (since 'airGR' 1.2.13.16) has been removed from the use of `Calibration()` call by the `CalGR()` function. ([#56](https://gitlab.irstea.fr/HYCAR-Hydro/airgr/-/issues/56))
+- The `FUN_CRIT` deprecated argument (since 'airGR' 1.2.13.16) has been removed from the use of `Calibration()` call by the `CalGR()` function. ([#56](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgr/-/work_items/56))
 
 ____________________________________________________________________________________
 
@@ -105,21 +122,21 @@ ________________________________________________________________________________
 
 #### Bug fixes
 
-- bug fixed in the GUI launched by `ShinyGR()`, it is possible to the export the GR2M model diagram PNG file again. ([#40](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/40))
-- bug fixed in `SimGR()` which can now simulate a period with no observed flow. Previously, it could only be run in this case when the observed flow was missing from the output of `PrepGR()` on the whole period and not just on a subperiod. ([#43](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/43))
+- bug fixed in the GUI launched by `ShinyGR()`, it is possible to the export the GR2M model diagram PNG file again. ([#40](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/40))
+- bug fixed in `SimGR()` which can now simulate a period with no observed flow. Previously, it could only be run in this case when the observed flow was missing from the output of `PrepGR()` on the whole period and not just on a subperiod. ([#43](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/43))
 
 
 #### User-visible changes
 
-- displaying a message when the package is attached from RStudio and also when the GUI is launched by `ShinyGR()` in order to warn users about GUI instability problems. ([#46](https://gitlab.irstea.fr/HYCAR-Hydro/airgr/-/issues/46))
-- added explanation of the use of the GR5H model in the `PrepGR()` help page. ([#41](https://gitlab.irstea.fr/HYCAR-Hydro/airgr/-/issues/41))
-- the text relating to the GR2M model in the 'GUI Help' image displayed by the GUI launched by `ShinyGR()` is corrected. ([#42](https://gitlab.irstea.fr/HYCAR-Hydro/airgr/-/issues/42))
-- replace the use of `class()` by `inherits()` in order to test the classes of inputs in all functions. ([#45](https://gitlab.irstea.fr/HYCAR-Hydro/airgr/-/issues/45))
+- displaying a message when the package is attached from RStudio and also when the GUI is launched by `ShinyGR()` in order to warn users about GUI instability problems. ([#46](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgr/-/work_items/46))
+- added explanation of the use of the GR5H model in the `PrepGR()` help page. ([#41](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgr/-/work_items/41))
+- the text relating to the GR2M model in the 'GUI Help' image displayed by the GUI launched by `ShinyGR()` is corrected. ([#42](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgr/-/work_items/42))
+- replace the use of `class()` by `inherits()` in order to test the classes of inputs in all functions. ([#45](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgr/-/work_items/45))
 
 
 #### Version control and issue tracking
 
-- automatic tests implemented in the package. ([#44](https://gitlab.irstea.fr/HYCAR-Hydro/airgr/-/issues/44))
+- automatic tests implemented in the package. ([#44](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgr/-/work_items/44))
 
 ____________________________________________________________________________________
 
@@ -129,13 +146,13 @@ ________________________________________________________________________________
 
 #### Bug fixes
 
-- bug fixed in `ShinyGR()` when the date column of `ObsDF` has another name as 'DatesR'. ([#38](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/38))
+- bug fixed in `ShinyGR()` when the date column of `ObsDF` has another name as 'DatesR'. ([#38](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/38))
 
 
 #### User-visible changes
 
-- the `as.data.frame` S3 methods have been set for classes `PrepGR`, `CalGR` and `SimGR`. ([#39](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/39))
-- the useless `airGRt` class and the `as.data.frame.airGRt` S3 method no longer exist ([#39](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/39))
+- the `as.data.frame` S3 methods have been set for classes `PrepGR`, `CalGR` and `SimGR`. ([#39](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/39))
+- the useless `airGRt` class and the `as.data.frame.airGRt` S3 method no longer exist ([#39](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/39))
 
 ____________________________________________________________________________________
 
@@ -145,30 +162,30 @@ ________________________________________________________________________________
 
 #### New features
 
-- the GUI, launched by the `ShinyGR()` function, can now run on monthly time series, using the GR2M model ([#14](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/14))
+- the GUI, launched by the `ShinyGR()` function, can now run on monthly time series, using the GR2M model ([#14](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/14))
 
 
 #### Bug fixes
 
-- bug fixed in `plot.PrepGR()` when all `Qobs` are missing. The function now displays an empty plot for the observed discharges ([#35](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/35))
+- bug fixed in `plot.PrepGR()` when all `Qobs` are missing. The function now displays an empty plot for the observed discharges ([#35](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/35))
 
 
 #### User-visible changes
 
-- `theme` agument of the `ShinyGR()` function now uses partial matching ([#12](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/12))
-- `as.data.frame.airGRt()`, `plot`, `plot.PrepGR()`, `plot.CalGR()` and `plot.SimGR()` functions are no longer exported by the namespace ([#30](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/30))
+- `theme` agument of the `ShinyGR()` function now uses partial matching ([#12](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/12))
+- `as.data.frame.airGRt()`, `plot`, `plot.PrepGR()`, `plot.CalGR()` and `plot.SimGR()` functions are no longer exported by the namespace ([#30](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/30))
 
 
 #### Version control and issue tracking
 
-- implement automatic tests in the package ([#29](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/29))
+- implement automatic tests in the package ([#29](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/29))
 
 
 #### CRAN-compatibility updates
 
-- now depends on R >= 3.6.0 in order to be sure to have the packages 'shiny' >= 1.1.0 and 'htmlwidgets' >= 1.5.3 available ([#5](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/5))
-- now depends on 'airGR' >= 1.6.9.27. 'airGRteaching' uses the new 'Ps' output of the `RunModel_GR2M` function ([#51](https://gitlab.irstea.fr/HYCAR-Hydro/airgr/-/issues/51)) and the new `SeriesAggreg()` function ([#25](https://gitlab.irstea.fr/HYCAR-Hydro/airgr/-/issues/25), [#41](https://gitlab.irstea.fr/HYCAR-Hydro/airgr/-/issues/41), [#43](https://gitlab.irstea.fr/HYCAR-Hydro/airgr/-/issues/43)) from 'airGR'
-- now suggests 'htmlwidgets' >= 1.5.3, available on the CRAN. It avoids troubles with the use of dynamic graphics of the 'dygraphs' package (called by the `dyplot*()` and the `ShinyGR()` functions) ([#5](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/5))
+- now depends on R >= 3.6.0 in order to be sure to have the packages 'shiny' >= 1.1.0 and 'htmlwidgets' >= 1.5.3 available ([#5](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/5))
+- now depends on 'airGR' >= 1.6.9.27. 'airGRteaching' uses the new 'Ps' output of the `RunModel_GR2M` function ([#51](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgr/-/work_items/51)) and the new `SeriesAggreg()` function ([#25](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgr/-/work_items/25), [#41](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgr/-/work_items/41), [#43](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgr/-/work_items/43)) from 'airGR'
+- now suggests 'htmlwidgets' >= 1.5.3, available on the CRAN. It avoids troubles with the use of dynamic graphics of the 'dygraphs' package (called by the `dyplot*()` and the `ShinyGR()` functions) ([#5](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/5))
 
 ____________________________________________________________________________________
 
@@ -178,12 +195,12 @@ ________________________________________________________________________________
 
 #### New features
 
-- GUI, launched by the `ShinyGR()` function, now displays a new tab panel that shows a summary sheets of basin if the name of the dataset contains the code station (8 characters : 1 letter and 7 digits) of the Banque Hydro French database (so it is available only for the dataset of this database) ([#10](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/10))
+- GUI, launched by the `ShinyGR()` function, now displays a new tab panel that shows a summary sheets of basin if the name of the dataset contains the code station (8 characters : 1 letter and 7 digits) of the Banque Hydro French database (so it is available only for the dataset of this database) ([#10](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/10))
 
 
 #### Version control and issue tracking
 
-- users can now track [changes](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching) and [issues](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues)
+- users can now track [changes](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching) and [issues](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/issues)
 
 
 #### User-visible changes
@@ -193,7 +210,7 @@ ________________________________________________________________________________
 
 #### CRAN-compatibility updates
 
-- when the package is attached or when the `dyplot()` and the `ShinyGR()` function are used, a message warns the users if they use a version of 'htmlwidgets' < 1.5.2.9000. The latest version of this package, available on GitHub, avoids troubles with the use of dynamic graphics of the 'dygraphs' package (called by the `dyplot*()` and the `ShinyGR()` functions) ([#5](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/5))
+- when the package is attached or when the `dyplot()` and the `ShinyGR()` function are used, a message warns the users if they use a version of 'htmlwidgets' < 1.5.2.9000. The latest version of this package, available on GitHub, avoids troubles with the use of dynamic graphics of the 'dygraphs' package (called by the `dyplot*()` and the `ShinyGR()` functions) ([#5](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/5))
 
 ____________________________________________________________________________________
 
@@ -220,10 +237,10 @@ ________________________________________________________________________________
 
 #### User-visible changes
 
-- it is now possible to use the GR4H and GR5H hourly models with or without CemaNeige. For that, in the `PrepGR()`, the `HydroModel` argument could be set to `"GR4H"` or `"GR5H"`. In the GUI, launched by `ShinyGR()` function, nothing changed, only the daily models are available. So, now airGRteaching depends on the version of 'airGR' >= 1.4.3.52) ([#7](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/7))
+- it is now possible to use the GR4H and GR5H hourly models with or without CemaNeige. For that, in the `PrepGR()`, the `HydroModel` argument could be set to `"GR4H"` or `"GR5H"`. In the GUI, launched by `ShinyGR()` function, nothing changed, only the daily models are available. So, now airGRteaching depends on the version of 'airGR' >= 1.4.3.52) ([#7](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/7))
 - it is now possible to run the `PrepGR()` function when discharge is not provided in `Qobs`. If it is the case, the `CalGR()` function will return an error message because it is not possible to calibrate the model. The `SimGR()` function will return a warning message because it is not possible to compute any efficiency criterion
 - it is now possible to run the `ShinyGR()` function when discharge is not provided in `Qobs`
-- when observed discharge is provided in `ShinyGR()`, the first plotting panel now draws the flow error time series ([#4](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/4))
+- when observed discharge is provided in `ShinyGR()`, the first plotting panel now draws the flow error time series ([#4](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/4))
 - `plot()` function is now exported
 - `dyplot.PrepGR()`, `dyplot.CalGR()` and `dyplot.SimGR()` functions are no longer exported
 - there is now only one help page for all `plot.*()` functions (use `?plot` to call it)
@@ -231,7 +248,7 @@ ________________________________________________________________________________
 
 #### CRAN-compatibility updates
 
-- when the package is loaded, a message warns the users if they use a version of 'htmlwidgets' < 1.5.1.9000. The latest version of this package, available on GitHub, avoids troubles with the use of dynamic graphics of the 'dygraphs' package (called by the `dyplot*()` and the `ShinyGR()` functions) ([#5](https://gitlab.irstea.fr/HYCAR-Hydro/airgrteaching/-/issues/5))
+- when the package is loaded, a message warns the users if they use a version of 'htmlwidgets' < 1.5.1.9000. The latest version of this package, available on GitHub, avoids troubles with the use of dynamic graphics of the 'dygraphs' package (called by the `dyplot*()` and the `ShinyGR()` functions) ([#5](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/5))
 
 ____________________________________________________________________________________
 

@@ -8,7 +8,6 @@ citHeader("To cite airGRteaching in publications use these two references:")
 bibentry(bibtype     = "Article",
          author      = c(as.person("O. Delaigue"), as.person("P. Brigode"), as.person("G. Thirel"), as.person("L. Coron")),
          title       = "{airGRteaching}: an open-source tool for teaching hydrological modeling with {R}",
-         booktitle   = "HIC 2018. 13th International Conference on Hydroinformatics",
          journal     = "Hydrology and Earth System Sciences",
          volume      = "27",
          number      = "17",

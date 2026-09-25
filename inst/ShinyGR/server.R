@@ -942,7 +942,7 @@ shinyServer(function(input, output, session) {
   output$DownloadTab <- downloadHandler(
     filename = function() {
       filename <- "TabSim"
-      filename <- sprintf("airGR_%s_%s.csv", filename, gsub("(.*)( )(\\d{2})(:)(\\d{2})(:)(\\d{2})", "\\1_\\3h\\5m\\7s", Sys.time()))
+      filename <- sprintf("airGR_%s_%s.csv", filename, gsub("(.*)( )(\\d{2})(:)(\\d{2})(:)(\\d{2})", "\\1_\\3h\\5m\\7s", format(Sys.time(), format = "%Y-%m-%d %H:%M:%S")))
     },
     content = function(file) {
       TabSim <- as.data.frame(getSim()$SIM)
@@ -966,7 +966,7 @@ shinyServer(function(input, output, session) {
                          "Flow time series"  = "PlotFlowTimeSeries",
                          "State variables"   = "PlotStateVar",
                          "Model diagram"     = "PlotModelDiag")
-      filename <- sprintf("airGR_%s_%s.png", filename, gsub("(.*)( )(\\d{2})(:)(\\d{2})(:)(\\d{2})", "\\1_\\3h\\5m\\7s", Sys.time()))
+      filename <- sprintf("airGR_%s_%s.png", filename, gsub("(.*)( )(\\d{2})(:)(\\d{2})(:)(\\d{2})", "\\1_\\3h\\5m\\7s", format(Sys.time(), format = "%Y-%m-%d %H:%M:%S")))
     },
     content = function(file) {
       k <- 1.75
@@ -989,7 +989,7 @@ shinyServer(function(input, output, session) {
       ParamTitle <- gsub(" ,", ",", ParamTitle)
       PngTitle <- sprintf("%s - %s/%s\n%s\n%s", input$Dataset,
                           input$HydroModel, ifelse(input$SnowModel == "CemaNeige", "CemaNeige", "No snow model"),
-                          paste0(input$Period, collapse = " - "),
+                          paste0(format(input$Period, format = "%Y-%m-%d"), collapse = " - "),
                           ParamTitle)
       if (getPlotType() == 1) {
         png(filename = file, width = 1000*k, height = ifelse(input$SnowModel != "CemaNeige", 700*k, 1100*k), pointsize = 14, res = 150)

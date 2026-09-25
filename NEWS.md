@@ -4,6 +4,14 @@
 
 
 
+### 0.3.8 Release Notes (2026-09-25)
+
+#### Bug fixes
+
+- bug fixed in the GUI launched by `ShinyGR()`: dates in exported CSV and PNG filenames and plot titles are now properly formatted to prevent unwanted decimal representations. ([#84](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items/84))
+
+____________________________________________________________________________________
+
 ### 0.3.7 Release Notes (2026-07-09)
 
 #### Bug fixes
@@ -200,7 +208,7 @@ ________________________________________________________________________________
 
 #### Version control and issue tracking
 
-- users can now track [changes](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching) and [issues](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/issues)
+- users can now track [changes](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching) and [issues](https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items)
 
 
 #### User-visible changes

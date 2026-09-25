@@ -2,8 +2,8 @@ Package: airGRteaching
 Type: Package
 Title: Teaching Hydrological Modelling with the GR Rainfall-Runoff
         Models ('Shiny' Interface Included)
-Version: 0.3.7
-Date: 2026-07-09
+Version: 0.3.8
+Date: 2026-09-25
 Authors@R: c(
   person("Olivier", "Delaigue", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-7668-8468"), email = "airGR@inrae.fr"),
   person("Laurent", "Coron", role = c("aut"), comment = c(ORCID = "0000-0002-1503-6204")),
@@ -22,7 +22,7 @@ URL: https://hydrogr.github.io/airGRteaching/
 BugReports: https://forge.inrae.fr/hydroGR/airgrgalaxy/airgrteaching/-/work_items
 Encoding: UTF-8
 VignetteBuilder: knitr
-Packaged: 2026-07-09 13:50:56 UTC; odelaigue
+Packaged: 2026-09-25 11:20:37 UTC; odelaigue
 Author: Olivier Delaigue [aut, cre] (ORCID:
     <https://orcid.org/0000-0002-7668-8468>),
   Laurent Coron [aut] (ORCID: <https://orcid.org/0000-0002-1503-6204>),
@@ -30,4 +30,4 @@ Author: Olivier Delaigue [aut, cre] (ORCID:
   Guillaume Thirel [aut] (ORCID: <https://orcid.org/0000-0002-1444-1830>)
 Maintainer: Olivier Delaigue <airGR@inrae.fr>
 Repository: CRAN
-Date/Publication: 2026-07-09 16:50:07 UTC
+Date/Publication: 2026-09-25 11:50:02 UTC
